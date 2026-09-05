@@ -1,0 +1,93 @@
+# Configuración del corrector
+
+**Versión:** v1.0 · 2026-09-05
+**System prompt activo:** `agente/system_prompt_v2.md` — versión v2.1
+**Rúbrica:** v1.1 — embebida en el system prompt
+**Rúbrica fuente:** `rubrica_V2.md`
+
+---
+
+## 1 · Qué necesita el corrector para funcionar
+
+El corrector no puede evaluar lo que no puede leer. Estas son las capacidades mínimas, expresadas como funciones y no como implementación: cualquier entorno que las provea sirve.
+
+| # | Capacidad | Para qué la usa | Qué pasa si falta |
+|---|---|---|---|
+| H1 | **Listar el árbol de archivos** del entregable, con rutas completas | FASE 1 · inventario | Sin árbol no hay contraste posible: R6, R11 y R18 quedan muertas y el tramposo pasa |
+| H2 | **Leer el contenido** de cualquier archivo de texto (`.md`, `.txt`, `.json`, `.py`, `.yaml`, `.csv`) | FASES 2 a 5 | El corrector puntúa por nombre de archivo, que es exactamente lo que 5.5 prohíbe |
+| H3 | **Descomprimir** un `.zip` antes de H1 | Vía de entrega comprimida | Se rompe la neutralidad de formato (RD6) |
+| H4 | **Clonar o acceder** a un repositorio público | Vía de entrega repositorio | Se rompe la neutralidad de formato (RD6) |
+
+**H2 es la crítica.** Un corrector que solo lista el árbol puede verificar existencia pero no contenido, y todas las condiciones de verificación de la rúbrica son de contenido. Si la corrida en vivo no permite leer archivos, hay que declararlo antes de correr, no descubrirlo durante.
+
+### Fuera de alcance
+
+No se requiere ejecutar código del entregable, instalar dependencias, llamar APIs de terceros ni reproducir las corridas del trabajo evaluado. El corrector audita evidencia registrada, no re-ejecuta el sistema. La rúbrica está escrita en consecuencia: D3 verifica que las instrucciones de ejecución existan, no que funcionen.
+
+---
+
+## 2 · Parámetros del modelo
+
+| Parámetro | Valor | Motivo |
+|---|---|---|
+| Temperatura | **0** (o el mínimo disponible) | RD8 exige determinismo. Es la palanca más directa contra la variación entre corridas. |
+| Modelo | Uno con ventana suficiente para el system prompt completo (rúbrica embebida) más el entregable | Ver 2.1 |
+| Formato de salida | JSON | Si el entorno permite forzar salida JSON por esquema, activarlo: reduce el riesgo de texto antes o después. |
+
+### 2.1 · Criterio de elección de modelo
+
+El criterio del curso es el modelo más chico que hace bien la tarea. Esta tarea tiene tres exigencias que la vuelven poco apta para un modelo liviano:
+
+1. **Contraste entre lo afirmado y lo hallado** (FASE 3). No es extracción: es cruce entre dos inventarios construidos por el propio modelo.
+2. **Resistencia a manipulación** (CAPA 5). Los modelos chicos son más fáciles de desviar con instrucciones embebidas.
+3. **Contexto largo.** System prompt con rúbrica completa más el entregable entero.
+
+La elección debe registrarse en `calibracion.md` con la evidencia: si se probó un modelo menor y falló, guardar la corrida fallida. Si no se probó, decirlo.
+
+---
+
+## 3 · Protocolo de corrida
+
+1. Cargar `agente/system_prompt.md` completo como system prompt. **Sin editar, sin resumir, sin recortar la rúbrica embebida.**
+2. Verificar que el bloque entre los marcadores `INICIO RÚBRICA v1.1` y `FIN RÚBRICA v1.1` esté íntegro.
+3. Poner el entregable a disposición del corrector: descomprimir el zip o clonar el repositorio.
+4. Enviar el user prompt (sección 4).
+5. Recibir el JSON, validarlo (sección 5) y archivar la corrida completa.
+
+---
+
+## 4 · User prompt
+
+Texto fijo. No se personaliza por caso: cualquier variación entre entregables es una variable no controlada que rompe la comparabilidad.
+
+```
+Evaluá el Trabajo Final contenido en el entregable disponible.
+
+Vía de entrega: [repositorio | comprimido]
+Identificador: [nombre del repo o del archivo]
+
+Aplicá el procedimiento de la CAPA 4 en orden y devolvé
+únicamente el JSON de la CAPA 6.
+```
+
+---
+
+## 5 · Validación de la corrida
+
+Una corrida es válida si cumple las cinco condiciones. Si falla alguna, se archiva como corrida fallida —material de proceso, no resultado— y se corre de nuevo.
+
+1. La salida es JSON válido, sin texto antes ni después.
+2. Están las cinco dimensiones con todas sus claves.
+3. Cada `puntaje` pertenece al conjunto de valores permitidos de su dimensión (tabla 3.3 del system prompt).
+4. `puntaje_total` es exactamente la suma de los cinco puntajes.
+5. Ninguna justificación menciona la vía de entrega (RD6).
+
+La condición 3 es la que hay que mirar con más atención: es el punto donde un corrector mal configurado empieza a inventar valores intermedios.
+
+---
+
+## 6 · Registro de corridas
+
+Cada corrida se archiva con: fecha, modelo y temperatura usados, versión del system prompt, entregable evaluado, JSON completo tal como salió, y si fue válida o fallida.
+
+Las corridas fallidas no se borran. Son la evidencia del proceso y el insumo de la calibración.
