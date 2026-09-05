@@ -1,7 +1,8 @@
 # System Prompt — Agente Evaluador de Trabajos Finales
 
 **Versión:** v2.1 · 2026-09-05 · rúbrica embebida
-**Rúbrica asociada:** `../rubrica_V2.md` — versión v1.1
+**Rúbrica embebida:** versión v1.1
+**Fuente de la rúbrica:** `../rubrica_V2.md`
 **Arquitectura:** seis capas, de arriba hacia abajo. El orden importa y no debe alterarse.
 
 ---
