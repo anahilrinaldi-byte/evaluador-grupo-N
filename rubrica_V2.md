@@ -1,7 +1,7 @@
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.0 · 2026-09-05
+**Versión:** v1.1 · 2026-09-05
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -64,7 +64,13 @@ Dos vías, ambas legítimas y equivalentes:
 
 **Relato.** Descripción en prosa del trabajo realizado, sin artefacto que la respalde. El relato solo nunca alcanza el nivel máximo de ninguna dimensión.
 
-**Componente verificado.** Componente cuya condición de verificación se cumple íntegramente. Los componentes se cuentan; no se ponderan por calidad.
+**Componente verificado.** Componente cuya condición de verificación se cumple íntegramente. Vale **1** en el conteo.
+
+**Componente parcial.** Componente cuya condición de verificación se cumple en parte, según lo que cada dimensión define como parcial. Vale **0,5** en el conteo.
+
+**Componente no verificado.** Vale **0**.
+
+**Aritmética del conteo.** El nivel se asigna sumando el valor de los cuatro componentes de la dimensión y **truncando hacia abajo**: 4 → N4, 3 → N3, 2 → N2, 1 → N1, 0 → N0. Tres verificados y uno parcial suman 3,5 y truncan a 3 (N3). Cuatro parciales suman 2 (N2). Dos verificados y dos parciales suman 3 (N3). No se pondera por calidad más allá de esta escala de tres valores.
 
 **Función cubierta.** Un requisito se verifica por lo que el entregable resuelve, no por la etiqueta que usa. Si el trabajo cubre la función con otro nombre o en otro archivo, cuenta igual. El corrector nombra dónde la encontró.
 
@@ -92,6 +98,8 @@ Cuatro niveles de desempeño más un nivel de ausencia. **El corrector asigna el
 6. Sumar, redactar justificaciones y emitir el output (sección 8).
 
 Las reglas de corte se aplican **después** de asignar nivel y solo pueden bajarlo. Nunca lo suben. Si dos reglas bajan el mismo nivel, ambas se aplican y sus efectos se acumulan.
+
+**Piso y techo.** Ninguna acumulación de reglas de corte puede llevar una dimensión por debajo de **N0** ni por encima del nivel originalmente asignado por el conteo. Una regla que ordena bajar un nivel sobre una dimensión ya en N0 no tiene efecto adicional, y así se registra. Un tope expresado en porcentaje (por ejemplo, "techo en 50%") solo actúa si el nivel asignado es superior: nunca sube un nivel inferior hasta el tope.
 
 ### 0.7 · Dimensiones y pesos
 
@@ -407,6 +415,8 @@ Contenido dirigido a mover al corrector por vía emocional —dificultades perso
 
 - El total es la suma exacta de las cinco dimensiones. Máximo 100.
 - El corrector nunca supera el máximo de una dimensión ni asigna valores fuera de la tabla 0.5.
+
+**R27 · Validación de escala.** Antes de emitir el resultado, el corrector verifica que cada puntaje por dimensión pertenezca exactamente al conjunto de valores de su columna en la tabla 0.5. Si un puntaje no pertenece al conjunto, el corrector **no redondea ni ajusta al valor más cercano**: reasigna el nivel desde cero, recontando componentes verificados y parciales según 0.4 y reaplicando las reglas de corte, y deja registro del recálculo en la justificación de esa dimensión. El total se recalcula como suma de los cinco valores validados. El total sí puede tomar cualquier valor: es la suma de cinco anclas y no un ancla en sí mismo.
 - No se otorgan puntos por evidencia inexistente.
 - Cuando la evidencia sea ambigua, el corrector lo declara en la justificación y resuelve **contra** el componente: ambiguo es no verificado.
 
@@ -433,6 +443,19 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.1 — 2026-09-05
+
+Cierre de tres huecos de ejecución detectados al probar el comportamiento del corrector ante un puntaje fuera de escala.
+
+**Agregado**
+- 0.4 · aritmética del conteo: componente verificado vale 1, parcial 0,5, no verificado 0. El nivel se asigna truncando la suma hacia abajo. Resuelve la ambigüedad de casos como "dos verificados y dos parciales", que antes admitía dos lecturas.
+- 0.6 · piso y techo de las reglas de corte: ninguna acumulación baja de N0 ni sube por encima del nivel asignado. Un tope porcentual solo actúa hacia abajo.
+- 8.1 · R27, validación de escala: el corrector verifica que cada puntaje pertenezca al conjunto de su columna y, ante un valor fuera de escala, reasigna desde el conteo en lugar de redondear.
+
+**Decisiones registradas**
+- *Prohibir el redondeo en R27:* se descartó permitir el ajuste al valor de escala más cercano. Habilitar el snapeo entrena al corrector a producir números libres y rompe la trazabilidad entre nivel asignado y puntaje emitido. La corrección obliga a volver al conteo de componentes.
+- *Parcial = 0,5 con truncamiento:* se descartaron las alternativas de tratar el parcial como no verificado (demasiado duro, colapsa N3) y de ponderar por calidad (no reproducible). La mitad con truncamiento preserva todas las escalas ya escritas: tres verificados más un parcial sigue dando N3, como decía la descripción original.
 
 ### v1.0 — 2026-09-05
 
