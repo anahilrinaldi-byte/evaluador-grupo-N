@@ -1,0 +1,8 @@
+2026-08-25 19:40:02 | INICIO lectura
+2026-08-25 19:40:02 | archivo=datos/bd_cursos.xlsx hoja=CURSOS
+2026-08-25 19:40:03 | filas_totales=363 encabezado=1 registros=362
+2026-08-25 19:40:03 | columnas_detectadas=15
+2026-08-25 19:40:03 | columnas=[COD CURSO, CURSO, DURACION, CLIENTE, IMPORTE CLIENTE, PROFESOR, IMPORTE PROFESOR, FECHA CURSO, JORNADA CURSO, COMERCIAL, IMPORTE COMERCIAL, PAGADO CLIENTE, PAIS, CIUDAD, PAGADO COMERCIAL]
+2026-08-25 19:40:03 | validacion_columnas=OK
+2026-08-25 19:40:03 | registros_excluidos=0
+2026-08-25 19:40:03 | FIN lectura registros_entregados=362

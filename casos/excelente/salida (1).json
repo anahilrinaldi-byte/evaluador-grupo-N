@@ -1,0 +1,42 @@
+{
+  "periodo": "España, histórico 2019-2021",
+  "filtro_aplicado": "PAIS=ESPAÑA",
+  "fecha_corrida": "2026-08-26",
+  "error": null,
+  "cursos_analizados": 149,
+  "registros_excluidos": 0,
+  "facturacion_total": 118810.00,
+  "margen_total": 66296.40,
+  "margen_pct": 55.8,
+  "margen_por_pais": [
+    {"pais": "ESPAÑA", "cursos": 149, "facturacion": 118810.00, "margen": 66296.40}
+  ],
+  "margen_por_curso": [
+    {"curso": "EXCEL", "cursos": 40, "margen": 18992.55},
+    {"curso": "ACCESS", "cursos": 30, "margen": 13839.50},
+    {"curso": "DISEÑO", "cursos": 19, "margen": 13185.00},
+    {"curso": "WORD", "cursos": 30, "margen": 9688.60},
+    {"curso": "WINDOWS", "cursos": 15, "margen": 4432.00},
+    {"curso": "PROGRAMACION", "cursos": 4, "margen": 3303.00},
+    {"curso": "INTERNET", "cursos": 11, "margen": 2855.75}
+  ],
+  "ranking_comerciales": [
+    {"comercial": "COMERCIAL-002", "cursos": 49, "facturacion": 41085.00},
+    {"comercial": "COMERCIAL-004", "cursos": 50, "facturacion": 39635.00},
+    {"comercial": "COMERCIAL-003", "cursos": 26, "facturacion": 19770.00},
+    {"comercial": "COMERCIAL-001", "cursos": 24, "facturacion": 18320.00}
+  ],
+  "cartera_impaga": {
+    "importe": 17815.00,
+    "cantidad_cursos": 25,
+    "detalle_por_cliente": [
+      {"cliente": "CLIENTE-004", "cursos": 24, "importe": 17190.00},
+      {"cliente": "CLIENTE-001", "cursos": 1, "importe": 625.00}
+    ]
+  },
+  "alertas": [
+    "La cartera impaga de España representa el 15.0% de su facturación, muy por debajo del promedio general (29.2%).",
+    "CLIENTE-004 concentra el 96.5% de la deuda del mercado español."
+  ],
+  "resumen_ejecutivo": "España aporta 149 cursos y 118810.00 euros de facturación con un margen de 66296.40 euros (55.8%). Es el mercado con mejor comportamiento de cobranza: 17815.00 euros impagos en 25 cursos, casi todos de un único cliente."
+}

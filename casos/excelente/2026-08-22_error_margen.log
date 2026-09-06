@@ -1,0 +1,12 @@
+2026-08-22 21:14:55 | corrida de prueba v1 del contrato
+2026-08-22 21:15:31 | salida recibida
+2026-08-22 21:15:31 | margen_total devuelto = 199997.00
+2026-08-22 21:16:10 | VERIFICACION MANUAL contra planilla: margen esperado = 171955.35
+2026-08-22 21:16:10 | DIFERENCIA = 28041.65
+2026-08-22 21:18:44 | diagnostico: la diferencia coincide EXACTAMENTE con la suma de
+                      la columna IMPORTE COMERCIAL (28041.65).
+2026-08-22 21:18:44 | causa: el agente calculo margen = IMPORTE CLIENTE - IMPORTE PROFESOR
+                      y omitio la comision del comercial.
+2026-08-22 21:19:02 | el contrato v1 decia: "calcula el margen de cada curso"
+2026-08-22 21:19:02 | conclusion: instruccion ambigua. El modelo no adivina la regla
+                      de negocio. Hay que escribir la formula explicita.

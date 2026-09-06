@@ -1,0 +1,49 @@
+{
+  "periodo": "Base histórica completa 2019-2021",
+  "filtro_aplicado": "SIN FILTRO",
+  "fecha_corrida": "2026-08-25",
+  "error": null,
+  "cursos_analizados": 362,
+  "registros_excluidos": 0,
+  "facturacion_total": 303905.00,
+  "margen_total": 171955.35,
+  "margen_pct": 56.6,
+  "margen_por_pais": [
+    {"pais": "ESPAÑA", "cursos": 149, "facturacion": 118810.00, "margen": 66296.40},
+    {"pais": "FRANCIA", "cursos": 130, "facturacion": 112290.00, "margen": 64396.90},
+    {"pais": "ITALIA", "cursos": 83, "facturacion": 72805.00, "margen": 41262.05}
+  ],
+  "margen_por_curso": [
+    {"curso": "EXCEL", "cursos": 89, "margen": 37823.10},
+    {"curso": "DISEÑO", "cursos": 46, "margen": 36997.50},
+    {"curso": "ACCESS", "cursos": 66, "margen": 32924.40},
+    {"curso": "WORD", "cursos": 79, "margen": 24523.10},
+    {"curso": "PROGRAMACION", "cursos": 15, "margen": 15259.50},
+    {"curso": "WINDOWS", "cursos": 38, "margen": 14253.25},
+    {"curso": "INTERNET", "cursos": 29, "margen": 10174.50}
+  ],
+  "ranking_comerciales": [
+    {"comercial": "COMERCIAL-002", "cursos": 103, "facturacion": 85005.00},
+    {"comercial": "COMERCIAL-004", "cursos": 103, "facturacion": 84075.00},
+    {"comercial": "COMERCIAL-001", "cursos": 79, "facturacion": 70755.00},
+    {"comercial": "COMERCIAL-003", "cursos": 77, "facturacion": 64070.00}
+  ],
+  "cartera_impaga": {
+    "importe": 88700.00,
+    "cantidad_cursos": 103,
+    "detalle_por_cliente": [
+      {"cliente": "CLIENTE-003", "cursos": 32, "importe": 28250.00},
+      {"cliente": "CLIENTE-005", "cursos": 25, "importe": 24160.00},
+      {"cliente": "CLIENTE-004", "cursos": 24, "importe": 17190.00},
+      {"cliente": "CLIENTE-006", "cursos": 19, "importe": 16525.00},
+      {"cliente": "CLIENTE-002", "cursos": 2, "importe": 1950.00},
+      {"cliente": "CLIENTE-001", "cursos": 1, "importe": 625.00}
+    ]
+  },
+  "alertas": [
+    "La cartera impaga representa el 29.2% de la facturación histórica.",
+    "Cuatro clientes concentran el 97.1% de la deuda.",
+    "PROGRAMACION tiene el mayor margen unitario (1017.30) con solo 15 ediciones."
+  ],
+  "resumen_ejecutivo": "Sobre 362 cursos dictados entre 2019 y 2021 se facturaron 303905.00 euros con un margen de 171955.35 euros (56.6%). El problema central es la cobranza: 88700.00 euros impagos en 103 cursos, concentrados en cuatro clientes. CLIENTE-003 y CLIENTE-005 acumulan 52410.00 euros, el 59.1% de la deuda total."
+}

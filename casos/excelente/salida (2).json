@@ -1,0 +1,48 @@
+{
+  "periodo": "Cierre anual 2021",
+  "filtro_aplicado": "AÑO=2021",
+  "fecha_corrida": "2026-08-26",
+  "error": null,
+  "cursos_analizados": 120,
+  "registros_excluidos": 0,
+  "facturacion_total": 101310.00,
+  "margen_total": 58388.10,
+  "margen_pct": 57.6,
+  "margen_por_pais": [
+    {"pais": "FRANCIA", "cursos": 46, "facturacion": 40040.00, "margen": 23446.20},
+    {"pais": "ESPAÑA", "cursos": 49, "facturacion": 37295.00, "margen": 20469.15},
+    {"pais": "ITALIA", "cursos": 25, "facturacion": 23975.00, "margen": 14472.75}
+  ],
+  "margen_por_curso": [
+    {"curso": "DISEÑO", "cursos": 14, "margen": 13075.50},
+    {"curso": "EXCEL", "cursos": 28, "margen": 12472.15},
+    {"curso": "ACCESS", "cursos": 16, "margen": 9142.50},
+    {"curso": "WORD", "cursos": 32, "margen": 9033.75},
+    {"curso": "PROGRAMACION", "cursos": 7, "margen": 7879.50},
+    {"curso": "WINDOWS", "cursos": 13, "margen": 3831.45},
+    {"curso": "INTERNET", "cursos": 10, "margen": 2953.25}
+  ],
+  "ranking_comerciales": [
+    {"comercial": "COMERCIAL-002", "cursos": 38, "facturacion": 30515.00},
+    {"comercial": "COMERCIAL-001", "cursos": 27, "facturacion": 27310.00},
+    {"comercial": "COMERCIAL-004", "cursos": 30, "facturacion": 23050.00},
+    {"comercial": "COMERCIAL-003", "cursos": 25, "facturacion": 20435.00}
+  ],
+  "cartera_impaga": {
+    "importe": 37040.00,
+    "cantidad_cursos": 39,
+    "detalle_por_cliente": [
+      {"cliente": "CLIENTE-003", "cursos": 12, "importe": 12875.00},
+      {"cliente": "CLIENTE-005", "cursos": 13, "importe": 11285.00},
+      {"cliente": "CLIENTE-004", "cursos": 7, "importe": 6450.00},
+      {"cliente": "CLIENTE-006", "cursos": 6, "importe": 5805.00},
+      {"cliente": "CLIENTE-001", "cursos": 1, "importe": 625.00}
+    ]
+  },
+  "alertas": [
+    "La morosidad de 2021 (36.6% de la facturación) es superior al promedio histórico (29.2%): la cobranza empeoró.",
+    "FRANCIA superó a ESPAÑA en facturación durante 2021, invirtiendo el orden histórico.",
+    "DISEÑO pasó a ser el curso de mayor margen absoluto pese a tener solo 14 ediciones."
+  ],
+  "resumen_ejecutivo": "En 2021 se dictaron 120 cursos por 101310.00 euros con un margen de 58388.10 euros (57.6%), el mejor porcentaje de los tres años. El deterioro está en la cobranza: 37040.00 euros impagos en 39 cursos, equivalente al 36.6% de la facturación del año, siete puntos por encima del promedio histórico."
+}
