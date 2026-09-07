@@ -268,7 +268,7 @@ Verifica el requisito 4 del Trabajo Final. Alcance: la historia de construcción
 
 ### 2.4 · Ejemplos
 
-**Nivel alto — N4.** `casos/excelente`. `prompts/versiones/system_prompt_v1.md` y `_v2.md` conservan el estado anterior; `logs/2026-08-22_error_margen.log` cita el error textual con su diagnóstico —«el agente calculó margen = IMPORTE CLIENTE − IMPORTE PROFESOR y omitió la comisión del comercial»—; `DECISIONES.md` nombra cinco alternativas descartadas con su motivo y trae la tabla de cambios de alcance.
+**Nivel alto — N4.** `casos/excelente`. `prompts/versiones/system_prompt_v1.md` y `_v2.md` conservan el estado anterior; `logs/2026-08-22_error_margen.log` cita el error textual con su diagnóstico —«causa: el agente calculo margen = IMPORTE CLIENTE - IMPORTE PROFESOR» — sin acentos y con guion simple, tal como está en el log—; `DECISIONES.md` nombra cinco alternativas descartadas con su motivo y trae la tabla de cambios de alcance.
 
 **Nivel bajo — N0.** `casos/tramposo`. `DECISIONES.md` narra seis iteraciones del contrato y un error de cálculo, y **no conserva ninguna versión anterior ni cita el error textual**. Además afirma que existen `prompts/system_prompt_v1.md` y `logs/errores.md`, y ninguno de los dos existe. Es el caso puro de relato sin traza: la prosa es buena y el estándar de traza exige estado anterior y posterior.
 
@@ -373,7 +373,7 @@ Verifica el requisito 5 del Trabajo Final.
 
 **Nivel alto — N4.** *No hay ningún caso en `casos/` que llegue a N4 en esta dimensión, y conviene decirlo en vez de forzar un ejemplo.* Un N4 exigiría los cuatro componentes: el artefacto con la medición —un log del contador de tokens, una captura de la consola, un script—, el cálculo del costo recalculable a mano, la proyección en **los dos** horizontes que pide el requisito, y la elección del modelo comparada contra una alternativa.
 
-**El que más cerca está — N3.** `casos/tramposo`, y es el ejemplo más instructivo de la rúbrica, **porque el trabajo miente en casi todo lo demás y en esta dimensión no.** Cita la tarifa —«Entrada: USD 0,150 por millón»—, la aritmética se recalcula a mano, proyecta semanal y anual, y compara contra GPT-4o con el criterio del curso. Lo único que le falta es el artefacto de la medición: la tabla de tokens dice «medición real tomada con el contador» y ese contador no está en ningún archivo, así que por **P9** el componente cuenta como parcial y el conteo trunca a N3.
+**El que más cerca está — N3.** `casos/tramposo`, y es el ejemplo más instructivo de la rúbrica, **porque el trabajo miente en casi todo lo demás y en esta dimensión no.** Cita la tarifa —«Entrada: USD 0,150 por millón»—, la aritmética se recalcula a mano, proyecta semanal y anual, y compara contra GPT-4o con el criterio del curso. Lo único que le falta es el artefacto de la medición: la tabla de tokens dice «Medición real tomada sobre las corridas ejecutadas, con el contador de la consola de la API» y esa consola no está en ningún archivo, así que por **P9** el componente cuenta como parcial y el conteo trunca a N3.
 
 **Lo que este caso enseña:** la dimensión se puntúa sola, por su propia evidencia. Si el corrector le bajara la nota por desconfianza del resto del trabajo, estaría puntuando por impresión general, que es justamente lo que la rúbrica prohíbe. Once puntos y cuarto en un trabajo que en las otras dimensiones se cae, y está bien que así sea.
 
