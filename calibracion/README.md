@@ -8,7 +8,7 @@ Qué hay acá y para qué sirve cada cosa.
 |---|---|
 | `corrida-excelente.json` | Salida completa sobre `casos/excelente`. Total **92,50** |
 | `corrida-flojo.json` | Salida completa sobre `casos/flojo`. Total **25,00** |
-| `corrida-tramposo.json` | Salida completa sobre `casos/tramposo`. Total **26,25** |
+| `corrida-tramposo.json` | Salida completa sobre `casos/tramposo`. Total **22,50** |
 
 Las tres son la rúbrica aplicada componente por componente, con el JSON del
 esquema de la CAPA 6. **No se ejecutaron con `app.py` y la API key.** Cuando se

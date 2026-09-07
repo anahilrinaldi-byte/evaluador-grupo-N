@@ -36,7 +36,7 @@ Ninguno llega a verificado, porque a ninguno se le puede abrir el contador.
 |---|---|---|---|---|
 | Excelente | N3 · 11,25 | N3 · 11,25 | 92,50 | **92,50** |
 | Flojo | N1 · 3,75 | N0 · 0,00 | 25,00 | **21,25** |
-| Tramposo | N4 · 15,00 | N3 · 11,25 | 26,25 | **22,50** |
+| Tramposo | N4 · 15,00 | N3 · 11,25 | 22,50 | **18,75** |
 
 **El excelente no se mueve.** Ya estaba en N3 porque su proyección cubre solo el
 horizonte anual: el conteo bajó de 3,5 a 3 y las dos cifras truncan al mismo nivel.

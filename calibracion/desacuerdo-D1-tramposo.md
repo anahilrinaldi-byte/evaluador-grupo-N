@@ -59,12 +59,13 @@ Motivo: si el output se valida solo contra sí mismo, la dimensión deja de medi
 el sistema respeta su propio contrato y pasa a medir únicamente que sea consistente.
 Dos informes igual de desprolijos pasarían.
 
-**Consecuencia si se adopta:** la nota objetivo del tramposo baja de 33,75 a 26,25 y
+**Consecuencia si se adopta:** la nota objetivo del tramposo baja 7,50 puntos y
 hay que actualizar `casos/NOTAS_DE_DISENO.md`. El resto de los objetivos no cambia.
 
-**Y un efecto colateral que conviene mirar:** con 26,25, el tramposo pasa a estar
-*por encima* del flojo por apenas 1,25 puntos en vez de 8,75. El resultado
-contraintuitivo que ya estaba identificado se atenúa, aunque no desaparece.
+**Y un efecto colateral que conviene mirar:** el tramposo se acerca al flojo en vez
+de superarlo con holgura. Sumado al desacuerdo de D3, la corrida lo deja en 22,50
+contra los 25,00 del flojo: **el resultado contraintuitivo se da vuelta.** El que
+hizo poco y lo dijo termina por encima del que hizo poco y dijo que hizo mucho.
 
 ---
 

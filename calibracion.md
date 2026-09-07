@@ -177,16 +177,21 @@ completo del esquema de la CAPA 6. Archivadas en `calibracion/`.
 |---|---|---|---|
 | Excelente | **92,50** · Excelente | 92,50 | **0,00** |
 | Flojo | **25,00** · Crítico | 25,00 | **0,00** |
-| Tramposo | **26,25** · Crítico | 33,75 | **−7,50** |
+| Tramposo | **22,50** · Crítico | 33,75 | **−11,25** |
 
-Dos de tres con desvío cero. El tercero tiene un desacuerdo, y está documentado
-en `calibracion/desacuerdo-D1-tramposo.md`: los 7,50 puntos salen de **una sola
-decisión de componente** —cuánto vale `output_estructurado` en D1— y las otras
-cuatro dimensiones coinciden exactamente.
+Dos de tres con desvío cero. El tercero acumula **dos desacuerdos independientes**,
+los dos documentados:
+
+- **D1 · 7,50 puntos** — `calibracion/desacuerdo-D1-tramposo.md`. Cuánto vale
+  `output_estructurado` cuando el trabajo declara un JSON y entrega prosa.
+- **D3 · 3,75 puntos** — `calibracion/desacuerdo-D3-tramposo.md`. Las notas de
+  diseño acreditan instrucciones de ejecución que no existen en ningún archivo.
+
+Las otras tres dimensiones coinciden exactamente.
 
 ### Lo que las corridas confirman
 
-**El corrector discrimina.** 92,50 contra 26,25 son 66 puntos de separación entre
+**El corrector discrimina.** 92,50 contra 22,50 son 70 puntos de separación entre
 dos casos que comparten dominio, extensión y calidad de prosa. La única diferencia
 entre ellos es que uno tiene los artefactos y el otro los declara.
 

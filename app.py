@@ -423,6 +423,26 @@ def validar_corrida(resultado):
                 f"La rubrica no tiene valores intermedios."
             )
 
+    # Condicion 3 bis: el nivel final no puede estar POR ENCIMA del que da el
+    # conteo. Todas las reglas de corte bajan o topean; ninguna sube. Un nivel
+    # final mas alto que el de conteo es una inconsistencia aritmetica, no una
+    # regla aplicada. Este chequeo no estaba en la spec y lo agregamos porque
+    # una de nuestras propias corridas lo violaba sin que nada lo detectara.
+    ORDEN = {"N0": 0, "N1": 1, "N2": 2, "N3": 3, "N4": 4}
+    for nombre in ANCLAS:
+        d = dimensiones.get(nombre)
+        if not isinstance(d, dict):
+            continue
+        por_conteo = d.get("nivel_por_conteo")
+        final = d.get("nivel_final")
+        if por_conteo in ORDEN and final in ORDEN:
+            if ORDEN[final] > ORDEN[por_conteo]:
+                fallas.append(
+                    f"{nombre}: nivel_final {final} es mayor que "
+                    f"nivel_por_conteo {por_conteo}. Ninguna regla de corte "
+                    f"sube de nivel: todas bajan o topean."
+                )
+
     # Condicion 4: el total es la suma exacta
     total = resultado.get("puntaje_total")
     try:
