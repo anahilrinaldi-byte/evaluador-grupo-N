@@ -4,8 +4,10 @@ Evidencia de que las notas del corrector coinciden con el criterio humano del
 grupo sobre los tres casos: qué notas esperábamos, qué salió al aplicar la
 rúbrica, dónde no coincidía y qué se ajustó.
 
-**Rúbrica aplicada:** `rubrica_V2.md` — es la única de las tres versiones que
-tiene anclas de puntaje discretas y aritmética de conteo de componentes.
+**Rúbrica aplicada:** la V2 de Anahí. Desde el 7/9 es la base de `rubrica.md`,
+tras la consolidación de las tres versiones — ver `comparacion_versiones.md`.
+Es la única de las tres que tiene anclas de puntaje discretas y aritmética de
+conteo de componentes.
 
 ---
 

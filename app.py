@@ -310,7 +310,7 @@ def evaluar_repo(url_repo):
         config=types.GenerateContentConfig(
             system_instruction=system_prompt,
             response_mime_type="application/json",
-            temperature=0.1
+            temperature=0
         )
     )
 
