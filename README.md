@@ -89,9 +89,12 @@ Finalmente, la calibración mostró que una rúbrica ejecutable debe ser lo sufi
 - `rubrica.md` — rúbrica ejecutable.
 - `agente/` — system prompt y configuración del evaluador.
 - `casos/` — casos de prueba excelente, flojo y tramposo.
-- `calibracion/` — evidencias y resultados de calibración.
+- `calibracion.md` — evidencia de calibración: las rondas, los desvíos y los ajustes.
+- `calibracion/` — corridas archivadas, desacuerdos documentados y plantillas de la corrección a ciegas.
 - `app.py` — aplicación del evaluador.
+- `comparacion_versiones.md` — por qué de las tres versiones de rúbrica y system prompt quedó la que quedó.
 - `PRUEBA_DE_FUEGO.md` — preparación para la prueba de fuego.
+- `QUE_FALTA.md` — qué queda pendiente, con dueño y con el cómo.
 - `requirements.txt` — dependencias necesarias.
 
 ## Cómo ejecutar

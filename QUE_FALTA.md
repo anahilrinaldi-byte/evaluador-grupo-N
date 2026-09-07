@@ -3,7 +3,7 @@
 Estado al **lunes 7/9**. Entrega el **miércoles 9 a la noche**, prueba de fuego el
 **jueves 10 a las 18:59**.
 
-Quedan **cuatro cosas**. Ninguna se puede hacer sin una persona del grupo: no es
+Quedan **tres cosas**. Ninguna se puede hacer sin una persona del grupo: no es
 que falten por tiempo, es que dependen de la API key, del criterio humano de cada
 uno, o de un archivo del campus.
 
@@ -96,10 +96,16 @@ Puede ser correcto o puede ser una vara imposible.
 
 ---
 
-## 3 · El README estándar de la materia — MIGUE
+## 3 · El README estándar de la materia — ~~MIGUE~~ **HECHO**
 
-El nuestro tiene ocho líneas: el título y los cuatro nombres. Falta el README
-estándar que pide la consigna, que está en el campus.
+**Migue lo subió el 7/9 a las 17:20.** Sigue la estructura estándar de la materia
+—qué construimos, cómo se lo pedimos, qué funciona, qué falló, qué aprendimos— y
+sus afirmaciones técnicas están verificadas contra el código: la priorización de
+archivos, el soporte de subcarpetas, la validación de salida y el reporte de árbol
+truncado son todas ciertas.
+
+Único ajuste posterior: la lista de estructura no incluía `calibracion.md`, que es
+uno de los siete elementos que exige la consigna. Agregado.
 
 *Prompt para tu agente:*
 
