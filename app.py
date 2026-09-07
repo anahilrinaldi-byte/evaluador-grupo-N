@@ -162,7 +162,13 @@ def descargar_repo_publico(url_repo):
             "No se pudo leer la estructura del repositorio."
         )
 
-    tree = respuesta_tree.json().get("tree", [])
+    datos_tree = respuesta_tree.json()
+    tree = datos_tree.get("tree", [])
+
+    # GitHub recorta el arbol cuando el repo es muy grande y lo avisa en este
+    # campo. Ignorarlo significa evaluar un repositorio al que le faltan
+    # archivos sin que nadie lo sepa: la lista de partida ya venia incompleta.
+    arbol_truncado = bool(datos_tree.get("truncated", False))
 
     # Si se pidio una subcarpeta, nos quedamos solo con lo que cuelga de ella
     # y le recortamos el prefijo: el corrector tiene que ver la subcarpeta como
@@ -285,6 +291,7 @@ def descargar_repo_publico(url_repo):
         "omitidos_por_cantidad": omitidos_por_cantidad,
         "caracteres_empaquetados": total_caracteres,
         "techo_caracteres": MAX_CARACTERES_REPO,
+        "arbol_truncado": arbol_truncado,
         "subcarpeta": subcarpeta
     }
 
@@ -312,6 +319,7 @@ Archivos que no se pudieron leer: {metadata.get('archivos_fallidos') or 'ninguno
 Archivos omitidos por límite de tamaño: {metadata.get('omitidos_por_tamano') or 'ninguno'}
 Archivos omitidos por límite de cantidad: {metadata.get('omitidos_por_cantidad') or 'ninguno'}
 Tamaño empaquetado: {metadata.get('caracteres_empaquetados')} de {metadata.get('techo_caracteres')} caracteres
+GitHub recortó el árbol del repositorio: {'SÍ — la lista de archivos de partida ya venía incompleta' if metadata.get('arbol_truncado') else 'no'}
 
 Si alguna de esas tres listas no está vacía, el paquete de evidencia está
 incompleto: hay archivos del entregable que no estás viendo.
@@ -354,6 +362,94 @@ fue encontrada.
 
 Devolvé únicamente el objeto JSON solicitado.
 """
+
+
+# ---------------------------------------------------------
+# VALIDACIÓN DE LA CORRIDA
+# ---------------------------------------------------------
+
+# Valores permitidos por dimensión, según la tabla 3.3 del system prompt.
+# V2 usa anclas discretas: no existen rangos ni valores intermedios. Sin este
+# chequeo, la afirmación central de la rúbrica no está respaldada por nada.
+ANCLAS = {
+    "sistema_completo":        [30, 22.5, 15, 7.5, 0],
+    "proceso_documentado":     [25, 18.75, 12.5, 6.25, 0],
+    "formato_reproducibilidad":[15, 11.25, 7.5, 3.75, 0],
+    "analisis_economico":      [15, 11.25, 7.5, 3.75, 0],
+    "gobierno_riesgo":         [15, 11.25, 7.5, 3.75, 0],
+}
+
+
+def validar_corrida(resultado):
+    """
+    Aplica las condiciones 2 a 5 de agente/configuracion, seccion 5.
+    La condicion 1 -- JSON valido -- ya la garantiza json.loads.
+
+    Devuelve la lista de incumplimientos. Vacia significa corrida valida.
+    """
+    fallas = []
+
+    dimensiones = resultado.get("dimensiones")
+    if not isinstance(dimensiones, dict):
+        return ["No hay objeto 'dimensiones' en la salida."]
+
+    # Condicion 2: estan las cinco dimensiones
+    faltantes = [d for d in ANCLAS if d not in dimensiones]
+    if faltantes:
+        fallas.append(
+            "Faltan dimensiones en la salida: " + ", ".join(faltantes)
+        )
+
+    # Condicion 3: cada puntaje es un valor de ancla
+    suma = 0
+    for nombre, permitidos in ANCLAS.items():
+        d = dimensiones.get(nombre)
+        if not isinstance(d, dict):
+            continue
+        p = d.get("puntaje")
+        if p is None:
+            fallas.append(f"{nombre}: no trae 'puntaje'.")
+            continue
+        try:
+            p = float(p)
+        except (TypeError, ValueError):
+            fallas.append(f"{nombre}: el puntaje '{p}' no es un número.")
+            continue
+        suma += p
+        if not any(abs(p - v) < 0.001 for v in permitidos):
+            fallas.append(
+                f"{nombre}: puntaje {p} no es un valor permitido. "
+                f"Solo se admiten {permitidos}. "
+                f"La rubrica no tiene valores intermedios."
+            )
+
+    # Condicion 4: el total es la suma exacta
+    total = resultado.get("puntaje_total")
+    try:
+        total = float(total)
+        if abs(total - suma) > 0.001:
+            fallas.append(
+                f"puntaje_total dice {total} y la suma de las dimensiones "
+                f"da {suma}."
+            )
+    except (TypeError, ValueError):
+        fallas.append(f"puntaje_total '{total}' no es un número.")
+
+    # Condicion 5: ninguna justificacion menciona la via de entrega
+    prohibidas = ["comprimido", "zip", "repositorio", "repo"]
+    for nombre in ANCLAS:
+        d = dimensiones.get(nombre)
+        if not isinstance(d, dict):
+            continue
+        j = str(d.get("justificacion", "")).lower()
+        usadas = [t for t in prohibidas if t in j]
+        if usadas:
+            fallas.append(
+                f"{nombre}: la justificacion menciona la via de entrega "
+                f"({', '.join(usadas)}). Lo prohibe RD6."
+            )
+
+    return fallas
 
 
 def evaluar_repo(url_repo):
@@ -434,7 +530,46 @@ if st.button("Evaluar repositorio", type="primary"):
             ):
                 resultado, metadata = evaluar_repo(url_repo)
 
-            st.success("Evaluación completada.")
+            # Validacion de la corrida, segun agente/configuracion seccion 5.
+            # Una corrida que no la pasa no es un resultado: es una corrida
+            # fallida, y hay que verlo antes de mirar la nota.
+            fallas = validar_corrida(resultado)
+
+            if fallas:
+                st.error(
+                    "**Corrida NO válida.** No cumple la validación de "
+                    "`agente/configuracion` §5. Se archiva como corrida "
+                    "fallida y se vuelve a correr."
+                )
+                for f in fallas:
+                    st.write("- " + f)
+                st.divider()
+            else:
+                st.success(
+                    "Evaluación completada. **Corrida válida**: las cinco "
+                    "dimensiones están, todos los puntajes son valores de "
+                    "ancla y el total coincide con la suma."
+                )
+
+            if metadata.get("arbol_truncado"):
+                st.warning(
+                    "GitHub recortó el árbol del repositorio: la lista de "
+                    "archivos de partida ya venía incompleta."
+                )
+
+            omitidos = (
+                metadata.get("omitidos_por_tamano", [])
+                + metadata.get("omitidos_por_cantidad", [])
+                + metadata.get("archivos_fallidos", [])
+            )
+            if omitidos:
+                st.warning(
+                    f"El paquete de evidencia está incompleto: "
+                    f"{len(omitidos)} archivos no llegaron al corrector."
+                )
+                with st.expander("Ver cuáles"):
+                    for r in omitidos:
+                        st.write("- " + r)
 
             puntaje_total = resultado.get("puntaje_total", "—")
             veredicto = resultado.get("veredicto", "—")
