@@ -3,7 +3,7 @@
     "via_entrega": "repositorio",
     "identificador_entregable": "casos/excelente",
     "fecha_correccion": "2026-09-07",
-    "version_rubrica": "v1.2",
+    "version_rubrica": "v1.3",
     "error_carga": false
   },
   "puntaje_total": 92.5,
@@ -123,12 +123,12 @@
     "analisis_economico": {
       "maximo": 15,
       "componentes": {
-        "consumo_medido": "verificado",
+        "consumo_medido": "parcial",
         "costo_por_corrida": "verificado",
         "proyeccion_operacion": "parcial",
         "eleccion_modelo": "verificado"
       },
-      "conteo": 3.5,
+      "conteo": 3.0,
       "nivel_por_conteo": "N3",
       "reglas_corte_aplicadas": [],
       "nivel_final": "N3",
@@ -141,12 +141,17 @@
         {
           "ruta": "ANALISIS_ECONOMICO.md",
           "cita": "Proyeccion anual ... 8 corridas mensuales, 96 anuales"
+        },
+        {
+          "ruta": "ANALISIS_ECONOMICO.md",
+          "cita": "Medicion real tomada de la consola de la API en las tres corridas documentadas en corridas/."
         }
       ],
       "faltantes": [
-        "El horizonte semanal, que el requisito 5 pide junto con el anual"
+        "El horizonte semanal, que el requisito 5 pide junto con el anual",
+        "El artefacto de la medicion de tokens: la consola de la API no esta en ningun archivo del entregable"
       ],
-      "justificacion": "Tokens medidos con origen, costo por corrida recalculable a mano y eleccion de modelo justificada. La proyeccion cubre solo el horizonte anual y el requisito pide los dos, por eso el componente cuenta como parcial y el conteo trunca a N3.",
+      "justificacion": "Costo por corrida recalculable a mano hasta el ultimo digito y eleccion de modelo con criterio explicito y alternativa nombrada. Consumo medido cuenta como parcial: el origen esta declarado, pero la consola de la API que lo produjo no esta en ningun archivo, y por P9 una tabla es evidencia del resultado solo si existe el artefacto que la produjo. Es la misma situacion probatoria que 4.4 resuelve como parcial en casos/tramposo, y P4 obliga a resolverla igual. La proyeccion cubre solo el horizonte anual y el requisito pide los dos, tambien parcial. Dos verificados y dos parciales suman 3 y truncan a N3, segun 0.4.",
       "mejora_prioritaria": "Agregar la proyeccion semanal a la misma tabla, con el supuesto de volumen enunciado."
     },
     "gobierno_riesgo": {

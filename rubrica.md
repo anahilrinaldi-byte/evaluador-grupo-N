@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.2 · 2026-09-07
+**Versión:** v1.3 · 2026-09-07
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -232,6 +232,20 @@ Una ruta afirmada e inexistente **no activa R2** únicamente si el corrector ver
 **Alcance de la excepción.** Cubre la **ausencia** del insumo, no su contenido: no habilita a dar por verificado ningún componente cuya condición exija ver el dato de origen. No se extiende por analogía a otras rutas faltantes del mismo entregable —se evalúa ruta por ruta— y la clasificación como insumo la determina el corrector aplicando C1, nunca la etiqueta que use el evaluado. R11 y R18 conservan su efecto propio con independencia de esta excepción.
 
 **Razón de la asimetría.** No declarar un insumo faltante una vez es un descuido; hacerlo dos veces es un patrón, y ahí deja de distinguirse de un hueco tapado. Un trabajo que no puede versionar su fuente de datos tiene una. Uno que declara varios insumos externos que casualmente ninguno existe, está usando la excepción como refugio.
+
+**R6-ter · Alcance del inventario de consistencia.**
+
+R6 alcanza únicamente **rutas nombradas**. Es ruta nombrada toda **cadena literal con forma de ruta** —que designe un archivo o un directorio— presente en el entregable, exista o no en el árbol; el corrector la busca en el árbol y registra si existe. La forma se juzga sobre la cadena, nunca sobre el resultado de la búsqueda: una ruta que no existe sigue siendo ruta nombrada, y es precisamente el caso que R6 viene a detectar. No son rutas nombradas las cantidades, frecuencias, periodicidades ni afirmaciones generales de práctica, aunque impliquen la existencia de artefactos.
+
+**Afirmación general de práctica.** Enunciado que afirma la existencia de artefactos sin nombrar su ruta —«cada corrida deja un log», «se conservan todas las versiones», «el sistema registra cada consulta»—. No entra al inventario de consistencia y **no activa R2 por sí sola**. Se registra como contradicción declaración–evidencia por 6.2, con obligación de consignarla en la justificación de la dimensión afectada.
+
+**Efecto sobre el puntaje.** Una afirmación general incumplida cuesta puntos únicamente cuando la condición de verificación del componente afectado exige el artefacto ausente, y entonces cuesta **por la vía del componente y no por la vía de R2**. El componente se evalúa según su propia condición y queda como parcial o como no verificado según lo que la evidencia acredite; esta cláusula no fija su valor y en ningún caso lo eleva.
+
+**Patrón.** Tres o más afirmaciones generales incumplidas registradas en un mismo entregable constituyen patrón y no descuido: **activan R2 una sola vez**, con independencia de cuántas se hayan registrado por encima de tres. El umbral es contable y no admite ponderación por gravedad.
+
+**Relación con R6-bis.** R6-bis opera sobre rutas nombradas inexistentes. Una afirmación general nunca califica para R6-bis ni consume su invocación única.
+
+**Razón.** La fuerza de R6 es que se ejecuta sin criterio: se arma la lista de rutas y se contrasta contra el árbol. Un conteo inferido de artefactos introduce un juicio dentro de una regla mecánica y hace que dos corridas sobre el mismo entregable puedan diferir, que es lo que P4 prohíbe.
 
 ---
 
@@ -541,6 +555,18 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.3 — 2026-09-07
+
+Delimitación del alcance de R6, detectada al registrar una afirmación de práctica incumplida en `casos/excelente` durante la ronda 1. R6 no distinguía una ruta nombrada, verificable por existencia en el árbol, de una afirmación general que implica artefactos sin nombrarlos. La segunda lectura admitía activar R2 sobre un conteo inferido, con lo que dos correctores podían emitir notas distintas sobre la misma evidencia.
+
+**Agregado**
+- 1.4 · R6-ter, alcance del inventario de consistencia: definición operativa de ruta nombrada, tratamiento de la afirmación general de práctica por 6.2, efecto sobre el puntaje por la vía del componente, umbral de patrón en tres, y relación con R6-bis.
+
+**Decisiones registradas**
+- *No prescribir «parcial» como resultado:* la redacción preliminar hacía bajar el componente afectado a parcial. Se descartó porque un componente sin ningún artefacto vale 0 por su propia condición, y fijarlo en 0,5 lo habría elevado. La cláusula deja el valor a la condición del componente y solo aclara que no lo eleva.
+- *Definición operativa de ruta nombrada:* se descartó dejarla al sentido común. Sin test mecánico, la discusión se traslada de «¿el conteo cierra?» a «¿esto es una ruta?», que reproduce el problema de P4 un nivel más abajo. La forma se juzga sobre la cadena y no sobre el resultado de la búsqueda: la redacción preliminar decía «cadena que resuelva a un archivo o directorio», que leída al pie dejaba fuera del inventario a toda ruta inexistente y desactivaba R6 por completo.
+- *Umbral de patrón en tres:* se descartó no poner umbral, que dejaba la afirmación vaga sin costo alguno, y se descartó activar R2 desde la primera, que reintroduce el juicio inferido que la cláusula viene a eliminar. Tres es contable y verificable por un tercero.
 
 ### v1.2 — 2026-09-07
 

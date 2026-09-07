@@ -17,6 +17,17 @@ calibración: una corrida que falló y se entiende por qué vale más que ningun
 | 2 | 2026-09-06 | aplicación manual de la rúbrica | — | v2.1 | `casos/flojo` | `corrida-flojo.json` | sí |
 | 3 | 2026-09-06 | aplicación manual de la rúbrica | — | v2.1 | `casos/tramposo` | `corrida-tramposo.json` | sí |
 | 1-bis | 2026-09-07 | aplicación manual de la rúbrica | — | `agente/system_prompt.md` | `casos/excelente` | `corrida-excelente.json` | sí, re-emitida |
+| 1-ter | 2026-09-07 | aplicación manual de la rúbrica | — | `agente/system_prompt.md` | `casos/excelente` | `corrida-excelente.json` | sí, re-emitida |
+
+**Corrida 1-ter.** Segunda re-emisión, contra **v1.3**, por una discrepancia de la
+ronda 1 en D4. La corrida daba **Consumo medido** como verificado; el ejemplo 4.4 resuelve
+esa misma situación probatoria como **parcial** en `casos/tramposo` —la tabla de tokens
+declara origen en la consola de la API y esa consola no está en ningún archivo, así que por
+P9 el componente no se verifica—, y el excelente afirma lo mismo con casi las mismas
+palabras. P4 obliga a puntuarlos igual. El componente pasa a parcial: el conteo cae de 3,5 a
+3,0, ambos truncan a N3 y **el puntaje no cambia**, 11,25. Se corrige igual, porque una
+inconsistencia entre dos casos del propio banco de calibración es exactamente lo que P4
+prohíbe, y porque el conteo es lo que el jueves se va a poder auditar.
 
 **Corrida 1-bis.** La corrida 1 se re-emitió el 7/9 contra la rúbrica **v1.2**. Su
 inventario de consistencia (6.3) estaba incompleto: no registraba `datos/bd_cursos.xlsx`,
