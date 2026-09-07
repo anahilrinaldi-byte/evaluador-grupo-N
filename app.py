@@ -17,7 +17,7 @@ st.set_page_config(
     layout="wide"
 )
 
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-3.6-flash"
 
 EXTENSIONES_PERMITIDAS = {
     ".md", ".txt", ".py", ".json", ".yaml", ".yml",
