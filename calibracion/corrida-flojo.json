@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "via_entrega": "repositorio",
+    "identificador_entregable": "casos/flojo",
+    "fecha_correccion": "2026-09-06",
+    "version_rubrica": "v1.1",
+    "error_carga": false
+  },
+  "puntaje_total": 25.0,
+  "veredicto": "Crítico",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {"contrato": "parcial", "herramienta_real": "no_verificado", "output_estructurado": "parcial", "gancho_supervision": "parcial"},
+      "conteo": 1.5,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [
+        {"regla": "R4", "efecto": "techo en 50 por ciento", "motivo": "Una sola corrida: no hay dos que satisfagan el mismo formato"}
+      ],
+      "nivel_final": "N1",
+      "puntaje": 7.5,
+      "evidencia": [
+        {"ruta": "prompts/system_prompt.md", "cita": "Que tenes que hacer / Datos que recibis / Como calcular / Formato - cuatro de las seis funciones"},
+        {"ruta": "corridas/corrida_01/entrada.md", "cita": "Le pegue la tabla de los 362 cursos en el prompt y le pedi el reporte"}
+      ],
+      "faltantes": [
+        "El contrato no define alcance explicito ni comportamiento ante ambiguedad o fallo",
+        "No hay herramienta: los datos se pegan en el prompt, que es lo que separa un agente de un chatbot con contexto",
+        "El formato de salida se menciona sin esquema fijo, y hay una sola corrida contra la que validarlo"
+      ],
+      "justificacion": "Cuatro de las seis funciones del contrato, sin herramienta real, formato enunciado sin esquema y supervision en una linea. El conteo da N1 y R4 confirma el techo por corrida unica.",
+      "mejora_prioritaria": "Hacer que el agente lea el archivo de datos en vez de recibirlos pegados en el prompt, y guardar el log de esa lectura."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {"iteraciones": "no_verificado", "fallas": "no_verificado", "decisiones": "verificado", "cambios_de_alcance": "parcial"},
+      "conteo": 1.5,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 6.25,
+      "evidencia": [
+        {"ruta": "DECISIONES.md", "cita": "proyeccion de facturacion para el ano siguiente, pero lo descarte"},
+        {"ruta": "DECISIONES.md", "cita": "Lo que quedo pendiente"}
+      ],
+      "faltantes": [
+        "Ninguna version anterior del prompt: no hay estado anterior contra el cual comparar",
+        "Ningun artefacto de falla: ni error textual, ni corrida abortada, ni output incorrecto"
+      ],
+      "justificacion": "Hay una decision real con la alternativa descartada nombrada y su motivo, y una seccion de pendientes que funciona como cambio de alcance parcial. Pero el proceso no tiene traza: nada muestra un estado anterior del trabajo.",
+      "mejora_prioritaria": "Guardar la version anterior del prompt junto con la razon del cambio, aunque sea una sola iteracion."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {"estructura_obligatoria": "parcial", "cantidad_corridas": "no_verificado", "reconstruibilidad": "parcial", "instrucciones_ejecucion": "no_verificado"},
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [
+        {"regla": "R14", "efecto": "techo en 50 por ciento", "motivo": "Una corrida verificable contra las tres que exige el documento oficial"}
+      ],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        {"ruta": "corridas/corrida_01/entrada.md", "cita": "Analiza esta base de cursos y devolveme el reporte de gestion"},
+        {"ruta": "corridas/corrida_01/salida.md", "cita": "Reporte de gestion - Base de cursos"}
+      ],
+      "faltantes": [
+        "prompts/user_prompt.md no existe",
+        "Solo una corrida de las tres exigidas",
+        "La corrida no tiene fecha ni identificacion temporal",
+        "No hay instrucciones para volver a ejecutar el sistema"
+      ],
+      "justificacion": "Falta un archivo de la estructura obligatoria y hay una sola corrida, sin fecha y sin instrucciones de ejecucion. R14 fija el techo, aunque el conteo ya daba N1 por si solo.",
+      "mejora_prioritaria": "Correr el sistema dos veces mas con entradas distintas y fechar cada corrida."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {"consumo_medido": "parcial", "costo_por_corrida": "parcial", "proyeccion_operacion": "no_verificado", "eleccion_modelo": "no_verificado"},
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        {"ruta": "README.md", "cita": "La corrida consumio aproximadamente 15.000 tokens"},
+        {"ruta": "README.md", "cita": "sale alrededor de 0,0023 dolares por corrida"}
+      ],
+      "faltantes": [
+        "El consumo es aproximado y no declara de donde sale el numero",
+        "No hay proyeccion semanal ni anual, ni supuesto de volumen",
+        "Se nombra el modelo sin comparar contra ninguna alternativa ni justificar la eleccion"
+      ],
+      "justificacion": "Hay un numero de tokens y un costo unitario calculado, pero el consumo no declara su origen y no existe proyeccion de operacion ni justificacion del modelo elegido.",
+      "mejora_prioritaria": "Declarar sobre que corrida se midieron los 15.000 tokens y agregar la proyeccion semanal y anual con el supuesto de frecuencia."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {"perimetro": "parcial", "riesgos_y_fallas": "parcial", "autonomia_y_supervision": "no_verificado", "responsabilidad": "parcial"},
+      "conteo": 1.5,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [
+        {"regla": "R23", "efecto": "riesgos_y_fallas a parcial", "motivo": "Riesgo generico de cualquier sistema con IA, no especifico de este"},
+        {"regla": "R25", "efecto": "responsabilidad a parcial", "motivo": "Responsable en primera persona, sin rol ni autoridad definida"}
+      ],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        {"ruta": "README.md", "cita": "El agente no manda nada a nadie"},
+        {"ruta": "README.md", "cita": "El principal riesgo es que el modelo se equivoque en los numeros o invente algun dato"},
+        {"ruta": "README.md", "cita": "Yo reviso el reporte antes de usarlo"}
+      ],
+      "faltantes": [
+        "No se declara ningun nivel de autonomia del rango L0-L4",
+        "El riesgo enunciado aplica a cualquier sistema con IA, no a este en particular",
+        "El responsable no tiene rol ni autoridad definida, ni se dice que puede vetar"
+      ],
+      "justificacion": "Hay una accion prohibida enunciada y hay revision humana, pero el riesgo es generico, no se declara nivel de autonomia y el responsable es una primera persona sin autoridad definida.",
+      "mejora_prioritaria": "Declarar el nivel L que corresponde al flujo descripto y definir que puede corregir o vetar quien revisa."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": ["README.md: presente", "prompts/system_prompt.md: presente", "prompts/user_prompt.md: AUSENTE", "corridas/: presente con una corrida", "DECISIONES.md: presente"],
+    "afirmaciones_verificadas": ["Una corrida sobre la base de 362 cursos", "Revision humana del reporte antes de usarlo"],
+    "afirmaciones_no_verificadas": [],
+    "contradicciones": [],
+    "corridas_declaradas": 1,
+    "corridas_verificadas": 1,
+    "herramientas_declaradas": [],
+    "herramientas_verificadas": []
+  },
+  "validacion_escala": {"ok": true, "recalculos": ["7,5 + 6,25 + 3,75 + 3,75 + 3,75 = 25,00"]},
+  "alertas_integridad": [],
+  "conclusion": "Trabajo que hizo poco y lo dice. No hay ninguna contradiccion entre lo declarado y lo hallado: todo lo que afirma existe, y lo que no hizo lo declara como pendiente. El puntaje bajo refleja alcance, no falta de honestidad. Cero contradicciones y cero alertas de integridad, que es la diferencia sustantiva con el caso tramposo aunque los totales sean parecidos."
+}
