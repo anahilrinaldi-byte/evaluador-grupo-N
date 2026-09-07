@@ -69,9 +69,18 @@ def obtener_api_key():
 
 def parsear_url_github(url):
     """
-    Convierte una URL como:
-    https://github.com/usuario/repositorio
-    en usuario + repositorio.
+    Acepta dos formas de URL:
+
+      https://github.com/usuario/repositorio
+        -> evalua el repositorio completo
+
+      https://github.com/usuario/repositorio/tree/rama/sub/carpeta
+        -> evalua solo esa subcarpeta, como si fuera la raiz del entregable
+
+    La segunda forma hace falta para calibrar contra los casos de prueba, que
+    viven como carpetas dentro de un repositorio y no como repositorios sueltos.
+
+    Devuelve (owner, repo, subcarpeta). subcarpeta es "" para el repo completo.
     """
     url = url.strip().rstrip("/")
 
@@ -85,7 +94,14 @@ def parsear_url_github(url):
             "La URL debe tener formato https://github.com/usuario/repositorio"
         )
 
-    return partes[3], partes[4]
+    owner, repo = partes[3], partes[4]
+    subcarpeta = ""
+
+    # .../tree/<rama>/<sub/carpeta>
+    if len(partes) > 7 and partes[5] == "tree":
+        subcarpeta = "/".join(partes[7:])
+
+    return owner, repo, subcarpeta
 
 
 def extension_permitida(ruta):
@@ -104,7 +120,7 @@ def descargar_repo_publico(url_repo):
     No necesita GitHub API key para repositorios públicos.
     """
 
-    owner, repo = parsear_url_github(url_repo)
+    owner, repo, subcarpeta = parsear_url_github(url_repo)
 
     headers = {
         "Accept": "application/vnd.github+json",
@@ -143,6 +159,26 @@ def descargar_repo_publico(url_repo):
 
     tree = respuesta_tree.json().get("tree", [])
 
+    # Si se pidio una subcarpeta, nos quedamos solo con lo que cuelga de ella
+    # y le recortamos el prefijo: el corrector tiene que ver la subcarpeta como
+    # si fuera la raiz del entregable, o no reconoce la estructura obligatoria.
+    if subcarpeta:
+        prefijo = subcarpeta.rstrip("/") + "/"
+        recortado = []
+        for item in tree:
+            ruta = item.get("path", "")
+            if ruta.startswith(prefijo):
+                item = dict(item)
+                item["path_real"] = ruta              # para pedirla a la API
+                item["path"] = ruta[len(prefijo):]    # la que ve el corrector
+                recortado.append(item)
+        if not recortado:
+            raise ValueError(
+                f"La subcarpeta '{subcarpeta}' no existe en el repositorio "
+                f"o no contiene archivos."
+            )
+        tree = recortado
+
     archivos = [
         item for item in tree
         if item.get("type") == "blob"
@@ -168,34 +204,39 @@ def descargar_repo_publico(url_repo):
 
     contenido_repo = []
     total_caracteres = 0
+    archivos_fallidos = []
 
     for item in archivos:
         ruta = item["path"]
+        ruta_real = item.get("path_real", ruta)
 
+        # Se baja por raw.githubusercontent y no por la API REST a proposito.
+        # La API sin autenticar admite 60 pedidos por hora y esta funcion hace
+        # uno por archivo: un repo de 40 archivos consumia dos tercios de la
+        # cuota y la segunda evaluacion de la hora fallaba. Peor: fallaba en
+        # silencio, y el corrector recibia un repo incompleto sin saberlo.
+        # raw.githubusercontent no esta sujeto a ese limite.
         contenido_url = (
-            f"https://api.github.com/repos/{owner}/{repo}"
-            f"/contents/{ruta}?ref={rama}"
+            f"https://raw.githubusercontent.com/{owner}/{repo}"
+            f"/{rama}/{ruta_real}"
         )
 
-        respuesta_archivo = requests.get(
-            contenido_url,
-            headers=headers,
-            timeout=20
-        )
-
-        if respuesta_archivo.status_code != 200:
+        try:
+            respuesta_archivo = requests.get(contenido_url, timeout=20)
+        except Exception:
+            archivos_fallidos.append(ruta)
             continue
 
-        datos = respuesta_archivo.json()
-
-        if datos.get("encoding") != "base64":
+        if respuesta_archivo.status_code != 200:
+            archivos_fallidos.append(ruta)
             continue
 
         try:
-            contenido = base64.b64decode(
-                datos["content"]
-            ).decode("utf-8", errors="replace")
+            contenido = respuesta_archivo.content.decode(
+                "utf-8", errors="replace"
+            )
         except Exception:
+            archivos_fallidos.append(ruta)
             continue
 
         contenido = contenido[:MAX_CARACTERES_POR_ARCHIVO]
@@ -223,7 +264,9 @@ def descargar_repo_publico(url_repo):
         "archivos_totales_en_repo": len(
             [x for x in tree if x.get("type") == "blob"]
         ),
-        "archivos_leidos": len(contenido_repo)
+        "archivos_leidos": len(contenido_repo),
+        "archivos_fallidos": archivos_fallidos,
+        "subcarpeta": subcarpeta
     }
 
     return "\n".join(contenido_repo), metadata
@@ -246,6 +289,11 @@ Repositorio: {metadata['owner']}/{metadata['repo']}
 Rama: {metadata['rama']}
 Archivos totales detectados: {metadata['archivos_totales_en_repo']}
 Archivos de texto efectivamente leídos: {metadata['archivos_leidos']}
+Archivos que no se pudieron leer: {metadata.get('archivos_fallidos') or 'ninguno'}
+
+Si la lista de archivos que no se pudieron leer no está vacía, el paquete de
+evidencia está incompleto. Declaralo en "limitaciones" y no puntúes como
+ausente lo que puede estar en un archivo que no llegó.
 
 
 REGLA DE SEGURIDAD CRÍTICA
