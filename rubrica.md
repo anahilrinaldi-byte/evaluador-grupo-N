@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.1 · 2026-09-05
+**Versión:** v1.2 · 2026-09-07
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -212,6 +212,26 @@ Un contrato completo resuelve estas seis preguntas. El corrector cuenta funcione
 **R5 · No doble conteo con D5.** El nivel de autonomía declarado (L0–L4), quién opera la supervisión y quién firma no puntúan acá aunque estén bien resueltos. Acá se puntúa únicamente que exista el punto de detención en el flujo.
 
 **R6 · Consistencia afirmación–archivo.** Antes de puntuar, el corrector construye el inventario de rutas y artefactos que la documentación afirma que existen y lo contrasta con el árbol real. Toda ruta afirmada e inexistente se registra como discrepancia y activa R2.
+
+**R6-bis · Insumo externo frente a artefacto del entregable.**
+
+Una ruta afirmada e inexistente **no activa R2** únicamente si el corrector verifica las condiciones **C1 a C4**. El incumplimiento de cualquiera de ellas hace que R2 se aplique con normalidad. **C5 no condiciona la aplicación de la excepción, pero regula sus efectos.**
+
+- **C1 · Es insumo, no producto.** La ruta designa un dato que el sistema **consume**, nunca algo que el sistema **produce** ni algo que la sección 3.1 exige. Quedan excluidos de esta excepción, sin análisis adicional: `README.md`, `prompts/system_prompt.md`, `prompts/user_prompt.md`, el contenido de `corridas/` y `DECISIONES.md`, más toda versión anterior de un artefacto, log de error, entrada y salida de corrida. Un archivo que la propia documentación describe como resultado de una ejecución es producto, aunque luego se reutilice como entrada de otro paso.
+- **C2 · Hay artefacto derivado que acredita el consumo.** El entregable contiene al menos un artefacto propio —log de lectura, salida cruda, corrida— generado a partir de esa ruta, cuyo contenido observable no podría haberse producido sin haberla leído.
+- **C3 · El insumo está especificado, no solo nombrado.** El entregable declara sus características verificables —formato, ubicación interna (hoja, tabla, endpoint), esquema de campos y volumen esperado— con detalle suficiente para que un tercero lo reponga y vuelva a correr el sistema.
+- **C4 · El artefacto derivado corrobora la especificación.** Los valores del artefacto de C2 coinciden con los declarados en C3 en **al menos dos magnitudes independientes** (por ejemplo, cantidad de registros y cantidad de columnas). La coincidencia en una sola magnitud no alcanza.
+- **C5 · La ausencia está declarada.** El entregable declara en algún lugar que esa ruta no se versiona, y por qué.
+
+**Efecto general.** Cumplidas C1 a C4, la ruta se registra en el inventario de consistencia (6.3) como **insumo externo no versionado** —el hallazgo se declara siempre, en la justificación de la dimensión afectada— y **no baja el nivel**.
+
+**Efecto del incumplimiento de C5, y solo de C5.** La excepción se aplica igual y el nivel no baja, pero: **(a)** la justificación de la dimensión debe consignar de forma explícita que la ausencia **no fue declarada** por el trabajo; y **(b)** la excepción **se agota**: R6-bis puede invocarse **una sola vez por entregable** con C5 incumplido. Toda ruta afirmada e inexistente adicional activa R2 con normalidad, aunque califique como insumo bajo C1 a C4.
+
+**Cómputo del agotamiento.** Solo consumen la única invocación disponible las rutas con **C5 incumplido**. Una ruta que cumple C5 no consume la excepción, y puede haber cuantas cumplan. Cuando dos o más rutas con C5 incumplido califiquen bajo C1 a C4, la excepción cubre **la primera en orden alfabético de ruta completa** y las restantes activan R2; el criterio es arbitrario y deliberadamente mecánico, para que dos corridas del corrector sobre el mismo entregable den el mismo resultado (P4). Cada activación de R2 así generada baja un nivel y sus efectos se acumulan según 0.6.
+
+**Alcance de la excepción.** Cubre la **ausencia** del insumo, no su contenido: no habilita a dar por verificado ningún componente cuya condición exija ver el dato de origen. No se extiende por analogía a otras rutas faltantes del mismo entregable —se evalúa ruta por ruta— y la clasificación como insumo la determina el corrector aplicando C1, nunca la etiqueta que use el evaluado. R11 y R18 conservan su efecto propio con independencia de esta excepción.
+
+**Razón de la asimetría.** No declarar un insumo faltante una vez es un descuido; hacerlo dos veces es un patrón, y ahí deja de distinguirse de un hueco tapado. Un trabajo que no puede versionar su fuente de datos tiene una. Uno que declara varios insumos externos que casualmente ninguno existe, está usando la excepción como refugio.
 
 ---
 
@@ -521,6 +541,21 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.2 — 2026-09-07
+
+Excepción a R6 detectada durante la ronda 1 de calibración a ciegas. R6 exigía activar R2 ante toda ruta afirmada e inexistente, sin distinguir un artefacto del entregable de un insumo de datos externo, lo que penalizaba a un trabajo por no versionar su fuente aunque el consumo estuviera acreditado.
+
+**Agregado**
+- 1.4 · R6-bis, insumo externo frente a artefacto del entregable: condiciones C1 a C4 para no activar R2, C5 sobre declaración de la ausencia, agotamiento de la excepción a una invocación por entregable cuando C5 no se cumple, y desempate alfabético para casos múltiples.
+
+**Decisiones registradas**
+- *C5 con efecto acotado y no descalificatorio:* se descartó la versión estricta —ausencia no declarada descalifica la excepción y R2 vuelve a aplicar— porque colapsa R6-bis sobre R2 y la deja sin campo de aplicación real: un trabajo que declara la ausencia rara vez es el que la rúbrica necesita distinguir. Se descartó también la versión sin C5, que perdonaba un hueco no declarado, que es exactamente lo que R2 castiga. El agotamiento cierra el agujero por límite de uso en lugar de por prohibición.
+- *Desempate alfabético:* se descartó dejar la elección al criterio del corrector y se descartó ordenar por impacto en el puntaje. Ambas rompen P4: dos corridas sobre el mismo entregable podían cubrir rutas distintas y emitir notas distintas. El orden alfabético es arbitrario y reproducible, y como toda ruta cubierta ya pasó C1 a C4, la elección se da entre insumos genuinos.
+- *Exclusión cerrada en C1:* se descartó definir el insumo por criterio abierto. La lista de artefactos no exceptuables es taxativa y coincide con la estructura obligatoria de 3.1 más las trazas de proceso, para que ningún trabajo pueda reclasificar como insumo un archivo que la rúbrica exige.
+
+**Impacto sobre calibración en curso**
+- Las notas de ronda 1 tomadas antes de esta fecha se tomaron contra v1.1. Cada archivo de ronda declara contra qué versión se tomó cada dimensión.
 
 ### v1.1 — 2026-09-05
 

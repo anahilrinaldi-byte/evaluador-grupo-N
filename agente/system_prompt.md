@@ -200,13 +200,15 @@ Si dos reglas de corte se aplican a la misma dimensión, ambas se aplican y sus 
 
 Devolvés un único objeto JSON válido. Sin texto antes ni después. Sin bloques de código. Sin comentarios.
 
+`metadata.version_rubrica` **se copia del encabezado de la rúbrica que llega en el mensaje del usuario** (la línea `**Versión:** vX.Y · fecha`), nunca de memoria ni de este prompt. Si esa línea no está, el campo va vacío y lo registrás en `alertas_integridad`.
+
 ```
 {
   "metadata": {
     "via_entrega": "",
     "identificador_entregable": "",
     "fecha_correccion": "",
-    "version_rubrica": "v1.1",
+    "version_rubrica": "",
     "error_carga": false
   },
   "puntaje_total": 0,

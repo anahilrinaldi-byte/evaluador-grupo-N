@@ -1,9 +1,9 @@
 # Configuración del corrector
 
-**Versión:** v1.0 · 2026-09-05
-**System prompt activo:** `agente/system_prompt_v2.md` — versión v2.1
-**Rúbrica:** v1.1 — embebida en el system prompt
-**Rúbrica fuente:** `rubrica_V2.md`
+**Versión:** v1.1 · 2026-09-07
+**System prompt activo:** `agente/system_prompt.md`
+**Rúbrica:** `rubrica.md` — v1.2, **no embebida**: `app.py` la lee del archivo y la inyecta en el mensaje del usuario en cada corrida.
+**Rúbrica fuente:** `rubrica.md` (única; `rubrica_V2.md` y `system_prompt_v2.md` se consolidaron y ya no existen)
 
 ---
 
@@ -48,8 +48,8 @@ La elección debe registrarse en `calibracion.md` con la evidencia: si se probó
 
 ## 3 · Protocolo de corrida
 
-1. Cargar `agente/system_prompt.md` completo como system prompt. **Sin editar, sin resumir, sin recortar la rúbrica embebida.**
-2. Verificar que el bloque entre los marcadores `INICIO RÚBRICA v1.1` y `FIN RÚBRICA v1.1` esté íntegro.
+1. Cargar `agente/system_prompt.md` completo como system prompt. **Sin editar, sin resumir, sin recortar.**
+2. Verificar que la rúbrica llegue completa en el **mensaje del usuario**, no en el system prompt: `app.py` lee `rubrica.md` y la inyecta ahí en cada corrida. El control es que el mensaje enviado contenga el encabezado `**Versión:** vX.Y` y la sección `## Changelog` del final; si falta cualquiera de los dos extremos, la rúbrica llegó truncada y la corrida no vale. El corrector debe copiar esa `vX.Y` en `metadata.version_rubrica`: si el campo vuelve vacío o con otra versión, la rúbrica no llegó o llegó incompleta.
 3. Poner el entregable a disposición del corrector: descomprimir el zip o clonar el repositorio.
 4. Enviar el user prompt (sección 4).
 5. Recibir el JSON, validarlo (sección 5) y archivar la corrida completa.
