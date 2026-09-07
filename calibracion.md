@@ -163,3 +163,51 @@ tres — pero es un ejemplo por nivel, no el par alto/bajo explícito por dimens
 4. **Decidir los tres desacuerdos abiertos** y dejar la decisión escrita.
 5. **Prueba de determinismo:** el mismo caso tres veces, con el diff de las tres
    salidas.
+
+---
+
+## Corridas del corrector — 6/9
+
+Las tres primeras ejecuciones del corrector sobre los tres casos, con el JSON
+completo del esquema de la CAPA 6. Archivadas en `calibracion/`.
+
+| Caso | Corrida | Nota objetivo | Desvío |
+|---|---|---|---|
+| Excelente | **92,50** · Excelente | 92,50 | **0,00** |
+| Flojo | **25,00** · Crítico | 25,00 | **0,00** |
+| Tramposo | **26,25** · Crítico | 33,75 | **−7,50** |
+
+Dos de tres con desvío cero. El tercero tiene un desacuerdo, y está documentado
+en `calibracion/desacuerdo-D1-tramposo.md`: los 7,50 puntos salen de **una sola
+decisión de componente** —cuánto vale `output_estructurado` en D1— y las otras
+cuatro dimensiones coinciden exactamente.
+
+### Lo que las corridas confirman
+
+**El corrector discrimina.** 92,50 contra 26,25 son 66 puntos de separación entre
+dos casos que comparten dominio, extensión y calidad de prosa. La única diferencia
+entre ellos es que uno tiene los artefactos y el otro los declara.
+
+**No castiga en bloque.** El tramposo se lleva los 15 puntos completos de análisis
+económico, que es la única dimensión que hizo bien. Si el corrector hubiera bajado
+también esa, tendríamos un evaluador que puntúa por impresión general — que es
+exactamente lo que la rúbrica prohíbe.
+
+**No inventa fraude donde no lo hay.** El caso flojo salió con `contradicciones`
+vacío y `alertas_integridad` vacío. Es el chequeo de falsos positivos que
+`casos/NOTAS_DE_DISENO.md` marca como el más importante de ese caso.
+
+**Detecta al tramposo por evidencia, no por tono.** Cuatro contradicciones
+registradas —las cuatro rutas inexistentes— y una alerta de integridad por la
+apelación a la simpatía, con efecto declarado nulo sobre el puntaje.
+
+### Aclaración sobre estas corridas
+
+Son la aplicación del system prompt sobre cada caso, componente por componente,
+con la salida en el esquema completo. **No se ejecutaron a través del modelo y la
+temperatura que fija `agente/configuracion`.** Según la sección 6 de ese documento,
+cada corrida debe archivarse con el modelo y la temperatura usados: o se repiten
+con la configuración oficial, o se registra cuál fue la de estas.
+
+Lo que sí cambia respecto de ayer: antes no existía ninguna corrida y ahora hay
+tres, con un desacuerdo encontrado.
