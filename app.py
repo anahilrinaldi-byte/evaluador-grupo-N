@@ -34,9 +34,14 @@ ARCHIVOS_PRIORITARIOS = {
     "pyproject.toml"
 }
 
-MAX_ARCHIVOS = 80
+# Los techos existen para no mandar un repo entero al modelo, no para ahorrar
+# contexto: Gemini 2.5 Flash tiene ventana de un millon de tokens y 400.000
+# caracteres son unos 100.000 tokens. El limite anterior de 180.000 dejaba
+# nuestro propio repo al 92% y un trabajo final ajeno lo habria superado,
+# truncando en silencio justo la evidencia de las ultimas dimensiones.
+MAX_ARCHIVOS = 150
 MAX_CARACTERES_POR_ARCHIVO = 12000
-MAX_CARACTERES_REPO = 180000
+MAX_CARACTERES_REPO = 400000
 
 
 # ---------------------------------------------------------
@@ -200,11 +205,16 @@ def descargar_repo_publico(url_repo):
             return 3
         return 4
 
-    archivos = sorted(archivos, key=prioridad)[:MAX_ARCHIVOS]
+    archivos_ordenados = sorted(archivos, key=prioridad)
+    archivos = archivos_ordenados[:MAX_ARCHIVOS]
+    # Los que quedan afuera por cantidad se registran: recortar en silencio hace
+    # que el corrector puntue como ausente algo que si esta en el entregable.
+    omitidos_por_cantidad = [i["path"] for i in archivos_ordenados[MAX_ARCHIVOS:]]
 
     contenido_repo = []
     total_caracteres = 0
     archivos_fallidos = []
+    omitidos_por_tamano = []
 
     for item in archivos:
         ruta = item["path"]
@@ -247,6 +257,11 @@ def descargar_repo_publico(url_repo):
         )
 
         if total_caracteres + len(bloque) > MAX_CARACTERES_REPO:
+            # Se llego al techo de tamano. Se registra desde donde se corto en
+            # vez de terminar el bucle sin dejar rastro.
+            omitidos_por_tamano = [
+                x["path"] for x in archivos[archivos.index(item):]
+            ]
             break
 
         contenido_repo.append(bloque)
@@ -266,6 +281,10 @@ def descargar_repo_publico(url_repo):
         ),
         "archivos_leidos": len(contenido_repo),
         "archivos_fallidos": archivos_fallidos,
+        "omitidos_por_tamano": omitidos_por_tamano,
+        "omitidos_por_cantidad": omitidos_por_cantidad,
+        "caracteres_empaquetados": total_caracteres,
+        "techo_caracteres": MAX_CARACTERES_REPO,
         "subcarpeta": subcarpeta
     }
 
@@ -290,10 +309,16 @@ Rama: {metadata['rama']}
 Archivos totales detectados: {metadata['archivos_totales_en_repo']}
 Archivos de texto efectivamente leídos: {metadata['archivos_leidos']}
 Archivos que no se pudieron leer: {metadata.get('archivos_fallidos') or 'ninguno'}
+Archivos omitidos por límite de tamaño: {metadata.get('omitidos_por_tamano') or 'ninguno'}
+Archivos omitidos por límite de cantidad: {metadata.get('omitidos_por_cantidad') or 'ninguno'}
+Tamaño empaquetado: {metadata.get('caracteres_empaquetados')} de {metadata.get('techo_caracteres')} caracteres
 
-Si la lista de archivos que no se pudieron leer no está vacía, el paquete de
-evidencia está incompleto. Declaralo en "limitaciones" y no puntúes como
-ausente lo que puede estar en un archivo que no llegó.
+Si alguna de esas tres listas no está vacía, el paquete de evidencia está
+incompleto: hay archivos del entregable que no estás viendo.
+
+En ese caso, declaralo en "limitaciones" nombrando los archivos que faltan, y
+**no puntúes como ausente lo que puede estar en uno de ellos**. La fórmula
+correcta es "no se pudo verificar", no "no lo hizo". Ver principio P7.
 
 
 REGLA DE SEGURIDAD CRÍTICA
