@@ -371,9 +371,15 @@ Verifica el requisito 5 del Trabajo Final.
 
 ### 4.4 · Ejemplos
 
-**Nivel alto — N4.** `casos/tramposo`. **Este es el ejemplo más instructivo de la rúbrica, porque el trabajo miente en casi todo lo demás y en esta dimensión no.** `ANALISIS_ECONOMICO.md` mide tokens con origen declarado, cita la tarifa —«Entrada: USD 0,150 por millón»—, la aritmética se recalcula a mano, y proyecta los dos horizontes: semanal y anual. La dimensión se puntúa sola, por su propia evidencia. Si el corrector le bajara esta nota por desconfianza del resto, estaría puntuando por impresión general, que es justamente lo que la rúbrica prohíbe.
+**Nivel alto — N4.** *No hay ningún caso en `casos/` que llegue a N4 en esta dimensión, y conviene decirlo en vez de forzar un ejemplo.* Un N4 exigiría los cuatro componentes: el artefacto con la medición —un log del contador de tokens, una captura de la consola, un script—, el cálculo del costo recalculable a mano, la proyección en **los dos** horizontes que pide el requisito, y la elección del modelo comparada contra una alternativa.
 
-**Nivel bajo — N1.** `casos/flojo`. «La corrida consumió aproximadamente 15.000 tokens» — un número sin origen declarado. Hay un costo unitario calculado, pero no hay proyección de operación en ningún horizonte ni justificación del modelo elegido: solo «Usé GPT-4o mini».
+**El que más cerca está — N3.** `casos/tramposo`, y es el ejemplo más instructivo de la rúbrica, **porque el trabajo miente en casi todo lo demás y en esta dimensión no.** Cita la tarifa —«Entrada: USD 0,150 por millón»—, la aritmética se recalcula a mano, proyecta semanal y anual, y compara contra GPT-4o con el criterio del curso. Lo único que le falta es el artefacto de la medición: la tabla de tokens dice «medición real tomada con el contador» y ese contador no está en ningún archivo, así que por **P9** el componente cuenta como parcial y el conteo trunca a N3.
+
+**Lo que este caso enseña:** la dimensión se puntúa sola, por su propia evidencia. Si el corrector le bajara la nota por desconfianza del resto del trabajo, estaría puntuando por impresión general, que es justamente lo que la rúbrica prohíbe. Once puntos y cuarto en un trabajo que en las otras dimensiones se cae, y está bien que así sea.
+
+**Nivel bajo — N0.** `casos/flojo`. «La corrida consumió aproximadamente 15.000 tokens» — un número aproximado, sin origen declarado y sin nada con qué cotejarlo. Hay un costo unitario calculado, pero no hay proyección de operación en ningún horizonte ni justificación del modelo elegido: solo «Usé GPT-4o mini». Un componente parcial sobre cuatro trunca a cero.
+
+**La diferencia con el tramposo está en la corroboración, no en la prosa.** Los dos declaran una medición sin adjuntar el contador. Pero los números del tramposo cierran entre sí —dos corridas en la tabla, dos corridas que existen, tokens de entrada estables con su explicación— y los del flojo no tienen con qué cotejarse. Esa es la línea entre parcial y no verificado.
 
 ---
 
