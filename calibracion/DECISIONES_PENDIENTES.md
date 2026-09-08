@@ -33,6 +33,29 @@ y va a aparecer el domingo 13.
 - [ ] **A** — verificado. La nota objetivo del tramposo no cambia por esta decisión.
 - [ ] **B** — parcial. Hay que cambiar el texto de la condición en `rubrica.md` §1.1 a «dos o más corridas que satisfacen **el formato declarado**, validado campo por campo».
 
+> **Antes de elegir, un hecho que hay que tener a la vista: la premisa de A no se
+> cumple.** A dice que «las dos corridas comparten estructura entre sí». Verificado
+> encabezado por encabezado, **no la comparten**: de cinco secciones cada una,
+> comparten dos.
+>
+> | | `corrida_01` | `corrida_02` |
+> |---|---|---|
+> | Comunes | Resumen ejecutivo · Alertas | Resumen ejecutivo · Alertas |
+> | Propias | Margen por país · Margen por tipo de curso · Cartera impaga | Ranking de comerciales · Cartera impaga por cliente · Observación sobre comisiones |
+>
+> O sea que el output del tramposo no satisface ni el formato declarado —el JSON de
+> `prompts/system_prompt.md:37`— ni el formato de la otra corrida. Bajo cualquiera
+> de las dos lecturas el componente **no puede ir a verificado**.
+>
+> Eso no vacía tu decisión, la mueve: ya no elegís entre dos lecturas defendibles,
+> sino **si además hay que cambiar el texto de la condición en §1.1** para que un
+> caso futuro —dos corridas consistentes entre sí y ninguna fiel al contrato
+> declarado— quede resuelto de antemano. Ese caso es el que va a aparecer el
+> domingo 13 y la rúbrica hoy no lo resuelve.
+>
+> `calibracion/corrida-tramposo.json` ya tiene `output_estructurado` en **parcial**,
+> que es el resultado compatible con lo verificado.
+
 ---
 
 ## Decisión 2 · D3 del tramposo — 3,75 puntos
@@ -49,8 +72,18 @@ existen, porque es parte de la trampa T1.
 Esta no es una diferencia de lectura: **es un componente acreditado sin evidencia.**
 R1 dice que solo cuenta lo abrible.
 
-- [ ] **A** — corregir la nota objetivo a **N1 · 3,75** y actualizar `casos/NOTAS_DE_DISENO.md`.
+- [x] **A** — corregir la nota objetivo a **N1 · 3,75** y actualizar `casos/NOTAS_DE_DISENO.md`.
 - [ ] **B** — sostener N2 · 7,50, explicando qué evidencia acredita el componente de instrucciones.
+
+> **YA IMPLEMENTADA COMO A — solo falta que la confirmes o la objetes.**
+> `calibracion/corrida-tramposo.json` tiene D3 en **N1 · 3,75** y el total en
+> **22,50**, y `calibracion.md` ya registra que el tramposo quedó por debajo del
+> flojo. No es una decisión que tengas que investigar: el hecho está verificado
+> —el tramposo no tiene instrucciones de ejecución en ningún archivo— y R1 dice
+> que solo cuenta lo abrible.
+>
+> Si estás de acuerdo, no hay nada que hacer. Si preferís B, hay que decir qué
+> evidencia acredita el componente y revertir la corrida y el registro.
 
 **Consecuencia si va A:** el tramposo baja a **22,50** y queda **por debajo** del
 flojo, que saca 25,00. El resultado contraintuitivo que identificaste —«el tramposo
