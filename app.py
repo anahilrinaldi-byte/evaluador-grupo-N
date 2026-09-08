@@ -1049,10 +1049,20 @@ def obtener_rutas_leidas(contenido_repo):
 
 def extraer_posibles_rutas(texto):
     """
-    Extrae referencias a archivos o carpetas desde una frase de evidencia.
+    Extrae referencias que realmente parecen archivos o carpetas.
 
-    No decide si existen: solamente identifica candidatos.
+    Evita falsos positivos como:
+    - semanal/anual
+    - entrada/salida
+    - antes/despues
+
+    Pero conserva referencias como:
+    - logs/errores.md
+    - prompts/system_prompt_v1.md
+    - corridas/corrida_03/
+    - corridas/corrida_03
     """
+
     if not isinstance(texto, str):
         return []
 
@@ -1078,22 +1088,56 @@ def extraer_posibles_rutas(texto):
 
         token_lower = token.lower()
 
+        # -------------------------------------------------
+        # CASO 1: ARCHIVO CON EXTENSION PERMITIDA
+        # -------------------------------------------------
+
         parece_archivo = any(
             token_lower.endswith(ext.lower())
             for ext in EXTENSIONES_PERMITIDAS
         )
 
-        parece_ruta = "/" in token
+        # -------------------------------------------------
+        # CASO 2: REFERENCIA A CARPETA
+        # -------------------------------------------------
 
-        if not parece_archivo and not parece_ruta:
+        parece_carpeta = False
+
+        if "/" in token:
+            partes = [
+                parte
+                for parte in token.strip("/").split("/")
+                if parte
+            ]
+
+            # Una ruta terminada en "/" se interpreta como carpeta.
+            if token.endswith("/") and len(partes) >= 1:
+                parece_carpeta = True
+
+            # También aceptamos rutas como corridas/corrida_03 aunque
+            # no terminen en "/". Para no confundirlas con expresiones
+            # como semanal/anual, exigimos que algún segmento tenga
+            # números, guion, guion bajo o punto.
+            elif len(partes) >= 2:
+                tiene_indicio_de_ruta = any(
+                    any(
+                        caracter.isdigit()
+                        or caracter in "._-"
+                        for caracter in parte
+                    )
+                    for parte in partes
+                )
+
+                if tiene_indicio_de_ruta:
+                    parece_carpeta = True
+
+        if not parece_archivo and not parece_carpeta:
             continue
 
         if token not in referencias:
             referencias.append(token)
 
     return referencias
-
-
 def ruta_existe_en_inventario(referencia, rutas_reales):
     """
     Decide de forma determinista si una referencia existe en el inventario.
