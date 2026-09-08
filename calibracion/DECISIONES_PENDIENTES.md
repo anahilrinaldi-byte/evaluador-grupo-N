@@ -71,10 +71,23 @@ tokens**, así que `consumo_medido` queda parcial o peor en los tres.
 Aplicado literal, casi ningún trabajo final va a adjuntar un volcado del contador,
 y **D4 queda con techo práctico en N3**.
 
-- [ ] **A** — sostener P9 como está. Quien mide de verdad puede guardar una captura: es barato y es la diferencia entre medir y decir que se midió.
+- [x] **A** — sostener P9 como está. Quien mide de verdad puede guardar una captura: es barato y es la diferencia entre medir y decir que se midió.
 - [ ] **B** — escribir una excepción en la condición de `consumo_medido`: una medición sin artefacto cuenta como verificada si sus cifras se pueden cotejar contra corridas que sí existen, como pasa en el caso excelente.
 
 **Consecuencia si va A:** flojo baja a 21,25 y tramposo pierde 3,75 más.
+
+> **RESUELTA EN LA RONDA 1 — va A.** Esta decisión se cruzó con la ronda de
+> calibración a ciegas y quedó resuelta ahí, así que no hace falta que la
+> vuelvas a tomar; queda acá por trazabilidad. La razón está escrita como
+> decisión registrada en el changelog de `rubrica.md` v1.4: la corroboración que
+> ofrece el caso excelente —la tabla de tokens ajusta linealmente contra las
+> cantidades de registros de tres corridas que sí existen— es exactamente la que
+> la opción B pedía admitir, y aun así se sostuvo el parcial. La diferencia con
+> R6-bis, que sí admite corroboración indirecta, no es de calidad sino de cuántas
+> fuentes independientes intervienen: en R6-bis el artefacto derivado corrobora un
+> tercer objeto, y acá la tabla corrobora contra sí misma. La opción B, además,
+> habría movido la nota de `casos/tramposo`, que el ejemplo 4.4 fija por escrito.
+> Si estás en desacuerdo, decilo y se reabre: es una decisión, no un hecho.
 
 ---
 
