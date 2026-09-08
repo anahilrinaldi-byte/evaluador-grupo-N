@@ -380,6 +380,37 @@ ANCLAS = {
 }
 
 
+def recalcular_total(resultado):
+    """
+    El modelo asigna el puntaje de cada dimension; el total lo calcula Python.
+
+    Un LLM puede sumar mal cinco numeros, y si emite un total que no es la suma
+    de sus propias dimensiones, la nota deja de ser trazable. Aca se recalcula.
+
+    Lo que el modelo dijo NO se descarta: queda en 'puntaje_total_modelo'. La
+    condicion 4 de agente/configuracion seccion 5 exige que el total sea la suma
+    exacta, y esa condicion se verifica contra ese valor. Sobrescribir en
+    silencio convertiria el chequeo en una tautologia y perderiamos la senal de
+    que el corrector fallo la aritmetica.
+    """
+    dimensiones = resultado.get("dimensiones")
+    if not isinstance(dimensiones, dict):
+        return resultado
+
+    suma = 0.0
+    for datos in dimensiones.values():
+        if isinstance(datos, dict):
+            try:
+                suma += float(datos.get("puntaje", 0))
+            except (TypeError, ValueError):
+                pass
+
+    if "puntaje_total_modelo" not in resultado:
+        resultado["puntaje_total_modelo"] = resultado.get("puntaje_total")
+    resultado["puntaje_total"] = round(suma, 2)
+    return resultado
+
+
 def validar_corrida(resultado):
     """
     Aplica las condiciones 2 a 5 de agente/configuracion, seccion 5.
@@ -391,30 +422,6 @@ def validar_corrida(resultado):
 
     dimensiones = resultado.get("dimensiones")
     if not isinstance(dimensiones, dict):
-        except json.JSONDecodeError:
-    raise ValueError(
-        "Gemini respondió, pero la salida no fue JSON válido."
-    )
-
-# El modelo decide los puntajes por dimensión.
-# El total final se calcula de forma determinista en Python
-# para evitar inconsistencias aritméticas del LLM.
-dimensiones = resultado.get("dimensiones", {})
-
-if isinstance(dimensiones, dict):
-    puntaje_total_calculado = 0.0
-
-    for datos in dimensiones.values():
-        if isinstance(datos, dict):
-            try:
-                puntaje_total_calculado += float(
-                    datos.get("puntaje", 0)
-                )
-            except (TypeError, ValueError):
-                pass
-
-    resultado["puntaje_total"] = puntaje_total_calculado
-
         return ["No hay objeto 'dimensiones' en la salida."]
 
     # Condicion 2: estan las cinco dimensiones
@@ -467,17 +474,25 @@ if isinstance(dimensiones, dict):
                     f"sube de nivel: todas bajan o topean."
                 )
 
-    # Condicion 4: el total es la suma exacta
-    total = resultado.get("puntaje_total")
-    try:
-        total = float(total)
-        if abs(total - suma) > 0.001:
-            fallas.append(
-                f"puntaje_total dice {total} y la suma de las dimensiones "
-                f"da {suma}."
-            )
-    except (TypeError, ValueError):
-        fallas.append(f"puntaje_total '{total}' no es un número.")
+    # Condicion 4: el total es la suma exacta.
+    # Se verifica contra el total que emitio el modelo, no contra el que
+    # recalculo Python: si se verificara contra el recalculo, la condicion
+    # nunca podria fallar. El total que se muestra y se archiva es el
+    # recalculado; este chequeo declara si el corrector supo sumar.
+    total = resultado.get("puntaje_total_modelo", resultado.get("puntaje_total"))
+    if total is None:
+        fallas.append("La salida no trae puntaje_total.")
+    else:
+        try:
+            total = float(total)
+            if abs(total - suma) > 0.001:
+                fallas.append(
+                    f"El corrector emitio puntaje_total {total} y la suma de "
+                    f"sus dimensiones da {suma}. Se archiva {suma}, que es la "
+                    f"suma; la discrepancia queda registrada."
+                )
+        except (TypeError, ValueError):
+            fallas.append(f"puntaje_total '{total}' no es un número.")
 
     # Condicion 5: ninguna justificacion menciona la via de entrega
     prohibidas = ["comprimido", "zip", "repositorio", "repo"]
@@ -536,6 +551,8 @@ def evaluar_repo(url_repo):
         raise ValueError(
             "Gemini respondió, pero la salida no fue JSON válido."
         )
+
+    recalcular_total(resultado)
 
     return resultado, metadata
 

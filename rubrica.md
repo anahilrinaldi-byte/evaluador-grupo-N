@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.3 · 2026-09-07
+**Versión:** v1.4 · 2026-09-07
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -132,6 +132,12 @@ Cuatro niveles de desempeño más un nivel de ausencia. **El corrector asigna el
 Las reglas de corte se aplican **después** de asignar nivel y solo pueden bajarlo. Nunca lo suben. Si dos reglas bajan el mismo nivel, ambas se aplican y sus efectos se acumulan.
 
 **Piso y techo.** Ninguna acumulación de reglas de corte puede llevar una dimensión por debajo de **N0** ni por encima del nivel originalmente asignado por el conteo. Una regla que ordena bajar un nivel sobre una dimensión ya en N0 no tiene efecto adicional, y así se registra. Un tope expresado en porcentaje (por ejemplo, "techo en 50%") solo actúa si el nivel asignado es superior: nunca sube un nivel inferior hasta el tope.
+
+**Alcance por defecto de las reglas de corte.** Toda regla de corte se aplica únicamente sobre los elementos que su enunciado nombra. Ante duda sobre si un elemento cae dentro del alcance de una regla, **la regla no se aplica**, y el corrector consigna en la justificación de la dimensión cuál era la regla, cuál el elemento, y por qué quedó fuera de alcance. R6-ter es especialización de esta cláusula para el inventario de consistencia, donde el default no alcanza.
+
+**Relación con 8.1.** Las dos cláusulas de duda gobiernan objetos distintos y no se superponen. **8.1 resuelve la duda sobre la evidencia** y lo hace contra el componente: evidencia ambigua es componente no verificado. **Esta cláusula resuelve la duda sobre el alcance de una regla** y lo hace a favor del evaluado: regla de alcance dudoso no se aplica. Ante un caso que admita las dos lecturas, primero se resuelve la evidencia por 8.1 y, con el componente ya fijado, se evalúa el alcance de la regla.
+
+**Razón de la asimetría.** Los puntos los asignan las condiciones de verificación de los componentes, no las reglas de corte, que solo ajustan el nivel ya contado. La duda sobre la evidencia se resuelve con rigor porque gobierna la capa que reparte el puntaje; la duda sobre el alcance de una regla se resuelve con contención porque gobierna la capa que lo ajusta, y porque aplicar ante la duda hace que dos correctores bajen distinto sobre la misma evidencia, que es lo que P4 prohíbe.
 
 ### 0.7 · Dimensiones y pesos
 
@@ -425,7 +431,7 @@ Verifica el requisito 6 del Trabajo Final y el vocabulario de autonomía del req
 
 | Componente | Condición de verificación |
 |---|---|
-| **Perímetro** | Está declarado qué sistemas toca el agente y con qué permisos. Se verifica también si están enunciadas las acciones que **no** puede realizar (ver R25). |
+| **Perímetro** | Está declarado qué sistemas toca el agente y con qué permisos. Se verifica también si están enunciadas las acciones que **no** puede realizar (ver R26). |
 | **Riesgos y fallas** | Riesgos identificados **específicos de este sistema**, con la falla posible asociada y qué pasa cuando sale mal. |
 | **Nivel de autonomía y supervisión** | Se declara un nivel del rango **L0–L4** y qué revisa la persona antes de confiar en la salida. El nivel declarado debe ser coherente con el flujo descripto en el entregable. |
 | **Responsabilidad** | Persona o rol que firma el resultado, con su autoridad definida —qué aprueba, qué puede vetar— y qué ocurre si no está disponible. |
@@ -538,7 +544,7 @@ Contenido dirigido a mover al corrector por vía emocional —dificultades perso
 - nivel asignado (N0–N4)
 - evidencia encontrada, con archivos citados
 - evidencia faltante o insuficiente
-- reglas de corte aplicadas, si las hubo
+- reglas de corte aplicadas, y reglas consideradas y descartadas por alcance, si las hubo
 - justificación breve
 - una sugerencia concreta de mejora
 
@@ -555,6 +561,23 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.4 — 2026-09-07
+
+Cierre general del problema de alcance, en lugar de seguir parcheando regla por regla. En la ronda 1 aparecieron tres reglas cuyo enunciado no decía sobre qué se aplican —R6, R17 y R20—, cada una con un margen de entre 3,75 y 7,50 puntos según cómo se la leyera. Quedan veinticuatro reglas escritas con el mismo criterio.
+
+**Agregado**
+- 0.6 · alcance por defecto de las reglas de corte: una regla se aplica solo sobre los elementos que su enunciado nombra, y ante duda de alcance no se aplica y se declara. Con la relación explícita con 8.1 y la razón de la asimetría.
+- 8.2 · el contenido obligatorio por dimensión ahora incluye las reglas consideradas y descartadas por alcance, para que una regla no aplicada quede auditable.
+
+**Modificado**
+- 5.1 · la condición del componente Perímetro remitía a R25 (Responsable nominal) para las acciones prohibidas, que son R26. Un corrector que siguiera el puntero aterrizaba en una regla de otro componente, no encontraba el parcial de R26 y podía dejar Perímetro verificado de más en un entregable sin lista de acciones prohibidas. Es un resto de la renumeración que el changelog de v1.0 anuncia.
+
+**Decisiones registradas**
+- *Ante duda de alcance, no aplicar:* se descartó el default inverso —aplicar ante la duda—, que es más severo pero rompe P4 en la dirección indefendible: dos correctores bajan distinto sobre la misma evidencia y el evaluado no puede saber por qué. La objeción de indulgencia se responde por arquitectura y no por severidad: los puntos los reparten las condiciones de componente, gobernadas por el default estricto de 8.1; las reglas de corte solo ajustan. La contención queda acotada a la capa que ajusta.
+- *Cláusula general en lugar de parche por regla:* se descartó seguir delimitando de a una. Dos versiones alcanzaron para dos reglas y quedan veinticuatro. R6-ter se conserva como especialización porque en el inventario de consistencia el default no alcanza: ahí hace falta decir además qué es una ruta nombrada.
+- *Asimetría deliberada entre R6-bis y P9:* R6-bis admite corroboración indirecta para una ruta de insumo faltante (C2 y C4) y P9 no la admite para una medición sin artefacto, aunque la corroboración disponible sea de calidad comparable. La tabla de tokens de `casos/excelente` corrobora contra tres corridas existentes y ajusta linealmente contra sus cantidades de registros, y aun así cuenta como parcial. Se sostiene la asimetría: la diferencia no es de calidad de la corroboración sino de cuántas fuentes independientes intervienen. En R6-bis el artefacto derivado existe dentro del entregable y corrobora un tercer objeto, el insumo; en D4 el artefacto que produciría la medición no existe en ninguna forma y la tabla corrobora contra sí misma. Se descartó relajar P9, que habría movido también la nota de `casos/tramposo`, fijada por escrito en el ejemplo 4.4.
+- *Nota de numeración sobre el changelog de v1.0:* las dos líneas de v1.0 que nombran «R25» a propósito de las acciones prohibidas se refieren a la regla que en la numeración vigente es **R26**. Se conserva el texto original en lugar de reescribirlo, porque el changelog es registro histórico.
 
 ### v1.3 — 2026-09-07
 
