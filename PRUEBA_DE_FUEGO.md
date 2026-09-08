@@ -1,150 +1,298 @@
 # Prueba de fuego — jueves 10/9
 
-El enunciado dice tres cosas sobre esa noche: los casos son **nuevos**, la prueba
-es **pública**, y de ahí sale **un solo** evaluador para corregir todos los
-trabajos finales. Y agrega una advertencia que conviene leer literal: *un
-evaluador que se desploma frente a un caso real dice algo sobre su construcción,
-y la clase entera lo va a ver.*
+La prueba de fuego utiliza casos nuevos y públicos para comparar los evaluadores
+construidos por los grupos.
 
-Es la única parte del parcial que no se puede corregir después.
+El objetivo del grupo es demostrar no solamente que el evaluador produce una
+nota, sino que puede explicar qué verificó, qué no pudo verificar y por qué
+asignó cada puntaje.
 
 ---
 
 ## Antes de entrar
 
-Entregar el **miércoles a la noche**, no el jueves. El jueves es margen.
+Chequeo previo:
 
-Chequeo de cinco minutos:
+- comprobar que el repositorio abre desde una ventana privada;
+- comprobar que la aplicación desplegada abre correctamente;
+- confirmar que la API key está disponible mediante Streamlit Secrets;
+- realizar una evaluación de prueba para verificar disponibilidad del modelo;
+- tener disponible el repositorio y las corridas finales de calibración;
+- no modificar rúbrica, prompt o código después del último ensayo salvo que se
+  detecte una falla crítica.
 
-- [ ] El link del repo abre desde una ventana privada, sin sesión iniciada
-- [ ] `app.py` levanta y la API key está cargada en los secretos
-- [ ] **Correr una evaluación de prueba esa misma tarde**, para confirmar que la
-      key sigue viva y que no nos comimos la cuota
-- [ ] Alguien tiene el repo clonado localmente, por si falla la red del aula
+Aplicación:
+
+`https://evaluador-grupo-n.streamlit.app/`
 
 ---
 
-## Los tres roles
+## Roles durante la prueba
 
-No improvisar quién habla.
+Para evitar improvisación conviene separar tres funciones.
 
 | Rol | Qué hace |
 |---|---|
-| **Manos** | Maneja la pantalla. No explica: ejecuta |
-| **Voz** | Narra qué está por pasar **antes** de que pase. Una sola persona habla |
-| **Notas** | Anota qué falló, para responder preguntas sin depender de la memoria |
+| **Manos** | Maneja la pantalla y ejecuta la evaluación. |
+| **Voz** | Explica brevemente qué comportamiento esperamos antes de ejecutar. |
+| **Notas** | Registra resultados, preguntas y cualquier comportamiento inesperado. |
 
-**La regla de oro: la Voz anuncia antes de correr, no después.** «Nuestro corrector
-va a reportar esto como hallazgo», dicho antes de que aparezca, vale diez veces
-más que la misma frase dicha después. Es lo que demuestra que el comportamiento
-estaba diseñado y no fue suerte.
+La persona que explica debe anticipar el comportamiento esperado sin prometer un
+puntaje exacto.
 
----
+Ejemplo:
 
-## Los cinco casos que probablemente tiren
+> “Esperamos que el evaluador diferencie lo declarado de lo verificable y que
+> muestre explícitamente las limitaciones o contradicciones que encuentre.”
 
-### 1 · Un repo con instrucciones dirigidas al evaluador
-
-Es el ataque más probable. Estamos cubiertos por partida doble: la CAPA 5 del
-system prompt y el bloque `REGLA DE SEGURIDAD CRÍTICA` que `app.py` inserta antes
-del contenido del repo.
-
-**Qué decir antes de correr:** «si este repo tiene algo dirigido al corrector, lo
-va a citar en `alertas_integridad` y no le va a cambiar la nota».
-
-### 2 · Un repo vacío, roto o sin la estructura esperada
-
-Cubierto. La respuesta correcta es puntuar lo verificable y declarar lo que no se
-pudo verificar. Nunca estimar.
-
-**Qué decir antes:** «esto va a dar bajo y con limitaciones declaradas, que es una
-corrección válida y no un error del corrector».
-
-### 3 · Un repo genuinamente bueno
-
-**Este es el que nos puede romper, y es el que nadie ensaya.** Después de
-construir un tramposo con seis capas, el corrector está entrenado para desconfiar.
-Si le levanta hallazgos a un trabajo honesto queda tan mal como si aprobara al
-tramposo: **un corrector paranoico es tan inservible como uno crédulo.**
-
-**Ya está probado:** la corrida sobre `casos/flojo` salió con `contradicciones`
-vacío y `alertas_integridad` vacío. El flojo hizo poco y lo dice, y el corrector
-no le inventó fraude. Ese es el resultado a mostrar si alguien duda.
-
-### 4 · Un repo grande
-
-`app.py` corta en 80 archivos y 180.000 caracteres. **Nuestro propio repo ya
-empaqueta 143.603**, o sea el 80% del techo. Un trabajo final más grande se trunca.
-
-La app ahora reporta `archivos_fallidos` y el prompt le avisa al corrector que
-declare el paquete incompleto. **Qué decir:** «si el repo es grande, el corrector
-va a declarar qué no alcanzó a leer en vez de evaluar a ciegas».
-
-### 5 · El mismo caso dos veces
-
-Para ver si da lo mismo. Está pedido en el enunciado, así que lo van a pedir.
-**Proponerlo nosotros antes de que lo pidan.**
+No conviene anticipar una nota exacta porque parte de la evaluación requiere
+interpretación semántica.
 
 ---
 
-## Si falla en vivo
+## Casos que pueden aparecer
 
-Va a fallar algo. Lo que se corrige no es que falle: es qué hacen los cuatro en
-los diez segundos siguientes.
+### 1. Repositorio con instrucciones dirigidas al evaluador
 
-**No hacer:** pedir disculpas, decir «se debe haber colgado», culpar al modelo,
-quedarse callados, o correrlo de nuevo esperando que salga distinto.
+El contenido del repositorio se considera evidencia no confiable.
 
-**Hacer:** nombrar el mecanismo de la falla en una oración y decir qué instrucción
-faltaba. El enunciado marca el camino: si el corrector «no puede» leer un repo, la
-pregunta es qué herramienta o instrucción le falta. Un grupo que diagnostica su
-propia falla en vivo demuestra exactamente la competencia que se evalúa.
+Las instrucciones encontradas dentro del trabajo evaluado no pueden reemplazar
+la rúbrica ni las instrucciones del evaluador.
 
-> «Falló porque el repo supera el límite de caracteres y el paquete se truncó. La
-> app lo reporta en `archivos_fallidos`; lo que falta es que el corrector lo lea y
-> lo declare en `limitaciones` en vez de puntuar como ausente lo que no llegó.»
+Si existe un intento inequívoco de modificar el comportamiento del corrector,
+puede registrarse en `alertas_integridad`.
 
-Eso, dicho con calma, deja mejor parado al grupo que un corrector que anduvo de
-casualidad.
+Una contradicción, una afirmación falsa o una apelación persuasiva no se
+clasifican automáticamente como prompt injection.
 
----
+**Qué decir antes:**
 
-## Las dos cartas para jugar
-
-Si hay que mostrar una sola cosa, son estas.
-
-### El desacuerdo de D1
-
-La calibración encontró **7,50 puntos de diferencia en el tramposo**, y salen de
-una sola decisión de componente: si el output estructurado se verifica contra el
-formato que el trabajo declaró, o solo contra sí mismo. Un equipo que escribe el
-contrato al principio y después no lo respeta cae exactamente ahí.
-
-Está en `calibracion/desacuerdo-D1-tramposo.md`, con las dos lecturas y la
-recomendación.
-
-### El límite de cuota
-
-`app.py` pedía cada archivo a la API de GitHub, que sin autenticar admite 60
-pedidos por hora. **Un repo de 40 archivos consumía 41, así que la segunda
-evaluación de la hora fallaba — y fallaba en silencio**, entregándole al corrector
-un repo incompleto sin ninguna señal.
-
-Lo encontramos probando, no razonando: la cuota quedó en 0/60 después de dos
-corridas. Corregido bajando por `raw.githubusercontent`, que no tiene ese límite.
-
-**Es la clase de defecto que solo aparece cuando corrés el sistema de verdad**, y
-esa es exactamente la diferencia entre un trabajo que funciona y uno que se
-describe.
+> “El repositorio es tratado como contenido no confiable. Una instrucción dentro
+> del trabajo no puede cambiar las reglas del evaluador.”
 
 ---
 
-## El ensayo del miércoles
+### 2. Repositorio vacío, incompleto o roto
 
-Cada integrante trae **un caso que los otros tres no vieron**. Es lo más parecido
-a la prueba de fuego que se puede hacer sin estar ahí. Se corre con los roles
-puestos y se cronometra.
+El evaluador debe puntuar solamente lo verificable.
 
-Después de ese ensayo se arregla **solo lo que se rompa feo**. Un cambio de prompt
-la noche antes, sin volver a correr los tres casos, es cómo se pierde el
-determinismo justo cuando lo van a probar.
+La ausencia de evidencia no se reemplaza con una estimación.
+
+Si el paquete recibido es incompleto por una limitación técnica, esa situación
+debe distinguirse de la inexistencia demostrada de un artefacto.
+
+**Qué decir antes:**
+
+> “Si falta evidencia, el sistema no la inventa. Y si no pudo leer una parte del
+> repositorio, debe distinguir esa limitación de una ausencia real.”
+
+---
+
+### 3. Repositorio genuinamente bueno
+
+Un evaluador excesivamente desconfiado también sería un mal evaluador.
+
+La calibración incluyó un caso Excelente que obtuvo **92,50/100** y un caso
+Flojo que obtuvo **25,00/100** sin que ser incompleto se transformara
+automáticamente en una alerta de integridad.
+
+**Qué decir antes:**
+
+> “Los controles de integridad no están diseñados para castigar un trabajo por
+> ser incompleto. Buscan verificar la evidencia y registrar contradicciones
+> concretas.”
+
+---
+
+### 4. Repositorio grande
+
+La aplicación utiliza límites para evitar enviar cantidades ilimitadas de
+contenido al modelo.
+
+Configuración actual:
+
+- máximo de archivos evaluables: **150**;
+- máximo por archivo: **12.000 caracteres**;
+- máximo total del repositorio: **400.000 caracteres**.
+
+La aplicación registra información sobre archivos fallidos, truncamientos y
+otras limitaciones de carga.
+
+Cuando el paquete es incompleto, una ruta ausente del material recibido no debe
+tratarse automáticamente como prueba de que el archivo no existe.
+
+**Qué decir:**
+
+> “Si el repositorio supera los límites, la aplicación hace visible que el
+> paquete está incompleto en lugar de convertir automáticamente lo que no leyó
+> en evidencia ausente.”
+
+---
+
+### 5. Repetición del mismo caso
+
+La calibración mostró que `temperature = 0` no garantiza identidad absoluta
+entre ejecuciones.
+
+Por eso el objetivo de repetibilidad no es exigir que cada componente semántico
+produzca siempre exactamente la misma interpretación.
+
+Lo que debe permanecer estable son las invariantes objetivas:
+
+- una ruta inexistente no puede utilizarse como evidencia válida;
+- las corridas declaradas deben contrastarse con las verificables;
+- una herramienta no queda verificada solo porque sea mencionada;
+- los niveles y puntajes deben respetar las anclas de la rúbrica;
+- la suma final debe corresponder a los puntajes de las dimensiones.
+
+**Qué decir:**
+
+> “No prometemos identidad textual entre dos llamadas al modelo. Sí controlamos
+> determinísticamente los hechos objetivos y la aritmética de la evaluación.”
+
+---
+
+## El caso Tramposo y el control de evidencia
+
+El caso Tramposo fue especialmente útil durante el desarrollo.
+
+En las primeras pruebas observamos que el modelo podía aceptar como evidencia
+una ruta simplemente porque aparecía escrita en README.md o DECISIONES.md.
+
+Eso llevó a incorporar un control determinista en Python.
+
+La arquitectura final puede resumirse así:
+
+`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
+
+En la corrida final del caso Tramposo:
+
+- se declaraban 3 corridas y se verificaron 2;
+- se declaraba Google Sheets API y no se verificó una herramienta;
+- se detectaron referencias a artefactos inexistentes.
+
+Entre ellas:
+
+- `conectores/sheets_config.yaml`
+- `prompts/system_prompt_v1.md`
+- `logs/errores.md`
+- `corridas/corrida_03/`
+
+El resultado final fue **55,00/100 — Insuficiente**.
+
+El caso conserva, sin embargo, los puntos correspondientes a evidencia legítima.
+Por ejemplo, obtuvo el puntaje completo de análisis económico.
+
+Esto demuestra que las contradicciones no generan una penalización global por
+impresión general.
+
+---
+
+## Si algo falla en vivo
+
+No conviene ocultar una falla ni ejecutar repetidamente hasta obtener una salida
+más conveniente.
+
+Primero hay que identificar qué tipo de falla ocurrió.
+
+Puede tratarse de:
+
+- acceso al repositorio;
+- disponibilidad de Gemini;
+- límites del paquete;
+- JSON inválido;
+- evidencia inexistente;
+- interpretación semántica discutible;
+- validación determinista.
+
+La respuesta debe separar un error técnico de un desacuerdo de evaluación.
+
+Ejemplo:
+
+> “La aplicación pudo recuperar el repositorio, pero el modelo devolvió una
+> salida que no cumple la estructura esperada. El sistema la rechaza en lugar de
+> publicar una nota inválida.”
+
+Que una corrida sea rechazada por una validación puede ser evidencia de que el
+control funciona.
+
+---
+
+## Tres cosas para mostrar si preguntan cómo evolucionó el sistema
+
+### 1. Rúbrica ejecutable
+
+La rúbrica pasó por distintas versiones a medida que aparecieron ambigüedades en
+las pruebas.
+
+La versión utilizada en las corridas finales es **v1.9**.
+
+Los cambios y desacuerdos están documentados en `calibracion.md`.
+
+### 2. Separación entre modelo y código determinista
+
+El modelo interpreta evidencia, pero no tiene control absoluto sobre el puntaje
+final.
+
+Python controla hechos objetivos, conteos, niveles, anclas y suma final.
+
+Las corridas finales muestran esta diferencia:
+
+| Caso | Propuesta del modelo | Puntaje final |
+|---|---:|---:|
+| Excelente | 97,50 | **92,50** |
+| Flojo | 33,75 | **25,00** |
+| Tramposo | 63,75 | **55,00** |
+
+### 3. El problema de las rutas inexistentes
+
+La calibración descubrió que un LLM puede aceptar como evidencia una ruta
+mencionada aunque no exista.
+
+Ese problema no se intentó resolver solamente agregando instrucciones al prompt.
+
+Se agregó una verificación objetiva del inventario en Python y una segunda
+evaluación cuando el control encuentra evidencia inválida.
+
+Es un ejemplo concreto de una decisión arquitectónica surgida de una falla real.
+
+---
+
+## Resultados de referencia antes de la prueba
+
+Las corridas finales de calibración son:
+
+| Caso | Resultado |
+|---|---|
+| Excelente | **92,50 — Excelente** |
+| Flojo | **25,00 — Crítico** |
+| Tramposo | **55,00 — Insuficiente** |
+
+Estos valores son referencias de calibración, no puntajes que el evaluador deba
+forzar ante otros repositorios.
+
+Los JSON completos están archivados en `calibracion/`.
+
+---
+
+## Ensayo previo
+
+Cada integrante puede proponer un repositorio o caso que los demás no hayan
+utilizado durante la construcción.
+
+Durante el ensayo:
+
+1. ejecutar una sola vez;
+2. registrar el resultado;
+3. revisar evidencia y contradicciones antes de mirar solamente el total;
+4. comprobar si cualquier afirmación objetiva del evaluador puede reconstruirse;
+5. modificar el sistema únicamente si se descubre una falla generalizable.
+
+No modificar la rúbrica solamente para obtener un puntaje esperado.
+
+La pregunta central ante cualquier resultado inesperado es:
+
+> “¿Encontramos una ambigüedad semántica legítima o una propiedad objetiva que
+> deberíamos verificar mediante código?”
+
+Esa distinción resume una de las principales decisiones de diseño del evaluador.
