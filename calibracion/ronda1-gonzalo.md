@@ -72,7 +72,7 @@ vara se mueve y no se dice no vale nada.
 
 | Dim | Componentes (V / P / NV) | Conteo | Nivel | Puntaje | Por qué |
 |---|---|---|---|---|---|
-| D1 Sistema | | | | | |
+| D1 Sistema | Contrato **P** · Herramienta **NV** · Output **NV** · Gancho **P** | 1,0 | N1 | 7,5 | Contrato con cinco de seis funciones: falta el comportamiento ante fallo. Sin herramienta, y declarado en tres lugares —los datos se pegan en el prompt—. Una sola corrida, y el formato no se puede validar contra sí mismo. El gancho dice que revisa antes de usarlo, y no dice qué puede vetar |
 | D2 Proceso | | | | | |
 | D3 Formato | | | | | |
 | D4 Económico | | | | | |
@@ -124,6 +124,18 @@ descriptor mal escrito, y eso es lo que la ronda tiene que encontrar.
   ningún otro, es indeterminado y no inconsistente. Es un defecto de base de
   cálculo (R19) sobre una cifra que no es la viga del componente. Si se activara,
   D4 caería a 7,50.
+- **El N1 del flojo se apoya en dos lecturas benignas que la rúbrica no explicitaba.**
+  Contrato parcial exige contar funciones y no archivos —no hay `user_prompt.md`—, y
+  Gancho parcial exige aceptar «antes de usarlo» como criterio de activación
+  incondicional. Si cualquiera de las dos se resuelve en estricto, la dimensión cae
+  a N0 = 0. Es lo contrario del D4 del excelente, que daba 11,25 en tres de cuatro
+  escenarios. Originó v1.5.
+- **Casi le exijo más al flojo que al excelente.** Mi primera lectura del Gancho fue
+  0, contando el criterio de activación como ausente — cuando en el excelente había
+  aceptado la lectura incondicional de «se detiene después de producir el JSON». El
+  flojo dice lo mismo con menos palabras. Lo anoto porque es el mecanismo exacto por
+  el que un corrector le exige más al trabajo que ya le pareció flojo, y valía un
+  punto entero de conteo.
 - **Dos de las cinco celdas ciegas quedaron sin corregir** (D2-flojo, y D1, D3 y
   D5 del tramposo). Lo anoto como límite de esta ronda, no como resultado.
 
@@ -142,6 +154,18 @@ anotalo igual: sería una señal de que la rúbrica induce falsos positivos.
 - **El pie de `prompts/versiones/system_prompt_v1.md` cita D1 y D2** cuando esas
   dos decisiones son recortes de alcance.
 - **De las tres fallas narradas, solo la del margen tiene artefacto.**
+
+### En el caso flojo
+
+- **El ejemplo 1.5 afirmaba algo falso sobre el caso que cita.** Decía que al flojo
+  le falta «alcance explícito», y `prompts/system_prompt.md:15` dice «No hagas
+  proyecciones ni recomendaciones, solo el análisis de lo que pasó», que es fuera de
+  alcance en negativo. Cubre cinco funciones y no cuatro. El nivel no cambia porque
+  1.2 pone cuatro y cinco en la misma casilla, pero un ejemplo que describe mal su
+  propio caso enseña a leer mal. Corregido en v1.5.
+- **A favor del flojo, y vale registrarlo:** la fórmula del margen está bien desde el
+  principio, con la comisión del comercial incluida — que es justo el error que al
+  excelente le costó una iteración entera.
 
 ### En la rúbrica misma
 

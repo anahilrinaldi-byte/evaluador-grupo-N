@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.4 · 2026-09-07
+**Versión:** v1.5 · 2026-09-08
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -173,7 +173,7 @@ Verifica el requisito 1 del Trabajo Final: objetivo claro, contrato escrito, her
 
 | Componente | Condición de verificación |
 |---|---|
-| **Contrato** | Existen `system_prompt` y `user_prompt` escritos, y entre ambos cubren las seis funciones de 1.2. Se cuentan funciones cubiertas, no secciones tituladas. |
+| **Contrato** | El contrato del agente está escrito y cubre las seis funciones de 1.2. Se cuentan **funciones cubiertas, no secciones tituladas ni archivos**: si el contrato vive en un solo archivo, o en otros distintos de `system_prompt` y `user_prompt`, las funciones cuentan igual y el corrector nombra dónde las encontró. **La ausencia de `prompts/user_prompt.md` no se cobra acá**: es exigencia de la estructura obligatoria de 3.1 y se cobra en D3. Cobrarla en las dos dimensiones es doble conteo. |
 | **Herramienta real** | Existe invocación o configuración de al menos una herramienta o conector —API, lectura de archivos, planilla, calendario, base de datos— **y** al menos un artefacto de salida cruda (log, JSON, respuesta) coherente con esa invocación. |
 | **Output estructurado** | Existe formato de salida declarado **y** dos o más corridas que lo satisfacen con la misma estructura. Se valida campo por campo. |
 | **Gancho de supervisión** | Existen los tres elementos: punto del flujo donde el sistema se detiene, criterio de activación, y qué puede vetar o corregir la persona. Faltando uno, el componente cuenta como parcial. |
@@ -259,7 +259,7 @@ R6 alcanza únicamente **rutas nombradas**. Es ruta nombrada toda **cadena liter
 
 **Nivel alto — N4.** `casos/excelente`. Los cuatro componentes abribles: el contrato de `prompts/system_prompt.md` cubre las seis funciones en sus secciones 1 a 6; la herramienta tiene configuración en `herramienta/config_lector.md` y artefacto de invocación en `logs/2026-08-25_lectura_ok.log` («filas_totales=363 encabezado=1 registros=362»); las tres corridas comparten el mismo esquema JSON; y `GOBIERNO.md` declara punto de detención, criterio y objeto del veto. **Lo que lo hace alto no es la prosa: es que cada componente se puede abrir.**
 
-**Nivel bajo — N1.** `casos/flojo`. El contrato cubre cuatro de las seis funciones —falta alcance explícito y falta comportamiento ante fallo—. No hay herramienta: `corridas/corrida_01/entrada.md` dice «Le pegué la tabla de los 362 cursos en el prompt», que es exactamente la línea que separa un agente de un chatbot con contexto. El formato se menciona sin esquema fijo y hay una sola corrida contra la cual validarlo.
+**Nivel bajo — N1.** `casos/flojo`. El contrato cubre cinco de las seis funciones —falta el comportamiento ante ambigüedad, faltantes o fallo; el alcance sí está, en negativo: «No hagas proyecciones ni recomendaciones, solo el análisis de lo que pasó»—, y cinco de seis es parcial por 1.2. No hay herramienta: `corridas/corrida_01/entrada.md` dice «Le pegué la tabla de los 362 cursos en el prompt», que es exactamente la línea que separa un agente de un chatbot con contexto. El formato se menciona sin esquema fijo y hay una sola corrida contra la cual validarlo.
 
 ---
 
@@ -561,6 +561,18 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.5 — 2026-09-08
+
+Dos correcciones en D1 detectadas al corregir `casos/flojo` en la ronda 1. El ejemplo de nivel bajo de 1.5 afirmaba un puntaje que la propia rúbrica no podía sostener de forma reproducible: dependía de dos lecturas interpretativas no escritas, y cualquiera de las dos resuelta en estricto mandaba la dimensión de N1 a N0. Siete puntos y medio decididos por una ambigüedad.
+
+**Modificado**
+- 1.1 · condición del componente Contrato. Decía «Existen `system_prompt` y `user_prompt` escritos, **y** entre ambos cubren las seis funciones», y esa conjunción admitía leer la existencia de los dos archivos como condición previa: sin `user_prompt.md`, componente en cero por más funciones que cubriera. Ahora la condición cuenta funciones y dice de forma expresa que la ausencia de `prompts/user_prompt.md` se cobra en D3, donde 3.1 la exige, y no acá.
+- 1.5 · el ejemplo de nivel bajo decía que a `casos/flojo` le falta «alcance explícito». Es falso: `prompts/system_prompt.md:15` dice «No hagas proyecciones ni recomendaciones, solo el análisis de lo que pasó», que es fuera de alcance enunciado en negativo y cubre la función 2. Le faltan cinco de seis y no cuatro de seis. El nivel no cambia, porque 1.2 pone cuatro y cinco en la misma casilla.
+
+**Decisiones registradas**
+- *Contar funciones y no archivos:* se descartó sostener la lectura estricta —los dos archivos como condición previa—, que habría dejado el componente en cero y a `casos/flojo` en N0 = 0, contradiciendo el ejemplo que la propia 1.5 fija en N1. Entre corregir el ejemplo y corregir la condición se eligió la condición, por tres razones que ya estaban escritas en la rúbrica: la misma condición cierra con «se cuentan funciones cubiertas, no secciones tituladas», 0.4 define función cubierta como la que se resuelve «en otro archivo o bajo otro nombre», y la ausencia del archivo ya la cobra 3.1 en D3.
+- *Corregir el ejemplo en lugar de dejarlo:* un ejemplo que afirma algo falso sobre el caso que cita enseña a leer mal. El nivel se mantiene en N1 porque el conteo no cambia de casilla, y el cambio deja registro de que el error era del ejemplo y no del caso.
 
 ### v1.4 — 2026-09-07
 
