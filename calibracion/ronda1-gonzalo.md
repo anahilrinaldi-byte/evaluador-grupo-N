@@ -72,7 +72,7 @@ vara se mueve y no se dice no vale nada.
 
 | Dim | Componentes (V / P / NV) | Conteo | Nivel | Puntaje | Por qué |
 |---|---|---|---|---|---|
-| D1 Sistema | Contrato **P** · Herramienta **NV** · Output **NV** · Gancho **P** | 1,0 | N1 | 7,5 | Contrato con cinco de seis funciones: falta el comportamiento ante fallo. Sin herramienta, y declarado en tres lugares —los datos se pegan en el prompt—. Una sola corrida, y el formato no se puede validar contra sí mismo. El gancho dice que revisa antes de usarlo, y no dice qué puede vetar |
+| D1 Sistema | Contrato **P** · Herramienta **NV** · Output **P** · Gancho **P** | 1,5 | N1 | 7,5 | Contrato con cinco de seis funciones: falta el comportamiento ante fallo. Sin herramienta, y declarado en tres lugares —los datos se pegan en el prompt—. Una sola corrida, y el formato no se puede validar contra sí mismo. El gancho dice que revisa antes de usarlo, y no dice qué puede vetar |
 | D2 Proceso | Iteraciones **NV** · Fallas **NV** · Decisiones V · Alcance V | 2,0 → **R10** | **N1** | 6,25 | Dos decisiones con alternativa nombrada y motivo, y el lector de Excel resignado por falta de tiempo, que es recorte deliberado y no falla. Pero cero estado anterior de ningún artefacto y ninguna falla con artefacto: la falla del margen se narra y no se transcribe. R10 se activa y topea en N1 |
 | D3 Formato | | | | | |
 | D4 Económico | | | | | |
@@ -148,6 +148,13 @@ descriptor mal escrito, y eso es lo que la ronda tiene que encontrar.
   mencionar. Un corrector que se tomara esa condición en serio concluiría que R10
   nunca aplica y D2 del flojo pasaría de 6,25 a 12,5. Son 6,25 puntos decididos por
   una condición imposible. Originó v1.7.
+- **Output estructurado del flojo: lo tomé en no verificado y quedó en parcial.**
+  Mi razón para el cero era que una sola corrida no se puede validar contra sí
+  misma. Lo resolvió la decisión de Anahí sobre D1 del tramposo, cruzada con P4: si
+  un formato declarado que **ninguna** corrida satisface vale parcial —que es lo
+  que ella decidió—, un formato declarado que **una** corrida satisface no puede
+  valer menos. El flojo está estrictamente mejor que el tramposo en este
+  componente. El puntaje no se mueve, 1,0 y 1,5 truncan los dos a N1.
 - **Dos de las cinco celdas ciegas quedaron sin corregir** (D2-flojo, y D1, D3 y
   D5 del tramposo). Lo anoto como límite de esta ronda, no como resultado.
 
