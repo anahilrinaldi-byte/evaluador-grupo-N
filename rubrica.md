@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.5 · 2026-09-08
+**Versión:** v1.7 · 2026-09-08
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -178,6 +178,16 @@ Verifica el requisito 1 del Trabajo Final: objetivo claro, contrato escrito, her
 | **Output estructurado** | Existe formato de salida declarado **y** dos o más corridas que lo satisfacen con la misma estructura. Se valida campo por campo. |
 | **Gancho de supervisión** | Existen los tres elementos: punto del flujo donde el sistema se detiene, criterio de activación, y qué puede vetar o corregir la persona. Faltando uno, el componente cuenta como parcial. |
 
+**Criterio de activación — condición de verificación.** El componente Gancho de supervisión exige que el entregable permita responder, **con su solo texto y sin inferencia**, las dos preguntas siguientes. Faltando cualquiera de las dos, el criterio de activación no está cubierto.
+
+**(a) ¿En qué ejecuciones interviene la persona?** Se responde de dos formas, ambas válidas y sin orden de mérito: con un **cuantificador universal** sobre las ejecuciones —«toda corrida», «siempre», «cada reporte», «antes de cada emisión»— o con una **condición enunciada** que dispara la intervención —«si `registros_excluidos` es mayor que 0», «si el margen difiere de la planilla»—. **Un criterio incondicional es un criterio válido:** «siempre» es una condición bien definida.
+
+**(b) ¿Qué acción queda retenida hasta que la intervención ocurra?** El entregable debe nombrar al menos una acción o paso concreto que no sucede mientras la intervención no se haya hecho —«no se distribuye», «no se envía», «no se usa», «no se emite»—. La verificación es **señalable**: el corrector cita la frase que nombra la acción retenida, o el criterio no está cubierto.
+
+**No cuentan como criterio de activación:** la mención de una revisión sin acción retenida («un humano revisa», «hay control humano»); una revisión enunciada como facultativa o recomendada («conviene revisar», «se sugiere validar»); y una revisión posterior al efecto («el reporte distribuido se audita después»), que es control ex post y no un punto de detención.
+
+**Concurrencia de elementos.** Un mismo enunciado puede cubrir más de uno de los tres elementos del componente **solo si responde de forma distinguible la pregunta propia de cada uno**. Un enunciado que responde una sola pregunta cubre un solo elemento, aunque se lo cite en los tres.
+
 El objetivo del sistema se verifica dentro del Contrato (función 1). Se verifica además que los componentes sean **coherentes entre sí**: que formen un sistema y no una colección de documentos sueltos. La incoherencia se trata por R2.
 
 ### 1.2 · Las seis funciones del contrato
@@ -298,7 +308,9 @@ Verifica el requisito 4 del Trabajo Final. Alcance: la historia de construcción
 
 **R9 · Falla honesta, crédito pleno.** Una falla documentada con artefacto —incluso no resuelta— cuenta al mismo nivel que una resuelta. Criterio textual de la cátedra: un sistema honesto con una falla bien contada vale más que uno pulido que no se entiende.
 
-**R10 · Relato retroactivo.** Documentación de proceso escrita íntegramente al final, sin ningún artefacto de estado anterior ni error citado literalmente, se clasifica como relato en su totalidad. Techo: N1 (6,25 puntos).
+**R10 · Relato retroactivo.** Documentación de proceso **sin ningún artefacto de estado anterior y sin ningún error citado literalmente** se clasifica como relato en su totalidad. Techo: N1 (6,25 puntos).
+
+*Test operativo y único:* el corrector busca en el entregable (i) cualquier estado anterior de un artefacto —versión previa, borrador, archivo en `versiones/`— y (ii) cualquier error transcripto como texto, no descripto. Si no encuentra ninguno de los dos, la regla se activa. **No se verifica cuándo fue escrita la documentación**: esa es la razón de ser de la regla, no una condición aparte, y no hay forma de comprobarla sin recurrir al historial de commits, que N3 prohíbe usar y hasta mencionar. Una descripción del error —«no lo sacaba bien», «fallaba el cálculo»— no es un error citado: la cita es el texto del error, copiado.
 
 **R11 · Cruce con R6.** Si el inventario de consistencia detectó discrepancias y la documentación de proceso narra la construcción de esos artefactos inexistentes, la dimensión **baja un nivel adicional**.
 
@@ -561,6 +573,29 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.7 — 2026-09-08
+
+R10 tenía un disparador que ningún corrector puede verificar. Detectado al corregir D2 de `casos/flojo`, donde la regla decide 6,25 puntos.
+
+**Modificado**
+- 4.3 · R10. Exigía que la documentación estuviera «escrita íntegramente al final» **y** careciera de artefactos. La primera condición no es verificable por ningún medio disponible al corrector, y el único indicio posible —el historial de commits— está expresamente prohibido por N3, que impide usarlo como criterio y hasta mencionarlo. Un corrector que tomara esa condición como autónoma concluiría que R10 nunca es aplicable, no activaría el techo, y D2 de `casos/flojo` pasaría de 6,25 a 12,5. Ahora la ausencia de artefactos es el test operativo y único, y el carácter retroactivo del relato es la razón de la regla, no una condición aparte.
+
+**Decisiones registradas**
+- *Convertir el disparador en fundamento:* se descartó eliminar R10, que es la regla que separa documentar de narrar, y se descartó dejarla como estaba, que dejaba 6,25 puntos librados a si el corrector se toma en serio una condición imposible. Se descartó también admitir el historial de commits como prueba, que contradice N3 y castiga la vía de entrega en zip.
+- *La cita literal es texto copiado:* se agrega de forma expresa que una descripción del error no es una cita. Es la distinción que la regla ya suponía y que en `casos/flojo` decide la activación, porque el caso narra su falla con precisión y no transcribe nada.
+
+### v1.6 — 2026-09-08
+
+Cierre de la segunda lectura interpretativa detectada en D1 de `casos/flojo` durante la ronda 1. La condición del Gancho de supervisión exigía un «criterio de activación» sin definir el término en ninguna parte de la rúbrica, con lo que un criterio incondicional —«siempre», «antes de usarlo»— admitía leerse como criterio válido o como ausencia de criterio. Bajo la segunda lectura el componente caía a no verificado y la dimensión pasaba de N1 a N0: siete puntos y medio decididos por una ambigüedad no escrita.
+
+**Agregado**
+- 1.1 · condición de verificación del criterio de activación: test de dos preguntas, validez expresa del criterio incondicional, exigencia de nombrar la acción retenida, lista de lo que no cuenta, y regla de concurrencia entre los tres elementos del componente.
+
+**Decisiones registradas**
+- *Admitir el criterio incondicional:* se descartó exigir una condición disparadora, que habría dejado sin criterio a todo sistema de revisión sistemática —el caso más frecuente y el más seguro— y habría premiado la supervisión selectiva por encima de la universal.
+- *Exigir la acción retenida como test señalable:* se descartó verificar el criterio «por contexto». Sin un elemento citable, el corrector decide por impresión y dos corridas difieren, contra P4. La acción retenida es una frase que se cita o no se cita.
+- *Regla de concurrencia:* se descartó permitir que un único enunciado cubriera los tres elementos por remisión. Sin ella, «un humano revisa antes de enviar» acreditaba punto de detención, criterio y facultad de veto a la vez, y un componente de tres elementos se satisfacía con uno.
 
 ### v1.5 — 2026-09-08
 
