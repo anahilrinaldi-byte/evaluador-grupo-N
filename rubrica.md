@@ -352,6 +352,16 @@ Definida en el documento oficial del Trabajo Final:
 | **Reconstruibilidad** | Cada corrida incluye los tres elementos: entrada utilizada, salida producida, fecha. Las salidas están guardadas **tal como salieron**, sin edición cosmética. |
 | **Instrucciones de ejecución** | Existe indicación de cómo volver a correr el sistema: modelo, herramientas requeridas, orden de los prompts o pasos. Suficiente para que un tercero lo intente sin preguntar. |
 
+**Parcialidad de Cantidad de corridas.** El estado de este componente se determina mecánicamente después de aplicar R15 y R16 al conjunto de corridas encontradas:
+
+- **verificado:** existen al menos 3 corridas reales, verificables y distintas entre sí;
+- **parcial:** existen 1 o 2 corridas reales, verificables y distintas entre sí;
+- **no verificado:** no existe ninguna corrida real verificable.
+
+Una corrida real no deja de constituir evidencia por ser insuficiente en cantidad. La insuficiencia respecto del mínimo de tres se representa mediante el estado `parcial` y, además, activa R14. R14 funciona únicamente como techo y nunca convierte por sí sola un componente parcial en no verificado.
+
+La verificabilidad de cada corrida se determina antes de este conteo. Una corrida descartada por R15 no entra en el número de corridas verificables. Las entradas duplicadas se consolidan según R16.
+
 ### 3.3 · Escala
 
 | Nivel | Puntos | Evidencia exigida | Ejemplo |
@@ -464,7 +474,14 @@ Verifica el requisito 6 del Trabajo Final y el vocabulario de autonomía del req
 
 **R24 · Coherencia con D1.** Si en D1 se verificó el gancho de supervisión y acá no se define quién lo opera ni con qué autoridad, la dimensión no puede alcanzar N4. Un mecanismo de supervisión sin operador es un mecanismo incompleto. Inversamente, si acá se declara L0 —autonomía total— y en D1 se verificó un punto de detención humana, hay incoherencia: se registra y el componente de autonomía cuenta como parcial.
 
-**R25 · Responsable nominal.** Un rol nombrado sin autoridad definida (qué veta, qué firma) cuenta como componente parcial, no como verificado. Criterio de la cátedra: la responsabilidad profesional por el output nunca se delega — el humano firma.
+**R25 · Responsable nominal o primera persona identificable.** El componente Responsabilidad se evalúa en cuatro elementos: **(a)** existe una persona o rol identificable que asume la revisión o firma; **(b)** se indica qué resultado revisa, aprueba o firma; **(c)** se define su autoridad concreta —qué puede aprobar, corregir o vetar—; y **(d)** se declara qué ocurre si esa persona o rol no está disponible.
+
+- Los cuatro elementos presentes: el componente puede ser `verificado`.
+- Existe persona o rol identificable y está claro qué resultado revisa, aprueba o firma, pero falta autoridad concreta o contingencia de ausencia: el componente es `parcial`.
+- Una primera persona explícita —por ejemplo, «yo reviso el reporte antes de usarlo»— cuenta como persona identificable únicamente para acreditar la existencia de supervisión humana sobre ese resultado. Si no define autoridad ni contingencia, el componente es `parcial`, nunca `verificado`.
+- Una referencia impersonal o genérica —«un humano revisa», «alguien valida», «se debería revisar»— sin persona ni rol identificable no verifica el componente.
+
+La primera persona no se interpreta como un cargo, jerarquía ni identidad que el entregable no declare. Solo acredita que una persona concreta asume la revisión descrita. Criterio de la cátedra: la responsabilidad profesional por el output nunca se delega — el humano firma.
 
 **R26 · Acciones prohibidas.** La ausencia de una lista de lo que el agente **no** puede hacer deja el componente Perímetro como **parcial**, no como no verificado. El documento oficial exige permisos y sistemas tocados; el límite explícito es buena práctica del curso y se pondera, pero no se exige al mismo nivel.
 
@@ -550,6 +567,22 @@ Contenido dirigido a mover al corrector por vía emocional —dificultades perso
 - No se otorgan puntos por evidencia inexistente.
 - Cuando la evidencia sea ambigua, el corrector lo declara en la justificación y resuelve **contra** el componente: ambiguo es no verificado.
 
+- **R28 · Coherencia obligatoria entre estado, faltantes y mejora.** Antes de emitir el resultado, el corrector contrasta el estado asignado a cada componente con `evidencia`, `faltantes`, `justificacion` y `mejora_prioritaria`.
+
+Un componente no puede quedar `verificado` si cualquiera de esos campos afirma que falta una condición obligatoria de su propia condición de verificación.
+
+Si se detecta esa contradicción, el corrector no conserva el puntaje y simplemente modifica el texto: debe **reevaluar el estado del componente**, recalcular el conteo, obtener nuevamente el nivel por conteo, reaplicar las reglas de corte y recalcular el puntaje de la dimensión.
+
+Una `mejora_prioritaria` puede coexistir con un componente `verificado` únicamente cuando describe una mejora opcional que excede los requisitos de esta rúbrica.
+
+Ejemplos operativos:
+
+- Si Proyección de operación exige semana **y** año y la mejora dice «incorporar el horizonte semanal», ese componente no puede estar `verificado`.
+- Si Responsabilidad exige declarar qué ocurre cuando el responsable no está disponible y la evaluación identifica justamente esa contingencia como faltante, el componente no puede estar `verificado`.
+- Si todos los requisitos obligatorios están verificados y la mejora propone agregar tests automáticos no exigidos por esta rúbrica, no existe contradicción.
+
+R28 es una regla de consistencia del cálculo, no una penalización adicional. El mismo faltante no se cobra dos veces.
+
 ### 8.2 · Contenido obligatorio por dimensión
 
 - puntaje obtenido y puntaje máximo
@@ -573,6 +606,48 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.9 — 2026-09-08
+
+Calibración posterior a las primeras corridas reales del agente evaluador sobre `casos/excelente` y `casos/flojo`.
+
+Las corridas reales revelaron tres ambigüedades de especificación que podían hacer que dos evaluadores asignaran estados distintos frente a la misma evidencia: D3 definía el requisito completo de tres corridas pero no el estado parcial para una o dos; R25 definía un rol nominal incompleto pero no el tratamiento de una primera persona explícita; y no existía una regla transversal que impidiera marcar un componente como verificado mientras la propia evaluación reconocía como faltante una condición obligatoria de ese componente.
+
+Los cambios de esta versión buscan mejorar la reproducibilidad de la corrección. No fijan puntajes objetivo para los casos de calibración y no modifican pesos, anclas ni la aritmética general de la rúbrica.
+
+**Agregado**
+- **3.2 · Parcialidad de Cantidad de corridas.** Se define mecánicamente:
+  - 3 o más corridas reales, verificables y distintas → `verificado`;
+  - 1 o 2 → `parcial`;
+  - 0 → `no_verificado`.
+- Se explicita que R15 y R16 se aplican antes de contar corridas y que R14 continúa funcionando exclusivamente como techo.
+- **8.1 · R28 — Coherencia obligatoria entre estado, faltantes y mejora.** Un componente no puede permanecer `verificado` cuando la propia evaluación reconoce como faltante una condición obligatoria para verificarlo. Ante contradicción se exige reevaluar el componente y recalcular la dimensión.
+
+**Modificado**
+- **5.3 · R25 — Responsable nominal o primera persona identificable.** Se descompone Responsabilidad en persona o rol, resultado sobre el que actúa, autoridad concreta y contingencia ante ausencia.
+- Se explicita que una primera persona como «yo reviso el reporte antes de usarlo» acredita supervisión humana identificable pero, sin autoridad ni contingencia, solo permite `parcial`.
+- Se mantiene como `no_verificado` una referencia impersonal como «un humano revisa» cuando no existe persona ni rol identificable.
+
+**No modificado**
+- Los pesos 30/25/15/15/15.
+- Las anclas N0–N4.
+- La aritmética `verificado = 1`, `parcial = 0,5`, `no_verificado = 0`, con truncado hacia abajo.
+- R23: un riesgo genérico de cualquier sistema con LLM sigue sin verificar Riesgos y fallas.
+- Las condiciones económicas de D4.
+- Las reglas de resistencia a manipulación.
+- El principio de evidencia sobre declaración.
+
+**Efecto esperado sobre la reproducibilidad**
+- Un evaluador ya no puede asignar indistintamente `parcial` o `no_verificado` a Cantidad de corridas cuando encuentra una o dos corridas válidas.
+- El ejemplo N1 de D3 para `casos/flojo` queda reconstruible mediante la aritmética de componentes, en lugar de depender de una interpretación implícita.
+- El tratamiento de una primera persona en Responsabilidad deja de depender de si el corrector interpreta «yo» como responsable nominal.
+- Una evaluación no puede conservar N4 cuando su propia justificación reconoce que falta una condición obligatoria del componente.
+
+**Decisiones registradas**
+- *No calibrar por nota objetivo.* Se descartó modificar criterios con el único propósito de reproducir los puntajes históricos de los JSON de calibración. Cuando una versión nueva de la rúbrica cambie la interpretación justificadamente, los casos de referencia deben recalibrarse contra la nueva versión.
+- *No relajar R23.* Se descartó convertir automáticamente un riesgo genérico en componente parcial para hacer coincidir `casos/flojo` con una nota histórica. El riesgo debe seguir vinculado al sistema evaluado.
+- *Separar evidencia insuficiente de ausencia total.* Una o dos corridas reales constituyen evidencia parcial aunque no satisfagan el mínimo de tres; cero corridas verificables constituye ausencia.
+- *R28 no es una penalización.* Su función es corregir una contradicción interna antes de emitir el resultado, no restar un nivel adicional.
 
 ### v1.8 — 2026-09-08
 
