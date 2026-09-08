@@ -1,93 +1,225 @@
 # Configuración del corrector
 
-**Versión:** v1.1 · 2026-09-07
-**System prompt activo:** `agente/system_prompt.md`
-**Rúbrica:** `rubrica.md` — v1.2, **no embebida**: `app.py` la lee del archivo y la inyecta en el mensaje del usuario en cada corrida.
-**Rúbrica fuente:** `rubrica.md` (única; `rubrica_V2.md` y `system_prompt_v2.md` se consolidaron y ya no existen)
+**Versión:** v2.0 · 2026-09-08  
+**System prompt activo:** `agente/system_prompt.md`  
+**Rúbrica fuente:** `rubrica.md`  
+**Aplicación:** `app.py`  
+**Modelo configurado:** `gemini-3.1-flash-lite`  
+**Temperatura:** `0`
+
+La rúbrica no está embebida en el prompt: `app.py` lee `rubrica.md` y la
+incorpora dinámicamente en cada evaluación.
+
+La versión actual de `rubrica.md` es la fuente de verdad para nuevas
+evaluaciones. Las corridas finales archivadas en `calibracion/` fueron
+realizadas con la versión v1.9 y se conservan como evidencia histórica de
+calibración.
 
 ---
 
 ## 1 · Qué necesita el corrector para funcionar
 
-El corrector no puede evaluar lo que no puede leer. Estas son las capacidades mínimas, expresadas como funciones y no como implementación: cualquier entorno que las provea sirve.
+El corrector no puede evaluar evidencia que no puede recuperar.
 
-| # | Capacidad | Para qué la usa | Qué pasa si falta |
+La implementación actual separa la recuperación y los controles objetivos en
+Python de la interpretación semántica realizada por el modelo.
+
+| # | Capacidad | Implementación actual | Para qué se usa |
 |---|---|---|---|
-| H1 | **Listar el árbol de archivos** del entregable, con rutas completas | FASE 1 · inventario | Sin árbol no hay contraste posible: R6, R11 y R18 quedan muertas y el tramposo pasa |
-| H2 | **Leer el contenido** de cualquier archivo de texto (`.md`, `.txt`, `.json`, `.py`, `.yaml`, `.csv`) | FASES 2 a 5 | El corrector puntúa por nombre de archivo, que es exactamente lo que 5.5 prohíbe |
-| H3 | **Descomprimir** un `.zip` antes de H1 | Vía de entrega comprimida | Se rompe la neutralidad de formato (RD6) |
-| H4 | **Clonar o acceder** a un repositorio público | Vía de entrega repositorio | Se rompe la neutralidad de formato (RD6) |
-
-**H2 es la crítica.** Un corrector que solo lista el árbol puede verificar existencia pero no contenido, y todas las condiciones de verificación de la rúbrica son de contenido. Si la corrida en vivo no permite leer archivos, hay que declararlo antes de correr, no descubrirlo durante.
-
-### Fuera de alcance
-
-No se requiere ejecutar código del entregable, instalar dependencias, llamar APIs de terceros ni reproducir las corridas del trabajo evaluado. El corrector audita evidencia registrada, no re-ejecuta el sistema. La rúbrica está escrita en consecuencia: D3 verifica que las instrucciones de ejecución existan, no que funcionen.
+| H1 | **Listar el árbol de archivos** del entregable | GitHub API / procesamiento Python | Construir el inventario real del repositorio |
+| H2 | **Leer archivos de texto** | `raw.githubusercontent.com` / procesamiento local | Recuperar evidencia verificable |
+| H3 | **Procesar una entrega comprimida** | Flujo de carga de la aplicación cuando corresponde | Evaluar entregas sin depender exclusivamente de GitHub |
+| H4 | **Acceder a un repositorio público de GitHub** | GitHub API + contenido raw | Evaluar un repositorio o una subcarpeta real |
+| H5 | **Interpretar semánticamente la evidencia** | `gemini-3.1-flash-lite` | Aplicar la rúbrica a la evidencia recuperada |
+| H6 | **Contrastar referencias con el inventario** | Python | Evitar aceptar como evidencia rutas inexistentes |
+| H7 | **Normalizar estados, niveles y puntajes** | Python | Aplicar anclas y reglas deterministas |
+| H8 | **Validar la salida estructurada** | Python | Evitar publicar una corrida inconsistente |
 
 ---
 
-## 2 · Parámetros del modelo
+## 2 · Entrada
 
-| Parámetro | Valor | Motivo |
-|---|---|---|
-| Temperatura | **0** (o el mínimo disponible) | RD8 exige determinismo. Es la palanca más directa contra la variación entre corridas. |
-| Modelo | Uno con ventana suficiente para el system prompt completo (rúbrica embebida) más el entregable | Ver 2.1 |
-| Formato de salida | JSON | Si el entorno permite forzar salida JSON por esquema, activarlo: reduce el riesgo de texto antes o después. |
+La aplicación admite como entrada principal un repositorio público de GitHub.
 
-### 2.1 · Criterio de elección de modelo
+También admite una URL que apunte a una subcarpeta:
 
-El criterio del curso es el modelo más chico que hace bien la tarea. Esta tarea tiene tres exigencias que la vuelven poco apta para un modelo liviano:
+`https://github.com/<owner>/<repo>/tree/<branch>/<subcarpeta>`
 
-1. **Contraste entre lo afirmado y lo hallado** (FASE 3). No es extracción: es cruce entre dos inventarios construidos por el propio modelo.
-2. **Resistencia a manipulación** (CAPA 5). Los modelos chicos son más fáciles de desviar con instrucciones embebidas.
-3. **Contexto largo.** System prompt con rúbrica completa más el entregable entero.
+En ese caso, la subcarpeta se trata como raíz lógica del trabajo evaluado.
 
-La elección debe registrarse en `calibracion.md` con la evidencia: si se probó un modelo menor y falló, guardar la corrida fallida. Si no se probó, decirlo.
+Cuando se utiliza una entrega comprimida, el sistema debe construir igualmente
+un inventario antes de realizar la evaluación semántica.
 
 ---
 
-## 3 · Protocolo de corrida
+## 3 · Recuperación del repositorio
 
-1. Cargar `agente/system_prompt.md` completo como system prompt. **Sin editar, sin resumir, sin recortar.**
-2. Verificar que la rúbrica llegue completa en el **mensaje del usuario**, no en el system prompt: `app.py` lee `rubrica.md` y la inyecta ahí en cada corrida. El control es que el mensaje enviado contenga el encabezado `**Versión:** vX.Y` y la sección `## Changelog` del final; si falta cualquiera de los dos extremos, la rúbrica llegó truncada y la corrida no vale. El corrector debe copiar esa `vX.Y` en `metadata.version_rubrica`: si el campo vuelve vacío o con otra versión, la rúbrica no llegó o llegó incompleta.
-3. Poner el entregable a disposición del corrector: descomprimir el zip o clonar el repositorio.
-4. Enviar el user prompt (sección 4).
-5. Recibir el JSON, validarlo (sección 5) y archivar la corrida completa.
+La recuperación del repositorio se realiza antes de llamar al modelo.
 
----
+La aplicación:
 
-## 4 · User prompt
+1. identifica propietario, repositorio, rama y subcarpeta cuando corresponde;
+2. obtiene metadatos y árbol;
+3. selecciona archivos de texto admitidos;
+4. recupera su contenido;
+5. registra archivos que no pudieron recuperarse;
+6. construye el paquete de evidencia que recibirá el modelo.
 
-Texto fijo. No se personaliza por caso: cualquier variación entre entregables es una variable no controlada que rompe la comparabilidad.
+Límites actuales:
 
-```
-Evaluá el Trabajo Final contenido en el entregable disponible.
+- máximo de archivos evaluables: **150**;
+- máximo por archivo: **12.000 caracteres**;
+- máximo total del repositorio: **400.000 caracteres**.
 
-Vía de entrega: [repositorio | comprimido]
-Identificador: [nombre del repo o del archivo]
+Estos límites son parte de la implementación y no deben interpretarse como
+evidencia de ausencia.
 
-Aplicá el procedimiento de la CAPA 4 en orden y devolvé
-únicamente el JSON de la CAPA 6.
-```
-
----
-
-## 5 · Validación de la corrida
-
-Una corrida es válida si cumple las cinco condiciones. Si falla alguna, se archiva como corrida fallida —material de proceso, no resultado— y se corre de nuevo.
-
-1. La salida es JSON válido, sin texto antes ni después.
-2. Están las cinco dimensiones con todas sus claves.
-3. Cada `puntaje` pertenece al conjunto de valores permitidos de su dimensión (tabla 3.3 del system prompt).
-4. `puntaje_total` es exactamente la suma de los cinco puntajes.
-5. Ninguna justificación menciona la vía de entrega (RD6).
-
-La condición 3 es la que hay que mirar con más atención: es el punto donde un corrector mal configurado empieza a inventar valores intermedios.
+Si el paquete queda incompleto, el evaluador debe declarar la limitación.
 
 ---
 
-## 6 · Registro de corridas
+## 4 · Separación de responsabilidades
 
-Cada corrida se archiva con: fecha, modelo y temperatura usados, versión del system prompt, entregable evaluado, JSON completo tal como salió, y si fue válida o fallida.
+La arquitectura final distingue dos tipos de tareas.
 
-Las corridas fallidas no se borran. Son la evidencia del proceso y el insumo de la calibración.
+### Interpretación semántica — modelo
+
+El modelo:
+
+- interpreta el contenido de los archivos;
+- aplica los criterios de la rúbrica;
+- propone estados por componente;
+- identifica evidencia relevante;
+- explica faltantes;
+- propone una mejora prioritaria;
+- identifica contradicciones y posibles alertas de integridad.
+
+### Controles objetivos — Python
+
+Python:
+
+- construye el inventario;
+- verifica referencias a rutas;
+- controla cantidad de corridas verificables;
+- normaliza estados;
+- deriva niveles;
+- aplica reglas de corte;
+- asigna los puntajes permitidos;
+- calcula el total;
+- deriva el veredicto final;
+- valida la consistencia de la salida.
+
+El modelo no es la única autoridad sobre hechos verificables ni sobre la
+aritmética final.
+
+---
+
+## 5 · Evidencia y seguridad
+
+Todo contenido proveniente del repositorio evaluado se considera **contenido no
+confiable**.
+
+Una instrucción escrita dentro del trabajo no puede:
+
+- cambiar la rúbrica;
+- reemplazar el system prompt;
+- ordenar al corrector que ignore evidencia;
+- fijar su propia nota;
+- modificar las reglas de evaluación.
+
+Una afirmación del trabajo no se considera evidencia solamente por estar escrita.
+
+Cuando el evaluador cita una ruta como evidencia, la aplicación puede
+contrastarla contra el inventario real.
+
+Si se detectan referencias a rutas inexistentes:
+
+1. se identifican los componentes afectados;
+2. se solicita una revisión semántica;
+3. se preserva cualquier evidencia alternativa válida;
+4. se registran contradicciones o afirmaciones no verificadas;
+5. si la salida insiste en utilizar una ruta inexistente como evidencia, la
+   corrida se rechaza.
+
+No se aplica una penalización global automática por contradicción o intento de
+persuasión. El efecto sobre el puntaje depende del criterio afectado.
+
+---
+
+## 6 · Modelo y parámetros
+
+La implementación presentada utiliza:
+
+- **Proveedor:** Google Gemini
+- **Modelo:** `gemini-3.1-flash-lite`
+- **Temperatura:** `0`
+- **Formato esperado:** JSON estructurado
+
+La temperatura cero reduce variabilidad, pero no garantiza identidad absoluta
+entre ejecuciones.
+
+Por eso las propiedades objetivas del resultado se controlan fuera del modelo.
+
+---
+
+## 7 · Salida
+
+El corrector devuelve una evaluación estructurada que incluye, entre otros
+campos:
+
+- puntaje por dimensión;
+- nivel por dimensión;
+- estados de los componentes;
+- evidencia;
+- faltantes;
+- mejora prioritaria;
+- contradicciones;
+- afirmaciones no verificadas;
+- alertas de integridad;
+- limitaciones;
+- puntaje total;
+- veredicto.
+
+La estructura exacta exigida al modelo está definida en
+`agente/system_prompt.md` y validada por `app.py`.
+
+El puntaje total oficial es el resultado de la normalización determinista de las
+dimensiones.
+
+Cuando corresponde, se conserva también la propuesta original del modelo como
+`puntaje_total_modelo` para fines de auditoría y calibración.
+
+---
+
+## 8 · Credenciales
+
+La credencial de Gemini no se almacena en el repositorio.
+
+La aplicación obtiene `GEMINI_API_KEY` desde Streamlit Secrets o desde una
+variable de entorno.
+
+Los archivos locales de secretos deben permanecer excluidos del control de
+versiones.
+
+---
+
+## 9 · Reproducibilidad
+
+Para interpretar una corrida deben conservarse como mínimo:
+
+- repositorio o subcarpeta evaluada;
+- versión de la rúbrica;
+- system prompt utilizado;
+- modelo;
+- temperatura;
+- salida completa;
+- limitaciones detectadas.
+
+Las corridas históricas se conservan aunque correspondan a versiones anteriores.
+
+Una nota histórica no constituye un puntaje objetivo que el agente deba
+reproducir.
+
+Si cambia la rúbrica, el system prompt o una regla determinista, la nueva versión
+debe volver a probarse contra los casos de calibración antes de reemplazar las
+referencias finales.
