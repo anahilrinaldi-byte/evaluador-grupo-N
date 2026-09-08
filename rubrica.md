@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.7 · 2026-09-08
+**Versión:** v1.8 · 2026-09-08
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -175,7 +175,7 @@ Verifica el requisito 1 del Trabajo Final: objetivo claro, contrato escrito, her
 |---|---|
 | **Contrato** | El contrato del agente está escrito y cubre las seis funciones de 1.2. Se cuentan **funciones cubiertas, no secciones tituladas ni archivos**: si el contrato vive en un solo archivo, o en otros distintos de `system_prompt` y `user_prompt`, las funciones cuentan igual y el corrector nombra dónde las encontró. **La ausencia de `prompts/user_prompt.md` no se cobra acá**: es exigencia de la estructura obligatoria de 3.1 y se cobra en D3. Cobrarla en las dos dimensiones es doble conteo. |
 | **Herramienta real** | Existe invocación o configuración de al menos una herramienta o conector —API, lectura de archivos, planilla, calendario, base de datos— **y** al menos un artefacto de salida cruda (log, JSON, respuesta) coherente con esa invocación. |
-| **Output estructurado** | Existe formato de salida declarado **y** dos o más corridas que lo satisfacen con la misma estructura. Se valida campo por campo. |
+| **Output estructurado** | Existe formato de salida declarado **y** dos o más corridas que **satisfacen el formato declarado**, validado campo por campo. La consistencia entre corridas no sustituye la fidelidad al formato: dos corridas idénticas entre sí que no respetan el formato declarado **no verifican** el componente. Si el formato declarado es un esquema —JSON, tabla de campos fijos— la corrida debe presentar ese esquema, no una redacción de su contenido. |
 | **Gancho de supervisión** | Existen los tres elementos: punto del flujo donde el sistema se detiene, criterio de activación, y qué puede vetar o corregir la persona. Faltando uno, el componente cuenta como parcial. |
 
 **Criterio de activación — condición de verificación.** El componente Gancho de supervisión exige que el entregable permita responder, **con su solo texto y sin inferencia**, las dos preguntas siguientes. Faltando cualquiera de las dos, el criterio de activación no está cubierto.
@@ -573,6 +573,21 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v1.8 — 2026-09-08
+
+Decisión de Anahí sobre D1 de `casos/tramposo`, tomada el 7/9 en `calibracion/DECISIONES_PENDIENTES.md` (Decisión 1, opción B). La condición del componente Output estructurado admitía leerse como consistencia entre corridas, sin exigir fidelidad al formato que el propio entregable declara. Bajo esa lectura, un trabajo que escribe un contrato al principio y después no lo respeta verificaba el componente igual.
+
+**Modificado**
+- 1.1 · condición del componente Output estructurado. Decía «dos o más corridas que lo satisfacen con la misma estructura», donde «lo» podía referirse al formato declarado o a la estructura compartida entre corridas. Ahora exige que las corridas satisfagan **el formato declarado**, dice de forma expresa que la consistencia entre corridas no lo sustituye, y aclara que si el formato declarado es un esquema, la corrida debe presentar el esquema y no una redacción de su contenido.
+
+**Efecto sobre el banco de calibración**
+- `casos/tramposo` declara un JSON en `prompts/system_prompt.md:37` y entrega dos informes en prosa. Bajo la condición corregida, Output estructurado es **parcial** —el formato está declarado, ninguna corrida lo satisface— y D1 queda en N0 · 0,00, que es lo que la corrida ya tenía.
+- Verificado además que la lectura descartada tampoco lo salvaba: los dos informes comparten solo dos de sus cinco secciones, así que ni siquiera son consistentes entre sí.
+
+**Decisiones registradas**
+- *Exigir fidelidad al formato declarado:* se descartó la lectura de consistencia entre corridas, que dejaba de medir lo que la dimensión existe para medir —que el sistema respete su propio contrato— y validaba el output contra sí mismo. Un trabajo cuyo contrato y cuyo output no se corresponden es exactamente el que la dimensión tiene que distinguir, y es el caso que puede aparecer entre los trabajos finales reales.
+- *No exigir identidad literal:* la condición pide que la corrida presente el esquema declarado, no que sea idéntica campo por campo a un modelo. Un output que respeta el esquema con un campo opcional ausente sigue verificando; uno que reemplaza el esquema por prosa, no.
 
 ### v1.7 — 2026-09-08
 
