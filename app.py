@@ -391,6 +391,30 @@ def validar_corrida(resultado):
 
     dimensiones = resultado.get("dimensiones")
     if not isinstance(dimensiones, dict):
+        except json.JSONDecodeError:
+    raise ValueError(
+        "Gemini respondió, pero la salida no fue JSON válido."
+    )
+
+# El modelo decide los puntajes por dimensión.
+# El total final se calcula de forma determinista en Python
+# para evitar inconsistencias aritméticas del LLM.
+dimensiones = resultado.get("dimensiones", {})
+
+if isinstance(dimensiones, dict):
+    puntaje_total_calculado = 0.0
+
+    for datos in dimensiones.values():
+        if isinstance(datos, dict):
+            try:
+                puntaje_total_calculado += float(
+                    datos.get("puntaje", 0)
+                )
+            except (TypeError, ValueError):
+                pass
+
+    resultado["puntaje_total"] = puntaje_total_calculado
+
         return ["No hay objeto 'dimensiones' en la salida."]
 
     # Condicion 2: estan las cinco dimensiones
