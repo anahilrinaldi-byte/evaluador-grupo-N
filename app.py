@@ -21,7 +21,12 @@ MODEL_NAME = "gemini-3.1-flash-lite"
 
 EXTENSIONES_PERMITIDAS = {
     ".md", ".txt", ".py", ".json", ".yaml", ".yml",
-    ".csv", ".toml", ".js", ".ts", ".html", ".css"
+    ".csv", ".toml", ".js", ".ts", ".html", ".css",
+    # Sin .log el corrector no podia leer los dos logs de casos/excelente, que
+    # son exactamente los artefactos que la rubrica cita por nombre para
+    # verificar Herramienta en D1 y Fallas en D2. Los demas son formatos en los
+    # que un trabajo final razonablemente deja evidencia.
+    ".log", ".ipynb", ".sql", ".sh", ".ini", ".cfg", ".env", ".xml", ".tsv"
 }
 
 ARCHIVOS_PRIORITARIOS = {
@@ -190,10 +195,14 @@ def descargar_repo_publico(url_repo):
             )
         tree = recortado
 
-    archivos = [
-        item for item in tree
-        if item.get("type") == "blob"
-        and extension_permitida(item.get("path", ""))
+    blobs = [item for item in tree if item.get("type") == "blob"]
+    archivos = [i for i in blobs if extension_permitida(i.get("path", ""))]
+    # Un archivo que el corrector no ve, y ademas no sabe que no ve, lo puntua
+    # como ausente. Los descartados por extension se declaran, igual que los
+    # que fallan al descargar o los que no entran por tamano o por cantidad.
+    omitidos_por_extension = [
+        i.get("path", "") for i in blobs
+        if not extension_permitida(i.get("path", ""))
     ]
 
     # Priorizamos archivos centrales antes que otros
@@ -289,6 +298,7 @@ def descargar_repo_publico(url_repo):
         "archivos_fallidos": archivos_fallidos,
         "omitidos_por_tamano": omitidos_por_tamano,
         "omitidos_por_cantidad": omitidos_por_cantidad,
+        "omitidos_por_extension": omitidos_por_extension,
         "caracteres_empaquetados": total_caracteres,
         "techo_caracteres": MAX_CARACTERES_REPO,
         "arbol_truncado": arbol_truncado,
@@ -318,11 +328,13 @@ Archivos de texto efectivamente leídos: {metadata['archivos_leidos']}
 Archivos que no se pudieron leer: {metadata.get('archivos_fallidos') or 'ninguno'}
 Archivos omitidos por límite de tamaño: {metadata.get('omitidos_por_tamano') or 'ninguno'}
 Archivos omitidos por límite de cantidad: {metadata.get('omitidos_por_cantidad') or 'ninguno'}
+Archivos omitidos por tipo de archivo no legible: {metadata.get('omitidos_por_extension') or 'ninguno'}
 Tamaño empaquetado: {metadata.get('caracteres_empaquetados')} de {metadata.get('techo_caracteres')} caracteres
 GitHub recortó el árbol del repositorio: {'SÍ — la lista de archivos de partida ya venía incompleta' if metadata.get('arbol_truncado') else 'no'}
 
-Si alguna de esas tres listas no está vacía, el paquete de evidencia está
-incompleto: hay archivos del entregable que no estás viendo.
+Si alguna de esas listas no está vacía, el paquete de evidencia está
+incompleto: hay archivos del entregable que no estás viendo. No los puntúes como
+ausentes —existen— y declaralo en `alertas_integridad`.
 
 En ese caso, declaralo en "limitaciones" nombrando los archivos que faltan, y
 **no puntúes como ausente lo que puede estar en uno de ellos**. La fórmula
