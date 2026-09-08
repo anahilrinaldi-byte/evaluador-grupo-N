@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "via_entrega": "repositorio",
+    "identificador_entregable": "anahilrinaldi-byte/evaluador-grupo-N",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v1.9",
+    "error_carga": false
+  },
+  "puntaje_total": 55.0,
+  "veredicto": "Insuficiente",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {
+        "contrato": "verificado",
+        "herramienta_real": "no_verificado",
+        "output_estructurado": "verificado",
+        "gancho_supervision": "parcial"
+      },
+      "conteo": 2.5,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R3",
+          "efecto": "tope en 50%",
+          "motivo": "La herramienta declarada (Google Sheets API) no tiene artefacto de invocación ni log en el inventario; la mención en README.md no verifica el componente."
+        }
+      ],
+      "nivel_final": "N2",
+      "puntaje": 15,
+      "evidencia": [
+        "prompts/system_prompt.md cubre las 6 funciones contractuales.",
+        "corridas/corrida_01/reporte.md y corridas/corrida_02/reporte.md presentan el esquema JSON declarado."
+      ],
+      "faltantes": [
+        "No hay artefacto de invocación o log de la API de Google Sheets.",
+        "El gancho de supervisión no especifica qué acción queda retenida hasta la intervención humana."
+      ],
+      "justificacion": "El contrato es completo y el output respeta el formato. La herramienta no está verificada por falta de artefactos. La supervisión es parcial al no definir la acción retenida.",
+      "mejora_prioritaria": "Incluir un log de ejecución que demuestre la conexión real con la API de Google Sheets."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {
+        "iteraciones": "no_verificado",
+        "fallas": "no_verificado",
+        "decisiones": "verificado",
+        "cambios_de_alcance": "verificado"
+      },
+      "conteo": 2.0,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R10",
+          "efecto": "techo en N1",
+          "motivo": "No existen artefactos de estados anteriores ni errores citados literalmente; la documentación es relato retroactivo."
+        }
+      ],
+      "nivel_final": "N1",
+      "puntaje": 6.25,
+      "evidencia": [
+        "DECISIONES.md documenta decisiones y cambios de alcance."
+      ],
+      "faltantes": [
+        "No hay versiones anteriores de archivos (prompts/system_prompt_v1.md no existe).",
+        "No hay errores citados literalmente (logs/errores.md no existe)."
+      ],
+      "justificacion": "El trabajo documenta el proceso pero carece de trazas reales (artefactos de versiones previas o errores textuales), clasificando como relato.",
+      "mejora_prioritaria": "Conservar versiones previas de los archivos de prompt y transcribir los errores textuales encontrados en los logs."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {
+        "estructura_obligatoria": "verificado",
+        "cantidad_corridas": "parcial",
+        "reconstruibilidad": "verificado",
+        "instrucciones_ejecucion": "no_verificado"
+      },
+      "conteo": 2.5,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R14",
+          "efecto": "techo en 50%",
+          "motivo": "Existen solo dos corridas verificables (corrida_01 y corrida_02)."
+        }
+      ],
+      "nivel_final": "N2",
+      "puntaje": 7.5,
+      "evidencia": [
+        "Estructura de archivos completa.",
+        "Dos corridas con entrada y salida."
+      ],
+      "faltantes": [
+        "Falta la tercera corrida exigida.",
+        "No hay instrucciones claras de ejecución (modelo, herramientas, pasos)."
+      ],
+      "justificacion": "Estructura correcta, pero faltan corridas y las instrucciones de ejecución son insuficientes.",
+      "mejora_prioritaria": "Incluir una tercera corrida y detallar los pasos técnicos para ejecutar el sistema."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {
+        "consumo_medido": "verificado",
+        "costo_por_corrida": "verificado",
+        "proyeccion_operacion": "verificado",
+        "eleccion_modelo": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 15,
+      "evidencia": [
+        "ANALISIS_ECONOMICO.md detalla tokens, tarifa, cálculo de costo, proyección semanal/anual y comparación de modelos."
+      ],
+      "faltantes": [],
+      "justificacion": "Análisis completo, reproducible y con justificación de modelo.",
+      "mejora_prioritaria": "Incorporar un log de la consola de la API que respalde la medición de tokens declarada."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {
+        "perimetro": "parcial",
+        "riesgos_y_fallas": "verificado",
+        "autonomia_y_supervision": "verificado",
+        "responsabilidad": "parcial"
+      },
+      "conteo": 3.0,
+      "nivel_por_conteo": "N3",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N3",
+      "puntaje": 11.25,
+      "evidencia": [
+        "Riesgos específicos identificados.",
+        "Supervisión humana definida."
+      ],
+      "faltantes": [
+        "No hay lista de acciones prohibidas (perímetro parcial).",
+        "No se define contingencia ante ausencia del responsable (responsabilidad parcial)."
+      ],
+      "justificacion": "Gobierno sólido con riesgos y supervisión claros, pero faltan detalles de perímetro y contingencia de responsabilidad.",
+      "mejora_prioritaria": "Definir explícitamente qué acciones no puede realizar el agente y quién lo reemplaza si el responsable no está disponible."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": [
+      "README.md",
+      "prompts/system_prompt.md",
+      "prompts/user_prompt.md",
+      "corridas/",
+      "DECISIONES.md"
+    ],
+    "afirmaciones_verificadas": [
+      "Estructura de archivos",
+      "Análisis económico"
+    ],
+    "afirmaciones_no_verificadas": [
+      "conectores/sheets_config.yaml",
+      "prompts/system_prompt_v1.md",
+      "logs/errores.md",
+      "corridas/corrida_03/",
+      "Existencia de conectores/sheets_config.yaml",
+      "Existencia de prompts/system_prompt_v1.md",
+      "Existencia de logs/errores.md"
+    ],
+    "contradicciones": [
+      "README.md menciona conectores/sheets_config.yaml pero no existe.",
+      "DECISIONES.md menciona prompts/system_prompt_v1.md pero no existe.",
+      "DECISIONES.md menciona logs/errores.md pero no existe.",
+      "README.md menciona corrida_03 pero no existe.",
+      "Python verifico que la ruta citada como evidencia `conectores/sheets_config.yaml` no existe en el inventario completo de archivos.",
+      "Python verifico que la ruta citada como evidencia `prompts/system_prompt_v1.md` no existe en el inventario completo de archivos.",
+      "Python verifico que la ruta citada como evidencia `logs/errores.md` no existe en el inventario completo de archivos."
+    ],
+    "corridas_declaradas": 3,
+    "corridas_verificadas": 2,
+    "herramientas_declaradas": [
+      "Google Sheets API"
+    ],
+    "herramientas_verificadas": []
+  },
+  "validacion_escala": {
+    "ok": true,
+    "recalculos": []
+  },
+  "alertas_integridad": [],
+  "conclusion": "El trabajo presenta un sistema funcional con un análisis económico excelente y una estructura de archivos correcta. Sin embargo, la falta de trazas reales de proceso (versiones, logs de error) y la ausencia de artefactos que acrediten la conexión con la API de Google Sheets limitan la puntuación en las dimensiones de proceso y sistema.",
+  "puntaje_total_modelo": 63.75,
+  "veredicto_modelo": "Bueno"
+}

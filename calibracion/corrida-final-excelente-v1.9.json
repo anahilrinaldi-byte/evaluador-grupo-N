@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "via_entrega": "repositorio",
+    "identificador_entregable": "anahilrinaldi-byte/evaluador-grupo-N",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v1.9",
+    "error_carga": false
+  },
+  "puntaje_total": 92.5,
+  "veredicto": "Excelente",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {
+        "contrato": "verificado",
+        "herramienta_real": "verificado",
+        "output_estructurado": "verificado",
+        "gancho_supervision": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 30,
+      "evidencia": [
+        "prompts/system_prompt.md cubre las 6 funciones contractuales",
+        "herramienta/config_lector.md y logs/2026-08-25_lectura_ok.log acreditan herramienta real",
+        "3 corridas en corridas/ comparten esquema JSON",
+        "GOBIERNO.md define punto de detención, criterio y veto"
+      ],
+      "faltantes": [],
+      "justificacion": "El sistema cumple con todos los componentes. El contrato es exhaustivo, la herramienta está configurada y logueada, el output es consistente y la supervisión es clara.",
+      "mejora_prioritaria": "Incorporar validación automática de los datos de entrada contra el esquema esperado antes de la lectura."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {
+        "iteraciones": "verificado",
+        "fallas": "verificado",
+        "decisiones": "verificado",
+        "cambios_de_alcance": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 25,
+      "evidencia": [
+        "prompts/versiones/ contiene v1 y v2",
+        "logs/2026-08-22_error_margen.log cita el error textual",
+        "DECISIONES.md detalla alternativas descartadas",
+        "DECISIONES.md incluye tabla de cambios de alcance"
+      ],
+      "faltantes": [],
+      "justificacion": "Proceso altamente documentado con trazas reales, errores citados y alternativas descartadas.",
+      "mejora_prioritaria": "Incluir el historial de commits para facilitar la trazabilidad de los cambios en los archivos de configuración."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {
+        "estructura_obligatoria": "verificado",
+        "cantidad_corridas": "verificado",
+        "reconstruibilidad": "verificado",
+        "instrucciones_ejecucion": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 15,
+      "evidencia": [
+        "Estructura completa según 3.1",
+        "3 corridas reales en corridas/",
+        "Cada corrida incluye entrada, salida y fecha",
+        "README.md indica pasos de ejecución"
+      ],
+      "faltantes": [],
+      "justificacion": "El entregable cumple con toda la estructura y permite la reproducción total del sistema.",
+      "mejora_prioritaria": "Automatizar la ejecución de las corridas mediante un script de bash o python."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {
+        "consumo_medido": "verificado",
+        "costo_por_corrida": "verificado",
+        "proyeccion_operacion": "parcial",
+        "eleccion_modelo": "verificado"
+      },
+      "conteo": 3.5,
+      "nivel_por_conteo": "N3",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N3",
+      "puntaje": 11.25,
+      "evidencia": [
+        "ANALISIS_ECONOMICO.md mide tokens por corrida",
+        "Cálculo de costo basado en tarifas de OpenAI",
+        "Comparación de modelos realizada"
+      ],
+      "faltantes": [
+        "Falta proyección en horizonte semanal"
+      ],
+      "justificacion": "El análisis es sólido y reproducible, pero falta el horizonte semanal exigido por la rúbrica.",
+      "mejora_prioritaria": "Completar la proyección con el horizonte semanal solicitado."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {
+        "perimetro": "verificado",
+        "riesgos_y_fallas": "verificado",
+        "autonomia_y_supervision": "verificado",
+        "responsabilidad": "parcial"
+      },
+      "conteo": 3.5,
+      "nivel_por_conteo": "N3",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N3",
+      "puntaje": 11.25,
+      "evidencia": [
+        "GOBIERNO.md define perímetro y acciones prohibidas",
+        "Riesgos específicos ligados a fallas",
+        "Nivel L2 declarado y coherente",
+        "Responsable identificado"
+      ],
+      "faltantes": [
+        "Falta definir qué ocurre si el responsable no está disponible"
+      ],
+      "justificacion": "Gobierno bien definido, pero el componente de responsabilidad es parcial al no incluir la contingencia por ausencia del responsable.",
+      "mejora_prioritaria": "Definir el rol de backup o contingencia ante la ausencia del responsable de control de gestión."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": [
+      "README.md",
+      "prompts/system_prompt.md",
+      "prompts/user_prompt.md",
+      "corridas/",
+      "DECISIONES.md"
+    ],
+    "afirmaciones_verificadas": [
+      "3 corridas reales",
+      "Uso de GPT-4o mini",
+      "Cálculo de margen corregido"
+    ],
+    "afirmaciones_no_verificadas": [],
+    "contradicciones": [],
+    "corridas_declaradas": 3,
+    "corridas_verificadas": 3,
+    "herramientas_declaradas": [
+      "Lector de archivos local"
+    ],
+    "herramientas_verificadas": [
+      "Lector de archivos local"
+    ]
+  },
+  "validacion_escala": {
+    "ok": true,
+    "recalculos": []
+  },
+  "alertas_integridad": [],
+  "conclusion": "El trabajo es excelente, con una documentación técnica y de proceso impecable. Se han verificado todos los componentes de sistema, proceso y reproducibilidad. El análisis económico y de gobierno son muy sólidos, aunque presentan faltantes menores en los horizontes de proyección y contingencias de responsabilidad, lo que impide alcanzar el puntaje máximo.",
+  "puntaje_total_modelo": 97.5,
+  "veredicto_modelo": "Excelente"
+}

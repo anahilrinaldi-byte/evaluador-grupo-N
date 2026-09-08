@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "via_entrega": "zip",
+    "identificador_entregable": "anahilrinaldi-byte/evaluador-grupo-N",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v1.9",
+    "error_carga": false
+  },
+  "puntaje_total": 25.0,
+  "veredicto": "Crítico",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {
+        "contrato": "verificado",
+        "herramienta_real": "no_verificado",
+        "output_estructurado": "no_verificado",
+        "gancho_supervision": "no_verificado"
+      },
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 7.5,
+      "evidencia": [
+        "prompts/system_prompt.md cubre las 6 funciones contractuales: identidad, alcance, insumos, reglas, comportamiento ante fallos y formato."
+      ],
+      "faltantes": [
+        "No hay herramienta real: el sistema procesa datos pegados manualmente en el prompt.",
+        "Output estructurado: solo hay una corrida, no se puede validar la consistencia sobre el formato.",
+        "Gancho de supervisión: no hay punto de detención, criterio de activación ni acción retenida."
+      ],
+      "justificacion": "El contrato está completo, pero el sistema carece de herramienta real, no cumple con la cantidad mínima de corridas para validar el output y no define un gancho de supervisión con acción retenida.",
+      "mejora_prioritaria": "Implementar una herramienta real (lectura de archivos) y definir un punto de detención con acción retenida."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {
+        "iteraciones": "no_verificado",
+        "fallas": "no_verificado",
+        "decisiones": "parcial",
+        "cambios_de_alcance": "verificado"
+      },
+      "conteo": 1.5,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R10",
+          "efecto": "Techo en N1",
+          "motivo": "La documentación es relato retroactivo sin artefactos de estados anteriores ni errores citados literalmente."
+        }
+      ],
+      "nivel_final": "N1",
+      "puntaje": 6.25,
+      "evidencia": [
+        "DECISIONES.md menciona el cambio de alcance (descarte de proyecciones) y una decisión (copiar y pegar datos)."
+      ],
+      "faltantes": [
+        "No hay versiones anteriores de archivos.",
+        "No hay errores citados literalmente (solo descripciones narrativas).",
+        "No hay trazas de iteraciones."
+      ],
+      "justificacion": "El trabajo documenta decisiones y cambios de alcance, pero carece de artefactos de proceso (versiones, logs de error), clasificándose como relato.",
+      "mejora_prioritaria": "Conservar versiones anteriores de los prompts y transcribir literalmente los errores encontrados durante el desarrollo."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {
+        "estructura_obligatoria": "verificado",
+        "cantidad_corridas": "parcial",
+        "reconstruibilidad": "verificado",
+        "instrucciones_ejecucion": "no_verificado"
+      },
+      "conteo": 2.5,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R14",
+          "efecto": "Techo en N2",
+          "motivo": "Menos de tres corridas reales."
+        }
+      ],
+      "nivel_final": "N2",
+      "puntaje": 7.5,
+      "evidencia": [
+        "Estructura completa según 3.1.",
+        "Corrida 01 con entrada y salida presente."
+      ],
+      "faltantes": [
+        "Faltan dos corridas para cumplir el mínimo de tres.",
+        "No hay instrucciones claras de ejecución (modelo, pasos, herramientas)."
+      ],
+      "justificacion": "El entregable cumple con la estructura, pero solo presenta una corrida y carece de instrucciones de ejecución.",
+      "mejora_prioritaria": "Incluir al menos dos corridas adicionales y detallar los pasos para ejecutar el sistema."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {
+        "consumo_medido": "no_verificado",
+        "costo_por_corrida": "parcial",
+        "proyeccion_operacion": "no_verificado",
+        "eleccion_modelo": "no_verificado"
+      },
+      "conteo": 0.5,
+      "nivel_por_conteo": "N0",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N0",
+      "puntaje": 0,
+      "evidencia": [],
+      "faltantes": [
+        "Consumo medido: no hay artefacto de medición.",
+        "Proyección: faltan horizontes semanal y anual.",
+        "Elección de modelo: no hay comparación con alternativas."
+      ],
+      "justificacion": "El análisis económico es insuficiente: no hay medición verificable, faltan proyecciones y no se justifica la elección del modelo.",
+      "mejora_prioritaria": "Adjuntar artefacto de medición de tokens y realizar la proyección anual y semanal."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {
+        "perimetro": "parcial",
+        "riesgos_y_fallas": "no_verificado",
+        "autonomia_y_supervision": "no_verificado",
+        "responsabilidad": "parcial"
+      },
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        "Se mencionan permisos básicos y una primera persona que revisa el reporte."
+      ],
+      "faltantes": [
+        "No hay lista de acciones prohibidas.",
+        "Riesgos genéricos (no específicos).",
+        "No se declara nivel L0-L4.",
+        "No hay contingencia ante ausencia del responsable."
+      ],
+      "justificacion": "El gobierno es superficial: faltan definiciones de riesgos específicos, nivel de autonomía y contingencias de responsabilidad.",
+      "mejora_prioritaria": "Definir riesgos específicos del sistema y declarar el nivel de autonomía L0-L4."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": [
+      "README.md",
+      "prompts/system_prompt.md",
+      "corridas/corrida_01/entrada.md",
+      "corridas/corrida_01/salida.md",
+      "DECISIONES.md"
+    ],
+    "afirmaciones_verificadas": [],
+    "afirmaciones_no_verificadas": [
+      "15.000 tokens consumidos",
+      "Tres corridas realizadas"
+    ],
+    "contradicciones": [
+      "README.md declara tres corridas, pero solo existe una en el inventario."
+    ],
+    "corridas_declaradas": 3,
+    "corridas_verificadas": 1,
+    "herramientas_declaradas": [
+      "GPT-4o mini"
+    ],
+    "herramientas_verificadas": []
+  },
+  "validacion_escala": {
+    "ok": true,
+    "recalculos": []
+  },
+  "alertas_integridad": [],
+  "conclusion": "El trabajo presenta una estructura correcta y un contrato bien definido, pero falla en la reproducibilidad (falta de corridas), la falta de herramientas reales y la debilidad del análisis económico y de gobierno.",
+  "puntaje_total_modelo": 33.75,
+  "veredicto_modelo": "Insuficiente"
+}
