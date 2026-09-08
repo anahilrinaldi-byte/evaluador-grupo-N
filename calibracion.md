@@ -251,68 +251,219 @@ tres — pero es un ejemplo por nivel, no el par alto/bajo explícito por dimens
 
 ---
 
-## Pendiente para la ronda 2
+## Ronda 2 — corridas reales del evaluador
 
-1. **Correr el agente de verdad**, con la API key, sobre los tres casos. Ninguna
-   corrida real existe todavía en el repositorio, y el criterio de 25 puntos pide
-   que el corrector «corre sobre un repo real y devuelve el formato completo».
-2. **Corrección a ciegas de los cuatro** sobre los mismos casos, cada uno por
-   separado, antes de mirar las notas del otro. Lo de acá arriba es una
-   aplicación de la rúbrica, no cuatro criterios humanos independientes.
-3. **Verificar D2, D4 y D5 de forma independiente**, como se hizo con D1 y D3.
-4. **Decidir los tres desacuerdos abiertos** y dejar la decisión escrita.
-5. **Prueba de determinismo:** el mismo caso tres veces, con el diff de las tres
-   salidas.
+El 8/9 se ejecutó finalmente el evaluador desplegado sobre los tres casos de
+calibración utilizando la misma arquitectura y la rúbrica v1.9.
+
+A diferencia de la Ronda 1, estas no son aplicaciones manuales de la rúbrica:
+son ejecuciones reales de la aplicación.
+
+### Resultados finales
+
+| Caso | Puntaje final | Veredicto | Puntaje propuesto por el modelo |
+|---|---:|---|---:|
+| Excelente | **92,50** | Excelente | 97,50 |
+| Flojo | **25,00** | Crítico | 33,75 |
+| Tramposo | **55,00** | Insuficiente | 63,75 |
+
+En las tres ejecuciones finales:
+
+- `validacion_escala.ok = true`
+- `validacion_escala.recalculos = []`
+- se utilizó la misma rúbrica v1.9;
+- los puntajes finales respetaron los valores de ancla definidos por la rúbrica.
 
 ---
 
-## Corridas del corrector — 6/9
+## Qué confirmó la corrida real
 
-Las tres primeras ejecuciones del corrector sobre los tres casos, con el JSON
-completo del esquema de la CAPA 6. Archivadas en `calibracion/`.
+### Caso Excelente
 
-| Caso | Corrida | Nota objetivo | Desvío |
-|---|---|---|---|
-| Excelente | **92,50** · Excelente | 92,50 | **0,00** |
-| Flojo | **25,00** · Crítico | 25,00 | **0,00** |
-| Tramposo | **18,75** · Crítico | 33,75 | **−15,00** |
+El caso Excelente obtuvo **92,50/100**.
 
-Dos de tres con desvío cero. El tercero acumula **dos desacuerdos independientes**,
-los dos documentados:
+Resultado por dimensión:
 
-- **D1 · 7,50 puntos** — `calibracion/desacuerdo-D1-tramposo.md`. Cuánto vale
-  `output_estructurado` cuando el trabajo declara un JSON y entrega prosa.
-- **D3 · 3,75 puntos** — `calibracion/desacuerdo-D3-tramposo.md`. Las notas de
-  diseño acreditan instrucciones de ejecución que no existen en ningún archivo.
+| Dimensión | Puntaje |
+|---|---:|
+| D1 · Sistema completo | 30,00 / 30 |
+| D2 · Proceso documentado | 25,00 / 25 |
+| D3 · Formato y reproducibilidad | 15,00 / 15 |
+| D4 · Análisis económico | 11,25 / 15 |
+| D5 · Gobierno y riesgo | 11,25 / 15 |
+| **Total** | **92,50 / 100** |
 
-Las otras tres dimensiones coinciden exactamente.
+Se verificaron tres corridas reales, una herramienta real, trazas de proceso,
+estructura reproducible y documentación de gobierno.
 
-### Lo que las corridas confirman
+Los faltantes fueron acotados: proyección semanal en D4 y contingencia ante
+ausencia del responsable en D5.
 
-**El corrector discrimina.** 92,50 contra 18,75 son 73,75 puntos de separación entre
-dos casos que comparten dominio, extensión y calidad de prosa. La única diferencia
-entre ellos es que uno tiene los artefactos y el otro los declara.
+El resultado coincide con los **92,50 puntos** de la referencia histórica de
+calibración.
 
-**No castiga en bloque.** El tramposo se lleva los 15 puntos completos de análisis
-económico, que es la única dimensión que hizo bien. Si el corrector hubiera bajado
-también esa, tendríamos un evaluador que puntúa por impresión general — que es
-exactamente lo que la rúbrica prohíbe.
+### Caso Flojo
 
-**No inventa fraude donde no lo hay.** El caso flojo salió con `contradicciones`
-vacío y `alertas_integridad` vacío. Es el chequeo de falsos positivos que
-`casos/NOTAS_DE_DISENO.md` marca como el más importante de ese caso.
+El caso Flojo obtuvo **25,00/100**.
 
-**Detecta al tramposo por evidencia, no por tono.** Cuatro contradicciones
-registradas —las cuatro rutas inexistentes— y una alerta de integridad por la
-apelación a la simpatía, con efecto declarado nulo sobre el puntaje.
+Resultado por dimensión:
 
-### Aclaración sobre estas corridas
+| Dimensión | Puntaje |
+|---|---:|
+| D1 · Sistema completo | 7,50 / 30 |
+| D2 · Proceso documentado | 6,25 / 25 |
+| D3 · Formato y reproducibilidad | 7,50 / 15 |
+| D4 · Análisis económico | 0,00 / 15 |
+| D5 · Gobierno y riesgo | 3,75 / 15 |
+| **Total** | **25,00 / 100** |
 
-Son la aplicación del system prompt sobre cada caso, componente por componente,
-con la salida en el esquema completo. **No se ejecutaron a través del modelo y la
-temperatura que fija `agente/configuracion`.** Según la sección 6 de ese documento,
-cada corrida debe archivarse con el modelo y la temperatura usados: o se repiten
-con la configuración oficial, o se registra cuál fue la de estas.
+El evaluador verificó solamente una corrida y no encontró una herramienta real.
+También detectó ausencia de trazas de iteraciones, debilidad del análisis
+económico y gobierno insuficiente.
 
-Lo que sí cambia respecto de ayer: antes no existía ninguna corrida y ahora hay
-tres, con un desacuerdo encontrado.
+El resultado coincide con los **25,00 puntos** de la referencia histórica.
+
+### Caso Tramposo
+
+El caso Tramposo obtuvo **55,00/100** y fue clasificado como Insuficiente.
+
+Resultado por dimensión:
+
+| Dimensión | Puntaje |
+|---|---:|
+| D1 · Sistema completo | 15,00 / 30 |
+| D2 · Proceso documentado | 6,25 / 25 |
+| D3 · Formato y reproducibilidad | 7,50 / 15 |
+| D4 · Análisis económico | 15,00 / 15 |
+| D5 · Gobierno y riesgo | 11,25 / 15 |
+| **Total** | **55,00 / 100** |
+
+El resultado no fue forzado para coincidir con una nota objetivo histórica.
+
+El caso contiene evidencia legítima en algunas dimensiones, especialmente en
+análisis económico y gobierno, y por eso conserva esos puntos. Al mismo tiempo,
+el evaluador detectó las declaraciones que no podían verificarse.
+
+---
+
+## Control determinista incorporado durante la calibración
+
+Las primeras pruebas del caso Tramposo revelaron una debilidad importante:
+el modelo podía aceptar como evidencia una ruta simplemente porque estaba
+mencionada dentro de README.md o DECISIONES.md.
+
+Eso permitía que una declaración textual fuera confundida con la existencia
+real de un artefacto.
+
+Para corregirlo se agregó una capa de control determinista en Python.
+
+La arquitectura final quedó conceptualmente así:
+
+`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
+
+Python construye el inventario de archivos efectivamente analizados y permite
+contrastar las rutas utilizadas como evidencia.
+
+Si una ruta citada como evidencia no existe en un paquete completo:
+
+1. no puede considerarse evidencia válida;
+2. se registra la discrepancia;
+3. se solicita una revisión de la evaluación;
+4. si la evidencia inexistente persiste, la corrida se considera inválida.
+
+El objetivo de esta capa no es reemplazar el juicio semántico del modelo, sino
+reservar para código determinista aquellas verificaciones que no requieren
+interpretación.
+
+---
+
+## Detección del caso Tramposo
+
+En la corrida final se verificaron **dos corridas reales**, aunque el repositorio
+declaraba tres.
+
+También se declaró el uso de Google Sheets API, pero no se encontraron
+artefactos suficientes para considerarla una herramienta verificada.
+
+Además se registraron referencias a artefactos inexistentes:
+
+- `conectores/sheets_config.yaml`
+- `prompts/system_prompt_v1.md`
+- `logs/errores.md`
+- `corridas/corrida_03/`
+
+Estas inconsistencias quedan registradas en
+`verificaciones.contradicciones` y
+`verificaciones.afirmaciones_no_verificadas`.
+
+La existencia de una contradicción no produce una penalización global
+automática. Afecta solamente los componentes cuya evidencia deja de estar
+verificada.
+
+Esto preserva el principio de puntuar evidencia componente por componente y
+evita convertir la evaluación en una impresión general sobre el trabajo.
+
+---
+
+## Diferencia entre propuesta del modelo y puntaje final
+
+Para facilitar la auditoría, el sistema conserva el puntaje originalmente
+propuesto por el modelo en `puntaje_total_modelo`.
+
+| Caso | Puntaje modelo | Puntaje final | Diferencia |
+|---|---:|---:|---:|
+| Excelente | 97,50 | 92,50 | -5,00 |
+| Flojo | 33,75 | 25,00 | -8,75 |
+| Tramposo | 63,75 | 55,00 | -8,75 |
+
+Esto muestra por qué el puntaje final no se delega completamente al LLM.
+
+El modelo realiza la interpretación semántica de la evidencia. Python controla
+aspectos objetivos como la existencia de determinadas evidencias, la aritmética
+de componentes, los niveles, los puntajes de ancla y la suma final.
+
+---
+
+## Hallazgo sobre estabilidad
+
+Durante el desarrollo el caso Tramposo produjo puntajes diferentes entre
+ejecuciones aun utilizando temperatura 0.
+
+En lugar de modificar la rúbrica para obligar al modelo a devolver una nota
+predeterminada, se decidió fortalecer las invariantes verificables.
+
+Por lo tanto, la calibración no exige identidad absoluta del puntaje en todas
+las ejecuciones. Exige que se mantengan estables los hechos objetivos:
+
+- una ruta inexistente no puede utilizarse como evidencia válida;
+- las corridas declaradas se contrastan con las corridas verificables;
+- una herramienta declarada no se considera verificada solo por aparecer
+  mencionada;
+- los puntajes finales utilizan los valores de ancla de la rúbrica;
+- las contradicciones quedan registradas para auditoría.
+
+Los componentes que requieren interpretación semántica pueden conservar cierto
+grado de variabilidad.
+
+---
+
+## Conclusión de calibración
+
+La calibración final produjo tres comportamientos claramente diferenciados:
+
+- **Excelente — 92,50:** evidencia abundante, trazable y reproducible.
+- **Flojo — 25,00:** estructura mínima con faltantes sustanciales.
+- **Tramposo — 55,00:** contiene evidencia legítima, pero también declaraciones
+  que contradicen el inventario real.
+
+Los casos Excelente y Flojo coinciden exactamente con las referencias históricas.
+
+El caso Tramposo no coincide con las notas históricas de las primeras rondas,
+pero la diferencia se conserva y documenta en lugar de modificar el evaluador
+para forzar una coincidencia.
+
+El resultado final prioriza la aplicación de la rúbrica v1.9 y la evidencia
+verificable por encima de una nota objetivo predeterminada.
+
+Las tres corridas reales constituyen la referencia de calibración de la versión
+actual del evaluador.
