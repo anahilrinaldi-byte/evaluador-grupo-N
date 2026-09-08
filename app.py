@@ -384,21 +384,344 @@ Devolvé únicamente el objeto JSON solicitado.
 # V2 usa anclas discretas: no existen rangos ni valores intermedios. Sin este
 # chequeo, la afirmación central de la rúbrica no está respaldada por nada.
 ANCLAS = {
-    "sistema_completo":        [30, 22.5, 15, 7.5, 0],
-    "proceso_documentado":     [25, 18.75, 12.5, 6.25, 0],
-    "formato_reproducibilidad":[15, 11.25, 7.5, 3.75, 0],
-    "analisis_economico":      [15, 11.25, 7.5, 3.75, 0],
-    "gobierno_riesgo":         [15, 11.25, 7.5, 3.75, 0],
+    "sistema_completo":         [30, 22.5, 15, 7.5, 0],
+    "proceso_documentado":      [25, 18.75, 12.5, 6.25, 0],
+    "formato_reproducibilidad": [15, 11.25, 7.5, 3.75, 0],
+    "analisis_economico":       [15, 11.25, 7.5, 3.75, 0],
+    "gobierno_riesgo":          [15, 11.25, 7.5, 3.75, 0],
+}
+
+VALOR_ESTADO = {
+    "verificado": 1.0,
+    "parcial": 0.5,
+    "no_verificado": 0.0,
+}
+
+PUNTAJES_POR_NIVEL = {
+    "sistema_completo": {
+        "N4": 30,
+        "N3": 22.5,
+        "N2": 15,
+        "N1": 7.5,
+        "N0": 0,
+    },
+    "proceso_documentado": {
+        "N4": 25,
+        "N3": 18.75,
+        "N2": 12.5,
+        "N1": 6.25,
+        "N0": 0,
+    },
+    "formato_reproducibilidad": {
+        "N4": 15,
+        "N3": 11.25,
+        "N2": 7.5,
+        "N1": 3.75,
+        "N0": 0,
+    },
+    "analisis_economico": {
+        "N4": 15,
+        "N3": 11.25,
+        "N2": 7.5,
+        "N1": 3.75,
+        "N0": 0,
+    },
+    "gobierno_riesgo": {
+        "N4": 15,
+        "N3": 11.25,
+        "N2": 7.5,
+        "N1": 3.75,
+        "N0": 0,
+    },
+}
+
+ORDEN_NIVELES = {
+    "N0": 0,
+    "N1": 1,
+    "N2": 2,
+    "N3": 3,
+    "N4": 4,
 }
 
 
-def recalcular_total(resultado):
+def nivel_desde_conteo(conteo):
     """
-    El modelo asigna el puntaje de cada dimension; el total lo calcula Python.
+    La rubrica usa truncado hacia abajo:
+    [0,1) -> N0
+    [1,2) -> N1
+    [2,3) -> N2
+    [3,4) -> N3
+    4     -> N4
+    """
+    try:
+        conteo = float(conteo)
+    except (TypeError, ValueError):
+        conteo = 0.0
 
-    Un LLM puede sumar mal cinco numeros, y si emite un total que no es la suma
-    de sus propias dimensiones, la nota deja de ser trazable. Aca se recalcula.
+    conteo = max(0.0, min(4.0, conteo))
+    return f"N{int(conteo)}"
 
+
+def veredicto_desde_total(total):
+    """
+    El veredicto es una derivacion matematica del puntaje total.
+    No se deja a criterio del modelo.
+    """
+    total = float(total)
+
+    if total >= 90:
+        return "Excelente"
+    if total >= 75:
+        return "Muy bueno"
+    if total >= 60:
+        return "Bueno"
+    if total >= 40:
+        return "Insuficiente"
+    return "Crítico"
+
+
+def normalizar_resultado(resultado):
+    """
+    Separa juicio semantico de aritmetica.
+
+    Gemini decide:
+    - evidencia
+    - estado de los componentes
+    - contradicciones
+    - reglas de corte semanticamente aplicables
+
+    Python decide:
+    - reglas puramente mecanicas
+    - conteos
+    - nivel por conteo
+    - puntajes de ancla
+    - total
+    - veredicto
+
+    El valor original del modelo se conserva para auditoria.
+    """
+
+    dimensiones = resultado.get("dimensiones")
+    if not isinstance(dimensiones, dict):
+        return resultado
+
+    # -----------------------------------------------------
+    # 1. Conservar valores originales del modelo
+    # -----------------------------------------------------
+
+    if "puntaje_total_modelo" not in resultado:
+        resultado["puntaje_total_modelo"] = resultado.get("puntaje_total")
+
+    if "veredicto_modelo" not in resultado:
+        resultado["veredicto_modelo"] = resultado.get("veredicto")
+
+    validacion = resultado.setdefault(
+        "validacion_escala",
+        {"ok": True, "recalculos": []}
+    )
+
+    recalculos = validacion.setdefault("recalculos", [])
+
+    # -----------------------------------------------------
+    # 2. Regla mecanica de cantidad de corridas — rubrica v1.9
+    # -----------------------------------------------------
+
+    verificaciones = resultado.get("verificaciones", {})
+    corridas_verificadas = verificaciones.get("corridas_verificadas")
+
+    try:
+        cantidad_corridas = int(corridas_verificadas)
+    except (TypeError, ValueError):
+        cantidad_corridas = None
+
+    d3 = dimensiones.get("formato_reproducibilidad")
+
+    if (
+        cantidad_corridas is not None
+        and isinstance(d3, dict)
+        and isinstance(d3.get("componentes"), dict)
+    ):
+        if cantidad_corridas >= 3:
+            estado_corridas = "verificado"
+        elif cantidad_corridas >= 1:
+            estado_corridas = "parcial"
+        else:
+            estado_corridas = "no_verificado"
+
+        estado_modelo = d3["componentes"].get("cantidad_corridas")
+
+        if estado_modelo != estado_corridas:
+            recalculos.append(
+                {
+                    "campo": (
+                        "dimensiones.formato_reproducibilidad."
+                        "componentes.cantidad_corridas"
+                    ),
+                    "valor_modelo": estado_modelo,
+                    "valor_python": estado_corridas,
+                    "motivo": (
+                        f"La rubrica v1.9 define mecanicamente el estado "
+                        f"segun corridas verificadas: {cantidad_corridas}."
+                    ),
+                }
+            )
+
+            d3["componentes"]["cantidad_corridas"] = estado_corridas
+
+    # -----------------------------------------------------
+    # 3. Recalcular conteo y nivel por conteo
+    # -----------------------------------------------------
+
+    for nombre_dimension, datos in dimensiones.items():
+        if nombre_dimension not in PUNTAJES_POR_NIVEL:
+            continue
+
+        if not isinstance(datos, dict):
+            continue
+
+        componentes = datos.get("componentes")
+
+        if not isinstance(componentes, dict):
+            continue
+
+        conteo = 0.0
+
+        for estado in componentes.values():
+            conteo += VALOR_ESTADO.get(estado, 0.0)
+
+        conteo = round(conteo, 2)
+        nivel_conteo = nivel_desde_conteo(conteo)
+
+        conteo_modelo = datos.get("conteo")
+        nivel_conteo_modelo = datos.get("nivel_por_conteo")
+
+        if conteo_modelo != conteo:
+            recalculos.append(
+                {
+                    "campo": f"{nombre_dimension}.conteo",
+                    "valor_modelo": conteo_modelo,
+                    "valor_python": conteo,
+                    "motivo": (
+                        "Conteo determinista: verificado=1, "
+                        "parcial=0.5, no_verificado=0."
+                    ),
+                }
+            )
+
+        if nivel_conteo_modelo != nivel_conteo:
+            recalculos.append(
+                {
+                    "campo": f"{nombre_dimension}.nivel_por_conteo",
+                    "valor_modelo": nivel_conteo_modelo,
+                    "valor_python": nivel_conteo,
+                    "motivo": "Nivel calculado por truncado hacia abajo.",
+                }
+            )
+
+        datos["conteo"] = conteo
+        datos["nivel_por_conteo"] = nivel_conteo
+
+        # -------------------------------------------------
+        # 4. Determinar nivel final
+        # -------------------------------------------------
+        #
+        # Si no hay reglas de corte aplicadas, el nivel final
+        # tiene que ser exactamente el nivel por conteo.
+        #
+        # Si existen reglas de corte, conservamos la decision
+        # semantica del modelo siempre que solo reduzca el nivel.
+        # Nunca permitimos que una regla lo aumente.
+        # -------------------------------------------------
+
+        reglas = datos.get("reglas_corte_aplicadas", [])
+        nivel_final_modelo = datos.get("nivel_final")
+
+        if not reglas:
+            nivel_final = nivel_conteo
+
+        elif (
+            nivel_final_modelo in ORDEN_NIVELES
+            and ORDEN_NIVELES[nivel_final_modelo]
+            <= ORDEN_NIVELES[nivel_conteo]
+        ):
+            nivel_final = nivel_final_modelo
+
+        else:
+            nivel_final = nivel_conteo
+
+        if nivel_final_modelo != nivel_final:
+            recalculos.append(
+                {
+                    "campo": f"{nombre_dimension}.nivel_final",
+                    "valor_modelo": nivel_final_modelo,
+                    "valor_python": nivel_final,
+                    "motivo": (
+                        "Las reglas de corte pueden bajar o topar "
+                        "el nivel, pero nunca subirlo."
+                    ),
+                }
+            )
+
+        datos["nivel_final"] = nivel_final
+
+        # -------------------------------------------------
+        # 5. Puntaje de ancla
+        # -------------------------------------------------
+
+        puntaje_modelo = datos.get("puntaje")
+
+        puntaje = PUNTAJES_POR_NIVEL[
+            nombre_dimension
+        ][nivel_final]
+
+        if puntaje_modelo != puntaje:
+            recalculos.append(
+                {
+                    "campo": f"{nombre_dimension}.puntaje",
+                    "valor_modelo": puntaje_modelo,
+                    "valor_python": puntaje,
+                    "motivo": (
+                        "El puntaje se deriva mecanicamente "
+                        "del nivel final."
+                    ),
+                }
+            )
+
+        datos["puntaje"] = puntaje
+
+    # -----------------------------------------------------
+    # 6. Total oficial
+    # -----------------------------------------------------
+
+    suma = 0.0
+
+    for nombre_dimension in PUNTAJES_POR_NIVEL:
+        datos = dimensiones.get(nombre_dimension)
+
+        if isinstance(datos, dict):
+            try:
+                suma += float(datos.get("puntaje", 0))
+            except (TypeError, ValueError):
+                pass
+
+    resultado["puntaje_total"] = round(suma, 2)
+
+    # -----------------------------------------------------
+    # 7. Veredicto oficial
+    # -----------------------------------------------------
+    
+    resultado["veredicto"] = veredicto_desde_total(
+        resultado["puntaje_total"]
+    )
+
+    validacion["ok"] = True
+
+    return resultado
+
+
+def validar_corrida(resultado):
+    """
+    Aplica las condiciones 2 a 5 de agente/configuracion, seccion 5.
     Lo que el modelo dijo NO se descarta: queda en 'puntaje_total_modelo'. La
     condicion 4 de agente/configuracion seccion 5 exige que el total sea la suma
     exacta, y esa condicion se verifica contra ese valor. Sobrescribir en
@@ -606,26 +929,7 @@ if st.button("Evaluar repositorio", type="primary"):
                       # fallida, y hay que verlo antes de mirar la nota.
             fallas = validar_corrida(resultado)
 
-            # Si el modelo calculó mal el total, Python ya lo corrigió.
-            # La discrepancia se muestra como advertencia y queda disponible
-            # en puntaje_total_modelo para auditoría.
-            total_modelo = resultado.get("puntaje_total_modelo")
-            total_calculado = resultado.get("puntaje_total")
-
-            if total_modelo is not None and total_calculado is not None:
-                try:
-                    if abs(
-                        float(total_modelo) - float(total_calculado)
-                    ) > 0.001:
-                        st.warning(
-                            "El modelo emitió un puntaje total distinto de la "
-                            "suma de las dimensiones. Python recalculó el total "
-                            "de forma determinista. La discrepancia se conserva "
-                            "en `puntaje_total_modelo` para auditoría."
-                        )
-                except (TypeError, ValueError):
-                    pass
-
+          
             if fallas:
                 st.error(
                     "**Corrida NO válida.** No cumple la validación de "
