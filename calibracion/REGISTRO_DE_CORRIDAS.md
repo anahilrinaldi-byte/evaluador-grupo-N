@@ -15,6 +15,7 @@ calibración: una corrida que falló y se entiende por qué vale más que ningun
 |---|---|---|---|---|---|---|---|
 | 1 | 2026-09-06 | aplicación manual de la rúbrica | — | v2.1 | `casos/excelente` | `corrida-excelente.json` | sí |
 | 2 | 2026-09-06 | aplicación manual de la rúbrica | — | v2.1 | `casos/flojo` | `corrida-flojo.json` | sí |
+| 2-bis | 2026-09-08 | aplicación manual de la rúbrica | — | `agente/system_prompt.md` | `casos/flojo` | `corrida-flojo.json` | sí, re-emitida |
 | 3 | 2026-09-06 | aplicación manual de la rúbrica | — | v2.1 | `casos/tramposo` | `corrida-tramposo.json` | sí |
 | 3-bis | 2026-09-08 | aplicación manual de la rúbrica | — | `agente/system_prompt.md` | `casos/tramposo` | `corrida-tramposo.json` | sí, re-emitida |
 | 1-bis | 2026-09-07 | aplicación manual de la rúbrica | — | `agente/system_prompt.md` | `casos/excelente` | `corrida-excelente.json` | sí, re-emitida |
@@ -26,6 +27,14 @@ contradicción directa con el ejemplo 4.4, que fija este caso en N3 y da la raz�
 tabla de tokens declara origen en el contador de la consola de la API y esa consola no
 está en ningún archivo, así que por P9 es una afirmación del autor—. D4 pasa de 15 a
 11,25 y el total de 22,50 a **18,75**. El tramposo sigue por debajo del flojo.
+
+**Corrida 2-bis.** La corrida del flojo se re-emitió contra **v1.9** por dos errores
+que se cancelaban entre sí. Daba D3 en N1 · 3,75 y D4 en N1 · 3,75; da ahora D3 en
+N2 · 7,50 y D4 en N0 · 0. **El total no cambia: 25,00 en las dos.** D3 estaba tomada
+contra la escala de Cantidad de corridas anterior a v1.9, que trataba la corrida
+única como no verificada; D4 contradecía el ejemplo 4.4, que fija este caso en N0.
+La corrida real de la app y la ronda a ciegas coincidieron entre sí en la
+distribución correcta, y la corrección a mano era la única de las tres que discrepaba.
 
 **Corrida 1-ter.** Segunda re-emisión, contra **v1.3**, por una discrepancia de la
 ronda 1 en D4. La corrida daba **Consumo medido** como verificado; el ejemplo 4.4 resuelve

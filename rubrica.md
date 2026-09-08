@@ -26,7 +26,7 @@ el prompt del usuario. Si se renombra, la app deja de encontrar la rúbrica.
 # Rúbrica ejecutable — Trabajo Final
 
 **Materia:** Programación de y con Agentes de IA · MBA UCEMA · 2026 2T
-**Versión:** v1.9 · 2026-09-08
+**Versión:** v2.0 · 2026-09-08
 **Evalúa:** entregables del Trabajo Final (sistema agéntico individual sobre un caso real).
 **Fuente normativa:** documento oficial del Trabajo Final — seis requisitos y rúbrica de cinco dimensiones.
 
@@ -221,7 +221,11 @@ Un contrato completo resuelve estas seis preguntas. El corrector cuenta funcione
 
 **R2 · Falla honesta vs. hueco tapado.** Limitación declarada con evidencia (log del error, corrida fallida) mantiene el nivel. Hueco no declarado que el corrector encuentra: **baja un nivel**.
 
+**Multiplicidad.** R2 se activa **una vez por cada ruta afirmada e inexistente** registrada en el inventario de consistencia, y sus efectos se acumulan según 0.6 hasta el piso de N0. Las rutas cubiertas por R6-bis no activan R2 y no cuentan para esta multiplicidad. El corrector consigna el número de activaciones y las rutas que las originaron.
+
 **R3 · Herramienta simulada.** Mockeada o hardcodeada **y declarada**: cuenta como componente parcial, habilita N3 y no N4. Simulada y presentada como real: **la dimensión se topea en 25% (7,5 puntos)**.
+
+**Herramienta inexistente presentada como operativa.** Cuando la documentación afirme una herramienta o conector **en funcionamiento** y el entregable no contenga ni configuración, ni invocación, ni artefacto de su uso, el componente Herramienta vale 0 por **R1** y la afirmación se registra como contradicción declaración–evidencia por 6.2, nombrando el archivo y la ubicación. Esta situación **no es simulación** en el sentido de esta regla —no hay nada simulado— y por lo tanto **no habilita el tope del 25%**: el tope de R3 alcanza a la herramienta que existe y no es real, no a la que no existe.
 
 **R4 · Corrida única.** Sin al menos dos corridas que satisfagan el mismo formato, el techo de la dimensión es 50% (15 puntos). La estabilidad del output es lo que esta dimensión mide.
 
@@ -392,7 +396,7 @@ La verificabilidad de cada corrida se determina antes de este conteo. Una corrid
 
 **Nivel alto — N4.** `casos/excelente`. Estructura completa; `corridas/corrida_01`, `_02` y `_03` con entradas realmente distintas —sin filtro, `PAIS=ESPAÑA`, `AÑO=2021`—, cada una con su entrada, su salida cruda en JSON y su fecha; y el README indica la secuencia de ejecución paso a paso, incluido dónde guardar la salida.
 
-**Nivel bajo — N1.** `casos/flojo`. Falta `prompts/user_prompt.md`, hay una sola corrida de las tres exigidas, la corrida no tiene fecha y no hay instrucciones para volver a ejecutar el sistema. R14 fija el techo por sí sola, pero el conteo ya daba N1.
+**Nivel bajo — N2.** `casos/flojo`. Los cuatro componentes quedan en **parcial** y ninguno verificado. Falta `prompts/user_prompt.md`, cuyo contenido aparece transcripto en `corridas/corrida_01/entrada.md` y se homologa por R13. Hay una sola corrida de las tres exigidas, que por la escala de 3.2 cuenta como parcial y activa R14 solo como techo, sin efecto. La corrida exhibe entrada y salida pero no tiene fecha en ningún archivo. Y el procedimiento de ejecución **existe disperso** —modelo en la sección de costo, ubicación del system prompt y método de carga en «Cómo funciona»— pero nunca dice de dónde sale la planilla, así que falla el test de suficiencia de 3.1 y no llega a verificado. **Lo que lo mantiene en N2 y no en N3 es que ningún componente llega a verificado; lo que lo salva de N1 es que ninguno llega a cero.**
 
 ---
 
@@ -439,7 +443,7 @@ Verifica el requisito 5 del Trabajo Final.
 
 **Lo que este caso enseña:** la dimensión se puntúa sola, por su propia evidencia. Si el corrector le bajara la nota por desconfianza del resto del trabajo, estaría puntuando por impresión general, que es justamente lo que la rúbrica prohíbe. Once puntos y cuarto en un trabajo que en las otras dimensiones se cae, y está bien que así sea.
 
-**Nivel bajo — N0.** `casos/flojo`. «La corrida consumió aproximadamente 15.000 tokens» — un número aproximado, sin origen declarado y sin nada con qué cotejarlo. Hay un costo unitario calculado, pero no hay proyección de operación en ningún horizonte ni justificación del modelo elegido: solo «Usé GPT-4o mini». Un componente parcial sobre cuatro trunca a cero.
+**Nivel bajo — N0.** `casos/flojo`. «La corrida consumió aproximadamente 15.000 tokens de entrada **según el contador de la consola**». El origen **sí** está declarado, con la misma fórmula que esta sección acepta como origen declarado en `casos/tramposo`. El componente no verifica por otras dos razones: informa **solo tokens de entrada** cuando la condición exige entrada y salida, y esa consola no está en ningún archivo, así que por P9 tampoco hay artefacto. Hay un costo unitario calculado, pero no hay proyección de operación en ningún horizonte ni justificación del modelo elegido: solo «Usé GPT-4o mini». Un componente parcial sobre cuatro trunca a cero.
 
 **La diferencia con el tramposo está en la corroboración, no en la prosa.** Los dos declaran una medición sin adjuntar el contador. Pero los números del tramposo cierran entre sí —dos corridas en la tabla, dos corridas que existen, tokens de entrada estables con su explicación— y los del flojo no tienen con qué cotejarse. Esa es la línea entre parcial y no verificado.
 
@@ -606,6 +610,21 @@ El corrector debe poder explicar cada punto asignado usando exclusivamente evide
 ---
 
 ## Changelog
+
+### v2.0 — 2026-09-08
+
+Cierre de cuatro defectos detectados al corregir `casos/flojo` y `casos/tramposo` en la ronda 1. Dos son ejemplos que describen mal el caso que citan; dos son reglas que no declaran su alcance ni su multiplicidad.
+
+**Modificado**
+- **3.5 · ejemplo de nivel bajo: `casos/flojo` pasa de N1 a N2.** El ejemplo estaba calculado contra la escala de Cantidad de corridas **anterior a v1.9**, que trataba la corrida única como no verificada. Con la escala vigente ese componente es parcial, el conteo llega a 2,0 y la dimensión es N2. El texto anterior afirmaba además que el caso «no tiene instrucciones para volver a ejecutar el sistema», y sí las tiene: modelo, ubicación del system prompt y método de carga están en el README, dispersos. Fallan por **suficiencia**, no por ausencia, que es una distinción que la propia 3.1 hace.
+- **4.4 · ejemplo de nivel bajo: se corrige «sin origen declarado» sobre `casos/flojo`, que es falso.** `README.md:36-37` dice «15.000 tokens de entrada **según el contador de la consola**», la misma fórmula que el propio ejemplo acepta como origen declarado en `casos/tramposo` dos párrafos más abajo — el ejemplo se contradecía a sí mismo dentro de la misma sección. La conclusión (componente no verificado) se mantiene y se refunda en las dos razones correctas: faltan los tokens de salida que la condición exige, y la consola no está en ningún archivo.
+- **1.4 · R3 ampliada.** La herramienta afirmada que no existe en ninguna forma se resuelve por R1 y 6.2, y **no** habilita el tope del 25%, que alcanza solo a la herramienta simulada. Sin esta distinción, `casos/tramposo` —que declara su conector «Operativo» sin nada que lo acredite— obligaba a dejar R3 fuera de alcance por 0.6 y resolver por R1: funcionaba, pero por accidente.
+- **1.4 · R2 ampliada.** Multiplicidad expresa: una activación por cada ruta afirmada e inexistente, acumulación por 0.6 hasta el piso N0, exclusión de las rutas cubiertas por R6-bis, y obligación de consignar el número de activaciones.
+
+**Decisiones registradas**
+- *Corregir el ejemplo y no el conteo:* se descartó ajustar D3 de `casos/flojo` para que coincidiera con el ejemplo. El conteo de los cuatro componentes se sostiene sobre la evidencia y sobre la escala vigente; el ejemplo se sostenía sobre una escala derogada. Cuando un ejemplo y un conteo discrepan, cede el ejemplo.
+- *R3 sin tope para la herramienta inexistente:* se descartó extender el tope del 25%. Ese tope castiga presentar como real algo construido simulado; una herramienta inexistente ya vale 0 por R1 y sus rutas afirmadas activan R2. Extenderlo sería cobrar dos veces el mismo hecho.
+- *Revisión de ejemplos ante cambio de escala:* se registra que v1.9 modificó la escala de un componente sin recalcular los ejemplos que dependían de ella, y que el defecto sobrevivió hasta que alguien corrigió el caso. **Todo cambio futuro de escala obliga a revisar los ejemplos de la dimensión afectada antes de cerrar la versión.**
 
 ### v1.9 — 2026-09-08
 
