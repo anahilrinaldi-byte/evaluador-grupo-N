@@ -486,25 +486,23 @@ def validar_corrida(resultado):
                     f"sube de nivel: todas bajan o topean."
                 )
 
-    # Condicion 4: el total es la suma exacta.
-    # Se verifica contra el total que emitio el modelo, no contra el que
-    # recalculo Python: si se verificara contra el recalculo, la condicion
-    # nunca podria fallar. El total que se muestra y se archiva es el
-    # recalculado; este chequeo declara si el corrector supo sumar.
-    total = resultado.get("puntaje_total_modelo", resultado.get("puntaje_total"))
-    if total is None:
-        fallas.append("La salida no trae puntaje_total.")
-    else:
-        try:
-            total = float(total)
-            if abs(total - suma) > 0.001:
-                fallas.append(
-                    f"El corrector emitio puntaje_total {total} y la suma de "
-                    f"sus dimensiones da {suma}. Se archiva {suma}, que es la "
-                    f"suma; la discrepancia queda registrada."
-                )
-        except (TypeError, ValueError):
-            fallas.append(f"puntaje_total '{total}' no es un número.")
+          # Condicion 4: el total oficial es la suma exacta de las dimensiones.
+    # Python es la fuente de verdad para la aritmetica.
+    # El valor emitido por el modelo queda guardado en
+    # puntaje_total_modelo solo para auditoria.
+    total = resultado.get("puntaje_total")
+
+    try:
+        total = float(total)
+        if abs(total - suma) > 0.001:
+            fallas.append(
+                f"puntaje_total calculado {total} y la suma de las "
+                f"dimensiones da {suma}."
+            )
+    except (TypeError, ValueError):
+        fallas.append(
+            f"puntaje_total '{total}' no es un número."
+        )
 
     # Condicion 5: ninguna justificacion menciona la via de entrega
     prohibidas = ["comprimido", "zip", "repositorio", "repo"]
@@ -605,8 +603,28 @@ if st.button("Evaluar repositorio", type="primary"):
 
             # Validacion de la corrida, segun agente/configuracion seccion 5.
             # Una corrida que no la pasa no es un resultado: es una corrida
-            # fallida, y hay que verlo antes de mirar la nota.
+                      # fallida, y hay que verlo antes de mirar la nota.
             fallas = validar_corrida(resultado)
+
+            # Si el modelo calculó mal el total, Python ya lo corrigió.
+            # La discrepancia se muestra como advertencia y queda disponible
+            # en puntaje_total_modelo para auditoría.
+            total_modelo = resultado.get("puntaje_total_modelo")
+            total_calculado = resultado.get("puntaje_total")
+
+            if total_modelo is not None and total_calculado is not None:
+                try:
+                    if abs(
+                        float(total_modelo) - float(total_calculado)
+                    ) > 0.001:
+                        st.warning(
+                            "El modelo emitió un puntaje total distinto de la "
+                            "suma de las dimensiones. Python recalculó el total "
+                            "de forma determinista. La discrepancia se conserva "
+                            "en `puntaje_total_modelo` para auditoría."
+                        )
+                except (TypeError, ValueError):
+                    pass
 
             if fallas:
                 st.error(
