@@ -885,7 +885,7 @@ def evaluar_repo(url_repo):
             "Gemini respondió, pero la salida no fue JSON válido."
         )
 
-    recalcular_total(resultado)
+    normalizar_resultado(resultado)
 
     return resultado, metadata
 
