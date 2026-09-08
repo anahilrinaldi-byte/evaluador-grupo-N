@@ -514,7 +514,7 @@ def normalizar_resultado(resultado):
 
     if "veredicto_modelo" not in resultado:
         resultado["veredicto_modelo"] = resultado.get("veredicto")
-
+        
     validacion = resultado.setdefault(
         "validacion_escala",
         {"ok": True, "recalculos": []}
@@ -522,10 +522,34 @@ def normalizar_resultado(resultado):
 
     recalculos = validacion.setdefault("recalculos", [])
 
+    # Normalizar nombres alternativos que el modelo pueda emitir.
+    # La salida oficial siempre usa los nombres definidos por la rubrica.
+    ALIAS_DIMENSIONES = {
+        "proyeccion_operacion": "formato_reproducibilidad",
+    }
+
+    for nombre_modelo, nombre_oficial in ALIAS_DIMENSIONES.items():
+        if (
+            nombre_modelo in dimensiones
+            and nombre_oficial not in dimensiones
+        ):
+            dimensiones[nombre_oficial] = dimensiones.pop(nombre_modelo)
+
+            recalculos.append(
+                {
+                    "campo": f"dimensiones.{nombre_modelo}",
+                    "valor_modelo": nombre_modelo,
+                    "valor_python": nombre_oficial,
+                    "motivo": (
+                        "Se normalizo el nombre de la dimension al identificador "
+                        "oficial exigido por la rubrica."
+                    ),
+                }
+            )
+
     # -----------------------------------------------------
     # 2. Regla mecanica de cantidad de corridas — rubrica v1.9
     # -----------------------------------------------------
-
     verificaciones = resultado.get("verificaciones", {})
     corridas_verificadas = verificaciones.get("corridas_verificadas")
 
