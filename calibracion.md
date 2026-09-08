@@ -199,7 +199,7 @@ Los tres son decisiones del grupo, no defectos.
 
 > **Ya no ocurre.** Al corregirse un error de aritmética de la corrida —`nivel_final`
 > N2 con conteo 1,5, que es N1: R14 es un techo y R17 degrada, y ninguna de las dos
-> sube— el tramposo bajó de 33,75 a **22,50** y quedó **por debajo** del flojo, que
+> sube— el tramposo bajó de 33,75 a **22,50**, y en una segunda corrección a **18,75**, quedando **por debajo** del flojo, que
 > saca 25,00. El desacuerdo se disolvió sin necesidad de decidirlo, y `app.py`
 > ahora valida esa condición para que no vuelva a pasar. Se conserva el análisis
 > porque la pregunta de fondo sigue siendo buena y puede volver con otros casos.
@@ -275,7 +275,7 @@ completo del esquema de la CAPA 6. Archivadas en `calibracion/`.
 |---|---|---|---|
 | Excelente | **92,50** · Excelente | 92,50 | **0,00** |
 | Flojo | **25,00** · Crítico | 25,00 | **0,00** |
-| Tramposo | **22,50** · Crítico | 33,75 | **−11,25** |
+| Tramposo | **18,75** · Crítico | 33,75 | **−15,00** |
 
 Dos de tres con desvío cero. El tercero acumula **dos desacuerdos independientes**,
 los dos documentados:
@@ -289,7 +289,7 @@ Las otras tres dimensiones coinciden exactamente.
 
 ### Lo que las corridas confirman
 
-**El corrector discrimina.** 92,50 contra 22,50 son 70 puntos de separación entre
+**El corrector discrimina.** 92,50 contra 18,75 son 73,75 puntos de separación entre
 dos casos que comparten dominio, extensión y calidad de prosa. La única diferencia
 entre ellos es que uno tiene los artefactos y el otro los declara.
 

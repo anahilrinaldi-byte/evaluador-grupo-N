@@ -2,11 +2,11 @@
   "metadata": {
     "via_entrega": "repositorio",
     "identificador_entregable": "casos/tramposo",
-    "fecha_correccion": "2026-09-06",
-    "version_rubrica": "v1.1",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v1.7",
     "error_carga": false
   },
-  "puntaje_total": 22.5,
+  "puntaje_total": 18.75,
   "veredicto": "Crítico",
   "dimensiones": {
     "sistema_completo": {
@@ -140,16 +140,16 @@
     "analisis_economico": {
       "maximo": 15,
       "componentes": {
-        "consumo_medido": "verificado",
+        "consumo_medido": "parcial",
         "costo_por_corrida": "verificado",
         "proyeccion_operacion": "verificado",
         "eleccion_modelo": "verificado"
       },
-      "conteo": 4,
-      "nivel_por_conteo": "N4",
+      "conteo": 3.5,
+      "nivel_por_conteo": "N3",
       "reglas_corte_aplicadas": [],
-      "nivel_final": "N4",
-      "puntaje": 15.0,
+      "nivel_final": "N3",
+      "puntaje": 11.25,
       "evidencia": [
         {
           "ruta": "ANALISIS_ECONOMICO.md",
@@ -160,8 +160,10 @@
           "cita": "Semanal | 3 | USD 0,0106 ... Anual | 156 | USD 0,5507"
         }
       ],
-      "faltantes": [],
-      "justificacion": "Tokens con origen declarado, tarifa identificada, aritmetica recalculable a mano, los dos horizontes de proyeccion y la eleccion de modelo comparada contra una alternativa. Esta dimension esta genuinamente bien hecha.",
+      "faltantes": [
+        "El artefacto de la medicion: la consola de la API no esta en ningun archivo del entregable"
+      ],
+      "justificacion": "Tarifa identificada, aritmetica recalculable a mano, los dos horizontes de proyeccion y la eleccion de modelo comparada contra una alternativa. Esta dimension esta genuinamente bien hecha, y es lo mas instructivo del caso: el trabajo miente en casi todo lo demas y aca no. Pero Consumo medido cuenta como parcial: la tabla declara origen en el contador de la consola de la API y esa consola no esta en ningun archivo, asi que por P9 es una afirmacion del autor. Es exactamente lo que el ejemplo 4.4 describe para este caso. Tres verificados y un parcial suman 3,5 y truncan a N3.",
       "mejora_prioritaria": "Ninguna sustantiva. Podria explicitarse sobre cuantas corridas se promedio el consumo."
     },
     "gobierno_riesgo": {
@@ -264,5 +266,5 @@
       "efecto_en_la_nota": "Ninguno. No modifica ningun puntaje."
     }
   ],
-  "conclusion": "Trabajo con una brecha marcada entre lo declarado y lo verificable. El analisis economico es genuinamente riguroso y se lleva los quince puntos completos; el resto se sostiene sobre afirmaciones que el arbol de archivos no respalda. Cuatro rutas citadas no existen, y tampoco hay ninguna instruccion para volver a correr el sistema. La calidad de la redaccion es alta y no influye en el puntaje."
+  "conclusion": "Trabajo con una brecha marcada entre lo declarado y lo verificable. El analisis economico es genuinamente riguroso y se lleva los quince puntos completos; el resto se sostiene sobre afirmaciones que el arbol de archivos no respalda. Cuatro rutas citadas no existen, y tampoco hay ninguna instruccion para volver a correr el sistema. La calidad de la redaccion es alta y no influye en el puntaje. Nota de version: esta corrida se re-emite contra v1.7. Daba D4 en N4 = 15 con Consumo medido verificado, en contradiccion directa con el ejemplo 4.4 de la propia rubrica, que fija este caso en N3 y da la razon: la consola de la API no esta en el entregable. Es el mismo defecto que se corrigio en la corrida del excelente, y en los dos casos el inventario de evidencia daba por acreditado un artefacto que no existe. Total: 22,50 -> 18,75."
 }

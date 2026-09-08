@@ -39,7 +39,7 @@ Guardá cada JSON como `calibracion/app-excelente.json`, `app-flojo.json`,
 la nota. Si sale inválida, se archiva como corrida fallida y se corre de nuevo —
 la corrida fallida **no se borra**, es evidencia de proceso.
 
-**Contra qué comparar.** Las corridas a mano dan 92,50 · 25,00 · 22,50. Si Gemini
+**Contra qué comparar.** Las corridas a mano dan 92,50 · 25,00 · 18,75. Si Gemini
 coincide, es determinismo entre correctores distintos y es material fuerte. Si
 difiere, ese desacuerdo también es calibración: se documenta dónde y por qué.
 
@@ -74,7 +74,7 @@ acreditado sin evidencia.
 
 ### Y una consecuencia que cambia una decisión abierta
 
-Con D3 corregido, **el tramposo saca 22,50 y el flojo 25,00**. El resultado
+Con D3 y D4 corregidos, **el tramposo saca 18,75 y el flojo 25,00**. El resultado
 contraintuitivo que identificaste —«el tramposo saca más que el flojo»— **se da
 vuelta solo**. Quizá no haga falta escribir la regla de integridad agregada que
 estaba en discusión: el problema era una nota mal calculada, no la rúbrica.
