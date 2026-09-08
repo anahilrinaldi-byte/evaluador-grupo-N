@@ -106,11 +106,104 @@ es una verificación independiente y hay que rehacerla en la ronda 2.**
 
 ---
 
+## Ronda 1 a ciegas — 7/9 · Gonzalo
+
+Primera corrección hecha por una persona del grupo con criterio propio, y no una
+aplicación de la rúbrica por el mismo agente que la escribió. Se hizo con un
+agente distinto, a propósito: el que construyó la rúbrica ya había puntuado los
+tres casos y no podía volver a mirarlos sin contaminar el resultado.
+
+Notas completas en `calibracion/ronda1-gonzalo.md`.
+
+### Qué corrigió
+
+El **caso excelente**, las cinco dimensiones: **92,50**. Coincide con la corrida de
+calibración a mano, pero el conteo de componentes no coincidía, y eso importa más
+que el total (ver abajo).
+
+El flojo y el tramposo quedan pendientes, y está declarado: son cuatro de las
+cinco celdas genuinamente ciegas.
+
+### Lo que la ronda le hizo a la rúbrica
+
+Tres versiones en una sesión, **cada una por un defecto encontrado corrigiendo, no
+por revisión de escritorio**. Ese es el resultado que la ronda tenía que producir.
+
+| Versión | Qué cerró | Lo destapó |
+|---|---|---|
+| v1.2 · R6-bis | R6 no distinguía un insumo de datos externo de un artefacto que el entregable debe producir, y penalizaba a un trabajo por no versionar su fuente aunque el consumo estuviera acreditado | `datos/bd_cursos.xlsx`, citado doce veces en el excelente y ausente del árbol |
+| v1.3 · R6-ter | R6 no decía si una afirmación general de práctica entra al inventario. Dos correctores podían diferir en 3,75 puntos sobre la misma evidencia | «Cada corrida deja un log en `logs/`», con log para una de tres corridas |
+| v1.4 · alcance por defecto | Tres reglas —R6, R17 y R20— no enunciaban sobre qué se aplican. Quedaban veinticuatro escritas con el mismo criterio | El USD 0,0562 del excelente, que no se reconstruye, y la pregunta de si R20 lo alcanza |
+
+La de v1.4 es la importante: en lugar de seguir delimitando regla por regla, 0.6
+ahora fija que **toda regla de corte se aplica solo sobre los elementos que su
+enunciado nombra**, y que ante duda de alcance la regla no se aplica y se declara.
+Con la relación explícita con 8.1, que gobierna la duda sobre la *evidencia* y la
+resuelve en la dirección contraria.
+
+### Lo que la ronda encontró en el trabajo mismo
+
+- **`rubrica.md` citaba mal su propia regla en tres lugares.** La condición del
+  componente Perímetro remitía a R25 (Responsable nominal) para las acciones
+  prohibidas, que son R26, y dos líneas del changelog de v1.0 hacen lo mismo. Un
+  corrector que siguiera el puntero aterrizaba en la regla de otro componente y
+  podía dejar Perímetro verificado de más en un entregable sin lista de acciones
+  prohibidas. Corregido el puntero vivo.
+- **La corrida de calibración del excelente tenía el inventario de 6.3 vacío.** No
+  registraba el `.xlsx`. Bajo v1.1 el total real era 85 y no 92,50: la corrida
+  daba el número correcto por una omisión, no por un análisis. Re-emitida dos
+  veces, como corridas 1-bis y 1-ter del registro.
+- **`app.py` no compilaba.** Un `SyntaxError` introducido esa misma noche dejó la
+  app sin levantar durante horas sin que nadie lo notara.
+
+### El desacuerdo que la ronda produjo, que es el entregable
+
+En **D4 del excelente**, las dos correcciones dieron 11,25 y **el conteo de
+componentes no coincidió**: la corrida a mano daba `Consumo medido` verificado
+(3,5) y la ronda lo dio parcial (3,0). Los dos truncan a N3, así que el puntaje
+tapaba la diferencia.
+
+Resolvió la rúbrica y no el criterio: el ejemplo 4.4 fija esa misma situación
+probatoria como **parcial** en `casos/tramposo` —tabla de tokens con origen
+declarado en la consola de la API, consola ausente del entregable, P9— y el
+excelente afirma lo mismo con casi las mismas palabras. **P4 obliga a puntuarlos
+igual.** Corregida la corrida.
+
+Vale por sí solo: dos correcciones pueden coincidir en el puntaje y estar
+midiendo distinto, y el total no lo muestra. Es el argumento de por qué la rúbrica
+exige el conteo de componentes y no solo la nota.
+
+### Dudas registradas
+
+Tres, con la decisión tomada y con lo que costaría resolverlas al revés:
+
+1. **R17 caza edición cosmética, no fabricación.** Las tres salidas del excelente
+   cierran al céntimo en todas las agregaciones, que es lo que uno esperaría de
+   una planilla más que de tres corridas de un LLM. **No se usó para bajar el
+   nivel**: la rúbrica no da ninguna palanca para hacerlo y 4.4 advierte contra
+   puntuar por impresión general.
+2. **P9 aplicado con dos varas en la misma corrección**, verificando en D1 con un
+   log que también podría haberse tipeado a mano y bajando en D4 por falta de
+   artefacto.
+3. **El USD 0,0562 y R20.** Se resolvió que no activa: el número no contradice a
+   ningún otro, es indeterminado y no inconsistente. Si se activara, D4 caería a
+   7,50.
+
+---
+
 ## Desacuerdos abiertos
 
 Los tres son decisiones del grupo, no defectos.
 
-### 1 · El tramposo saca más que el flojo — 33,75 contra 25,00
+### 1 · El tramposo saca más que el flojo — ~~33,75 contra 25,00~~ **DISUELTO**
+
+> **Ya no ocurre.** Al corregirse un error de aritmética de la corrida —`nivel_final`
+> N2 con conteo 1,5, que es N1: R14 es un techo y R17 degrada, y ninguna de las dos
+> sube— el tramposo bajó de 33,75 a **22,50** y quedó **por debajo** del flojo, que
+> saca 25,00. El desacuerdo se disolvió sin necesidad de decidirlo, y `app.py`
+> ahora valida esa condición para que no vuelva a pasar. Se conserva el análisis
+> porque la pregunta de fondo sigue siendo buena y puede volver con otros casos.
+
 
 Ya identificado en `casos/NOTAS_DE_DISENO.md`, y es el desacuerdo más valioso que
 tiene el trabajo.
@@ -144,7 +237,12 @@ corrector **no modifica automáticamente la nota**. Es prudente y evita el doble
 castigo. Pero tiene un costo: **intentarlo sale gratis.** Un trabajo puede probar
 la inyección y no perder nada.
 
-### 3 · Ninguna de las tres rúbricas tiene ejemplos alto/bajo
+### 3 · Ninguna de las tres rúbricas tiene ejemplos alto/bajo — **RESUELTO**
+
+> **Hecho en la consolidación.** `rubrica.md` tiene ahora el par alto/bajo explícito
+> por dimensión, en §§1.5, 2.4, 3.5, 4.4 y 5.4, cada uno citando el caso concreto y
+> el archivo donde se verifica. Se conserva el análisis original abajo.
+
 
 El enunciado del parcial los pide con esas palabras: «ejemplos de qué merece un
 nivel alto y uno bajo en cada dimensión». `rubrica_V2.md` tiene una columna
