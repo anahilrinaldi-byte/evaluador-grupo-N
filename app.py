@@ -347,27 +347,70 @@ def construir_prompt(rubrica, contenido_repo, metadata):
     if paquete_incompleto:
         regla_inventario = """
 El inventario siguiente contiene solamente los archivos efectivamente leidos.
+
 Como el paquete esta incompleto, una ruta que no aparezca en el inventario
-NO puede considerarse definitivamente inexistente. En ese caso usa
-"no se pudo verificar" y registra la limitacion correspondiente.
+NO puede considerarse definitivamente inexistente.
+
+En ese caso:
+- no la marques como existente;
+- no la uses como evidencia;
+- registra que no pudo verificarse;
+- no inventes su contenido.
 """
     else:
         regla_inventario = """
 El paquete de evidencia esta completo para los tipos de archivo evaluables.
 
-Por lo tanto, el inventario siguiente es AUTORITATIVO para esta evaluacion:
+El inventario siguiente es AUTORITATIVO para esta evaluacion.
 
-- Si un documento afirma que existe una ruta concreta y esa ruta no aparece
-  en el inventario, la existencia de esa ruta NO esta verificada.
-- No aceptes una declaracion de README.md, DECISIONES.md o cualquier otro
-  archivo como prueba de que otro archivo existe.
-- Si la afirmacion es concreta y contradice el inventario, registrala en
-  `verificaciones.contradicciones`.
-- No inventes archivos, carpetas, corridas, logs, conectores ni versiones
-  anteriores que no puedan reconstruirse a partir de este inventario.
+REGLAS OBLIGATORIAS:
+
+1. Una ruta concreta mencionada dentro de README.md, DECISIONES.md,
+   prompts, corridas u otro archivo NO prueba que esa ruta exista.
+
+2. Una ruta solamente puede considerarse existente si aparece en el
+   inventario de archivos efectivamente leidos.
+
+3. Si el repositorio declara una ruta concreta y esa ruta NO aparece en
+   este inventario completo:
+   - NO la uses como evidencia;
+   - NO la describas como verificada;
+   - agregala a `verificaciones.afirmaciones_no_verificadas`;
+   - registra la discrepancia en `verificaciones.contradicciones`.
+
+4. Ejemplos:
+   - Si README.md dice que existe `corridas/corrida_03/` pero el inventario
+     no contiene archivos dentro de esa ruta, esa tercera corrida NO existe
+     como evidencia verificable.
+   - Si README.md menciona `logs/errores.md` y ese archivo no aparece en el
+     inventario, NO puede utilizarse para verificar fallas.
+   - Si se menciona `prompts/system_prompt_v1.md` pero no aparece en el
+     inventario, NO puede utilizarse para verificar iteraciones.
+   - Si se menciona `conectores/sheets_config.yaml` pero no aparece en el
+     inventario, NO puede utilizarse para verificar una herramienta real.
+
+5. `corridas_verificadas` debe derivarse solamente de corridas cuyos
+   artefactos aparecen realmente en el inventario.
+
+6. `herramientas_verificadas` requiere evidencia real presente en el
+   inventario. Una declaracion en README.md no basta.
+
+7. Para verificar iteraciones deben existir artefactos de estados
+   anteriores realmente presentes. Un relato sobre versiones anteriores
+   no equivale a versiones verificadas.
+
+8. Si una dimension cita como evidencia un archivo que no aparece en este
+   inventario, esa evidencia es invalida y el componente correspondiente
+   no puede quedar `verificado` basandose en esa ruta.
+
+9. Toda contradiccion entre declaraciones del repositorio y este inventario
+   debe registrarse explicitamente en `verificaciones.contradicciones`.
+
+10. No reduzcas el puntaje simplemente porque exista una contradiccion.
+    La contradiccion afecta solamente los componentes cuya evidencia deja
+    de estar verificada.
 """
-
-    return f"""
+        return f"""
 RÚBRICA OFICIAL DEL EVALUADOR
 =============================
 {rubrica}
