@@ -2,11 +2,16 @@
 
 ## Qué construimos
 
-Construimos un sistema agéntico para evaluar trabajos finales de la materia Programación de y con Agentes de IA a partir de una rúbrica ejecutable.
+Construimos un sistema agéntico para evaluar trabajos finales de la materia
+**Programación de y con Agentes de IA** a partir de una rúbrica ejecutable.
 
-El sistema recibe la URL de un repositorio público de GitHub, recupera su contenido, aplica la rúbrica mediante un agente basado en Gemini y devuelve una evaluación estructurada con puntajes, evidencia, faltantes, contradicciones y alertas de integridad.
+El sistema recibe la URL de un repositorio público de GitHub, recupera su
+contenido, aplica la rúbrica mediante un agente basado en Gemini y devuelve una
+evaluación estructurada con puntajes, evidencia, faltantes, contradicciones y
+alertas de integridad.
 
-El sistema está pensado para que un mismo criterio de evaluación pueda aplicarse de forma consistente y trazable a distintos trabajos.
+El objetivo es que un mismo criterio de evaluación pueda aplicarse de forma
+consistente, trazable y auditable a distintos trabajos.
 
 ## Integrantes
 
@@ -15,89 +20,250 @@ El sistema está pensado para que un mismo criterio de evaluación pueda aplicar
 - Mocciola Tatiana
 - Rinaldi Anahí
 
+## Aplicación desplegada
+
+El evaluador está disponible en:
+
+https://evaluador-grupo-n.streamlit.app/
+
+También puede ejecutarse localmente mediante Streamlit.
+
 ## Cómo se lo pedimos
 
-El trabajo fue construido de manera grupal e iterativa, utilizando distintas interacciones con herramientas de IA y diferentes integrantes del equipo. Por eso, en lugar de reproducir un único prompting lineal, documentamos las principales instrucciones y criterios que guiaron la construcción del sistema.
+El trabajo fue construido de manera grupal e iterativa, utilizando herramientas
+de IA como apoyo para diseñar, programar, probar y corregir el sistema.
 
-Las instrucciones principales fueron:
+En lugar de reproducir un único prompting lineal, documentamos las principales
+instrucciones y criterios que guiaron la construcción:
 
-1. **Transformar la consigna y la rúbrica del Trabajo Final en un mecanismo de evaluación ejecutable**, manteniendo sus cinco dimensiones y ponderaciones.
-2. **Diseñar un agente evaluador basado en evidencia**, que distinga entre evidencia acreditada, parcialmente acreditada, no demostrada y contradicha, sin inventar información ausente.
-3. **Definir criterios de evaluación consistentes y reproducibles**, incluyendo niveles, anclas de puntaje y reglas para tratar faltantes, contradicciones y diferencias entre existencia y funcionamiento.
-4. **Diseñar casos de prueba deliberadamente diferentes** —excelente, flojo y tramposo— para someter la rúbrica y el agente a situaciones contrastantes y detectar inconsistencias.
-5. **Incorporar controles de integridad y seguridad**, especialmente frente a instrucciones contenidas dentro del repositorio evaluado que intenten modificar el comportamiento del evaluador.
-6. **Construir y probar la aplicación ejecutable**, verificando la recuperación de repositorios, los límites de lectura, la estructura de la salida y la validación de los puntajes generados.
-7. **Calibrar el evaluador contra los casos de prueba y documentar los desacuerdos**, utilizando esos resultados para corregir reglas, criterios y validaciones.
+1. **Transformar la consigna y la rúbrica del Trabajo Final en un mecanismo de
+   evaluación ejecutable**, manteniendo sus cinco dimensiones y ponderaciones.
+2. **Diseñar un agente evaluador basado en evidencia**, que distinga entre
+   evidencia verificada, parcial y no verificada, sin inventar información
+   ausente.
+3. **Definir criterios consistentes y reproducibles**, incluyendo niveles,
+   anclas de puntaje y reglas para tratar faltantes y contradicciones.
+4. **Diseñar tres casos de prueba deliberadamente diferentes** —Excelente,
+   Flojo y Tramposo— para someter la rúbrica y el agente a situaciones
+   contrastantes.
+5. **Tratar el repositorio evaluado como contenido no confiable**, evitando que
+   instrucciones incluidas dentro de un trabajo puedan modificar las reglas del
+   evaluador.
+6. **Construir y probar una aplicación ejecutable**, verificando la recuperación
+   de repositorios, los límites de lectura, la estructura de salida y los
+   puntajes.
+7. **Calibrar el evaluador contra los casos de prueba**, documentando
+   desacuerdos y utilizando los hallazgos para mejorar la rúbrica y el sistema.
+8. **Separar interpretación semántica de controles objetivos**, dejando al
+   modelo la interpretación de evidencia y a Python las verificaciones que
+   pueden resolverse de forma determinista.
 
-## Qué funciona
+## Cómo funciona
 
-El evaluador se ejecuta mediante Streamlit:
+El evaluador acepta:
 
-```bash
-streamlit run app.py
-```
+- la URL de un repositorio público completo de GitHub; o
+- la URL de una subcarpeta de un repositorio.
 
-Requiere una `GEMINI_API_KEY`, que puede configurarse mediante Streamlit Secrets o como variable de entorno.
+Esto último permite evaluar de manera independiente los tres casos almacenados
+en `casos/`.
 
-Las dependencias están especificadas en `requirements.txt`.
+El flujo general es:
 
-El evaluador puede recibir:
+`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
 
-- la URL de un repositorio público completo; o
-- la URL de una subcarpeta dentro de un repositorio, permitiendo evaluar los casos de prueba almacenados dentro del propio repositorio.
+### 1. Recuperación del repositorio
 
-El sistema:
+La aplicación identifica el repositorio y la rama correspondiente, recupera el
+árbol de archivos y descarga los archivos de texto admitidos.
 
-1. identifica el repositorio y su rama principal;
-2. recupera la estructura y los archivos de texto evaluables;
-3. prioriza archivos centrales como `README.md`, `DECISIONES.md` y los prompts;
-4. empaqueta la evidencia para el agente;
-5. aplica la rúbrica;
-6. valida la salida generada;
-7. informa problemas relacionados con archivos que no pudieron ser leídos, límites de tamaño o cantidad y árboles de GitHub truncados.
+También informa si existieron archivos que no pudieron leerse o si se alcanzaron
+límites de cantidad o tamaño.
 
-La prueba de fuego contempla casos como repositorios con prompt injection, repositorios incompletos, trabajos genuinamente buenos, repositorios grandes y ejecuciones repetidas para evaluar consistencia.
+### 2. Inventario de evidencia
 
-## Qué falta o qué falló
+Python construye un inventario de los archivos efectivamente incorporados a la
+evaluación.
 
-**Estado al momento de esta actualización:** todavía deben completarse las actividades finales de calibración y las pruebas con el evaluador ejecutado con una API key real antes de la prueba de fuego.
+Esto permite distinguir entre una ruta que realmente existe y una ruta que el
+trabajo solamente declara en un README u otro documento.
 
-Durante la construcción encontramos problemas que requirieron modificaciones del sistema.
+### 3. Evaluación semántica
 
-Entre ellos:
+El agente recibe:
 
-- límites de lectura del repositorio que podían provocar que parte de la evidencia quedara fuera de la evaluación;
-- fallos silenciosos al recuperar archivos desde GitHub;
-- necesidad de soportar la evaluación de subcarpetas;
-- necesidad de validar que la salida del agente contenga exactamente las dimensiones y valores esperados;
-- errores de calibración y de aritmética que fueron detectados mediante las pruebas sobre los casos.
+- la rúbrica ejecutable;
+- el contenido recuperado;
+- metadatos del repositorio;
+- instrucciones de seguridad e integridad.
 
-Estos problemas fueron utilizados como evidencia del proceso de construcción y llevaron a incorporar mecanismos de validación y de reporte de limitaciones.
+El modelo evalúa las cinco dimensiones y devuelve una salida estructurada.
+
+### 4. Control determinista
+
+Después de la evaluación semántica, Python controla hechos que pueden
+verificarse mecánicamente.
+
+Entre otros controles:
+
+- contrasta rutas utilizadas como evidencia con el inventario real;
+- verifica la cantidad de corridas encontradas;
+- normaliza estados de componentes;
+- calcula los niveles a partir de los conteos;
+- aplica los valores de ancla;
+- recalcula el puntaje total;
+- deriva el veredicto final.
+
+Si una ruta inexistente es utilizada como evidencia, el sistema solicita una
+revisión de la evaluación. Si la inconsistencia persiste, la corrida no se
+publica como una evaluación válida.
+
+## Rúbrica
+
+La versión utilizada en las corridas finales es **v1.9**.
+
+La evaluación se divide en cinco dimensiones:
+
+| Dimensión | Puntaje máximo |
+|---|---:|
+| Sistema completo | 30 |
+| Proceso documentado | 25 |
+| Formato y reproducibilidad | 15 |
+| Análisis económico | 15 |
+| Gobierno y riesgo | 15 |
+| **Total** | **100** |
+
+Cada dimensión se descompone en componentes observables y utiliza niveles
+discretos de evaluación.
+
+La evidencia tiene prioridad sobre las declaraciones: afirmar que un artefacto
+existe no equivale a demostrar su existencia.
+
+## Casos de prueba
+
+Se construyeron tres casos de calibración.
+
+### Excelente
+
+Representa una entrega sólida, con artefactos verificables, tres corridas,
+herramienta real, trazas de proceso, análisis económico y documentación de
+gobierno.
+
+### Flojo
+
+Representa una entrega incompleta: conserva algunos elementos formales, pero
+tiene una sola corrida, no acredita una herramienta real y presenta debilidades
+en proceso, economía y gobierno.
+
+### Tramposo
+
+Combina evidencia legítima con afirmaciones que no coinciden con el inventario
+real.
+
+El objetivo no es asignarle automáticamente cero puntos, sino verificar que el
+evaluador pueda distinguir entre lo que el trabajo declara y lo que realmente
+puede acreditar.
+
+## Calibración final
+
+Las tres corridas reales finales se realizaron con la misma versión de la
+rúbrica, **v1.9**.
+
+| Caso | Puntaje final | Veredicto | Puntaje propuesto por el modelo |
+|---|---:|---|---:|
+| Excelente | **92,50** | Excelente | 97,50 |
+| Flojo | **25,00** | Crítico | 33,75 |
+| Tramposo | **55,00** | Insuficiente | 63,75 |
+
+En las tres corridas finales:
+
+- `validacion_escala.ok = true`
+- `validacion_escala.recalculos = []`
+
+Los JSON completos están archivados en `calibracion/`.
+
+La diferencia entre `puntaje_total_modelo` y `puntaje_total` se conserva
+deliberadamente para hacer auditable la intervención de la capa determinista.
+
+## Qué detectó el caso Tramposo
+
+Durante la calibración, el caso Tramposo permitió detectar una debilidad
+importante: un modelo podía interpretar una ruta mencionada en un documento como
+si el archivo realmente existiera.
+
+La versión final contrasta esas referencias con el inventario obtenido por
+Python.
+
+En la corrida final se detectaron, entre otras, referencias a artefactos
+inexistentes como:
+
+- `conectores/sheets_config.yaml`
+- `prompts/system_prompt_v1.md`
+- `logs/errores.md`
+- `corridas/corrida_03/`
+
+El repositorio declaraba tres corridas, pero solamente dos pudieron verificarse.
+
+También declaraba Google Sheets API, pero no se encontró un artefacto suficiente
+para considerarla una herramienta verificada.
+
+Estas inconsistencias se registran en la salida en lugar de convertirse en una
+penalización global automática.
+
+## Qué falló durante el desarrollo
+
+El sistema actual es resultado de varias correcciones surgidas de las pruebas.
+
+Entre los problemas encontrados estuvieron:
+
+- una carga inicial en GitHub que había destruido la estructura de carpetas de
+  los casos;
+- límites de lectura que podían dejar evidencia fuera de la evaluación;
+- fallos al recuperar archivos desde GitHub;
+- necesidad de soportar URLs de subcarpetas;
+- errores de aritmética entre componentes, niveles y puntajes;
+- diferencias entre el puntaje calculado por el modelo y la suma de las
+  dimensiones;
+- aceptación por parte del modelo de rutas declaradas pero inexistentes;
+- variabilidad en componentes que requieren interpretación semántica.
+
+Estos problemas no se ocultaron: se utilizaron como evidencia del proceso y
+llevaron a modificar la rúbrica, el prompt y las validaciones de Python.
+
+La evolución y los desacuerdos están documentados en `calibracion.md` y
+`calibracion/`.
 
 ## Qué aprendimos
 
-Construir un agente evaluador requiere mucho más que escribir un prompt: también es necesario definir qué evidencia puede utilizar, cómo tratar la ausencia o contradicción de evidencia y cómo validar su salida.
+Construir un agente evaluador requiere más que escribir un buen prompt.
 
-Las pruebas con casos buenos, débiles y tramposos permitieron detectar problemas que no eran evidentes al analizar solamente la documentación.
+Fue necesario definir qué constituye evidencia, cómo tratar la ausencia de
+evidencia, cómo registrar contradicciones y qué decisiones conviene dejar al
+modelo o resolver mediante código.
 
-También aprendimos que los límites técnicos de las herramientas pueden afectar directamente la calidad de una evaluación. Por eso el sistema debe hacer visibles sus propias limitaciones en lugar de asumir que recibió toda la evidencia.
+La calibración mostró especialmente que **temperatura 0 no debe confundirse con
+una garantía de identidad absoluta entre ejecuciones**. Por eso priorizamos la
+estabilidad de las invariantes objetivas por encima de forzar una nota
+predeterminada.
 
-Finalmente, la calibración mostró que una rúbrica ejecutable debe ser lo suficientemente precisa para producir resultados consistentes sin reemplazar el criterio de evaluación por una interpretación libre del agente.
+También aprendimos que un evaluador no debería castigar un trabajo completo por
+impresión general. El caso Tramposo, por ejemplo, conserva los puntos de las
+dimensiones donde sí presenta evidencia suficiente, aunque simultáneamente se
+registren sus contradicciones.
 
 ## Estructura del repositorio
 
-- `rubrica.md` — rúbrica ejecutable.
+- `rubrica.md` — rúbrica ejecutable v1.9.
 - `agente/` — system prompt y configuración del evaluador.
-- `casos/` — casos de prueba excelente, flojo y tramposo.
-- `calibracion.md` — evidencia de calibración: las rondas, los desvíos y los ajustes.
-- `calibracion/` — corridas archivadas, desacuerdos documentados y plantillas de la corrección a ciegas.
-- `app.py` — aplicación del evaluador.
-- `comparacion_versiones.md` — por qué de las tres versiones de rúbrica y system prompt quedó la que quedó.
+- `casos/` — casos Excelente, Flojo y Tramposo.
+- `calibracion.md` — proceso de calibración, rondas, hallazgos y resultado final.
+- `calibracion/` — corridas, desacuerdos y evidencia de calibración.
+- `app.py` — aplicación Streamlit y controles deterministas.
+- `comparacion_versiones.md` — comparación y consolidación de versiones.
 - `PRUEBA_DE_FUEGO.md` — preparación para la prueba de fuego.
-- `QUE_FALTA.md` — qué queda pendiente, con dueño y con el cómo.
-- `requirements.txt` — dependencias necesarias.
+- `requirements.txt` — dependencias.
 
-## Cómo ejecutar
+## Cómo ejecutar localmente
 
 Instalar las dependencias:
 
@@ -105,12 +271,22 @@ Instalar las dependencias:
 pip install -r requirements.txt
 ```
 
-Configurar `GEMINI_API_KEY` mediante Streamlit Secrets o como variable de entorno.
+Configurar `GEMINI_API_KEY` mediante Streamlit Secrets o como variable de
+entorno.
 
-Ejecutar:
+Luego ejecutar:
 
 ```bash
 streamlit run app.py
 ```
 
-Luego ingresar la URL pública del repositorio que se desea evaluar.
+Finalmente, ingresar en la interfaz la URL pública del repositorio o subcarpeta
+que se desea evaluar.
+
+## Seguridad de credenciales
+
+La API key no se almacena en el repositorio.
+
+Los archivos locales de secretos se excluyen mediante `.gitignore`, y la
+aplicación obtiene `GEMINI_API_KEY` desde Streamlit Secrets o desde una variable
+de entorno.
