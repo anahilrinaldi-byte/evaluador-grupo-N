@@ -410,7 +410,7 @@ REGLAS OBLIGATORIAS:
     La contradiccion afecta solamente los componentes cuya evidencia deja
     de estar verificada.
 """
-        return f"""
+    return f"""
 RÚBRICA OFICIAL DEL EVALUADOR
 =============================
 {rubrica}
@@ -1031,7 +1031,203 @@ def validar_corrida(resultado):
 
     return fallas
 
+def obtener_rutas_leidas(contenido_repo):
+    """
+    Reconstruye el inventario exacto de archivos que Python entrego a Gemini.
+    """
+    rutas = []
 
+    for linea in contenido_repo.splitlines():
+        if linea.startswith("===== ARCHIVO: ") and linea.endswith(" ====="):
+            ruta = linea[len("===== ARCHIVO: "):-len(" =====")].strip()
+
+            if ruta and ruta not in rutas:
+                rutas.append(ruta)
+
+    return rutas
+
+
+def extraer_posibles_rutas(texto):
+    """
+    Extrae referencias a archivos o carpetas desde una frase de evidencia.
+
+    No decide si existen: solamente identifica candidatos.
+    """
+    if not isinstance(texto, str):
+        return []
+
+    limpio = texto
+
+    for caracter in [
+        "`", "'", '"', "(", ")", "[", "]",
+        "{", "}", "<", ">", ",", ";", ":"
+    ]:
+        limpio = limpio.replace(caracter, " ")
+
+    referencias = []
+
+    for token in limpio.split():
+        token = token.strip().strip(".,;:!?")
+
+        if not token:
+            continue
+
+        # Ignorar URLs.
+        if "://" in token:
+            continue
+
+        token_lower = token.lower()
+
+        parece_archivo = any(
+            token_lower.endswith(ext.lower())
+            for ext in EXTENSIONES_PERMITIDAS
+        )
+
+        parece_ruta = "/" in token
+
+        if not parece_archivo and not parece_ruta:
+            continue
+
+        if token not in referencias:
+            referencias.append(token)
+
+    return referencias
+
+
+def ruta_existe_en_inventario(referencia, rutas_reales):
+    """
+    Decide de forma determinista si una referencia existe en el inventario.
+
+    - archivo concreto -> debe existir
+    - carpeta -> debe contener al menos un archivo
+    - nombre sin carpeta -> se admite si existe un archivo con ese basename
+    """
+    referencia = referencia.strip().lstrip("./")
+
+    if not referencia:
+        return False
+
+    # Coincidencia exacta.
+    if referencia in rutas_reales:
+        return True
+
+    # Referencia a carpeta.
+    prefijo = referencia.rstrip("/") + "/"
+
+    if any(ruta.startswith(prefijo) for ruta in rutas_reales):
+        return True
+
+    # Si se cita solamente el nombre del archivo, admitirlo si el basename
+    # existe realmente en el paquete.
+    if "/" not in referencia:
+        coincidencias = [
+            ruta
+            for ruta in rutas_reales
+            if ruta.split("/")[-1] == referencia
+        ]
+
+        if coincidencias:
+            return True
+
+    return False
+
+
+def detectar_evidencia_con_rutas_inexistentes(
+    resultado,
+    contenido_repo,
+    metadata
+):
+    """
+    Busca rutas inexistentes utilizadas por Gemini COMO EVIDENCIA.
+
+    Si el paquete estaba incompleto, no se concluye inexistencia porque
+    Python no puede garantizar que un archivo ausente realmente no exista.
+    """
+
+    paquete_incompleto = any([
+        metadata.get("archivos_fallidos"),
+        metadata.get("omitidos_por_tamano"),
+        metadata.get("omitidos_por_cantidad"),
+        metadata.get("omitidos_por_extension"),
+        metadata.get("arbol_truncado"),
+    ])
+
+    if paquete_incompleto:
+        return []
+
+    rutas_reales = obtener_rutas_leidas(contenido_repo)
+    problemas = []
+
+    dimensiones = resultado.get("dimensiones", {})
+
+    if not isinstance(dimensiones, dict):
+        return problemas
+
+    for nombre_dimension, datos in dimensiones.items():
+        if not isinstance(datos, dict):
+            continue
+
+        evidencias = datos.get("evidencia", [])
+
+        if not isinstance(evidencias, list):
+            continue
+
+        for evidencia in evidencias:
+            for referencia in extraer_posibles_rutas(evidencia):
+                if not ruta_existe_en_inventario(
+                    referencia,
+                    rutas_reales
+                ):
+                    problema = {
+                        "dimension": nombre_dimension,
+                        "ruta": referencia,
+                        "evidencia": evidencia,
+                    }
+
+                    if problema not in problemas:
+                        problemas.append(problema)
+
+    return problemas
+
+
+def registrar_rutas_inexistentes(resultado, problemas):
+    """
+    Conserva en el JSON final las contradicciones comprobadas por Python.
+    No modifica el puntaje por si sola.
+    """
+
+    if not problemas:
+        return resultado
+
+    verificaciones = resultado.setdefault("verificaciones", {})
+
+    contradicciones = verificaciones.setdefault(
+        "contradicciones",
+        []
+    )
+
+    no_verificadas = verificaciones.setdefault(
+        "afirmaciones_no_verificadas",
+        []
+    )
+
+    for problema in problemas:
+        ruta = problema["ruta"]
+
+        contradiccion = (
+            f"Python verifico que la ruta citada como evidencia "
+            f"`{ruta}` no existe en el inventario completo de archivos."
+        )
+
+        if contradiccion not in contradicciones:
+            contradicciones.append(contradiccion)
+
+        afirmacion = f"Existencia de {ruta}"
+
+        if afirmacion not in no_verificadas:
+            no_verificadas.append(afirmacion)
+
+    return resultado
 def evaluar_repo(url_repo):
     api_key = obtener_api_key()
 
@@ -1053,6 +1249,10 @@ def evaluar_repo(url_repo):
 
     cliente = genai.Client(api_key=api_key)
 
+    # -----------------------------------------------------
+    # PRIMERA EVALUACION
+    # -----------------------------------------------------
+
     respuesta = cliente.models.generate_content(
         model=MODEL_NAME,
         contents=prompt_usuario,
@@ -1073,11 +1273,128 @@ def evaluar_repo(url_repo):
             "Gemini respondió, pero la salida no fue JSON válido."
         )
 
+    # -----------------------------------------------------
+    # CONTROL DETERMINISTA DE EVIDENCIA
+    # -----------------------------------------------------
+
+    problemas = detectar_evidencia_con_rutas_inexistentes(
+        resultado,
+        contenido_repo,
+        metadata
+    )
+
+    # -----------------------------------------------------
+    # SEGUNDA REVISION SOLO SI PYTHON DETECTA EVIDENCIA
+    # IMPOSIBLE
+    # -----------------------------------------------------
+
+    if problemas:
+        detalle_problemas = "\n".join(
+            (
+                f"- Dimension: {p['dimension']} | "
+                f"Ruta inexistente: {p['ruta']} | "
+                f"Evidencia emitida: {p['evidencia']}"
+            )
+            for p in problemas
+        )
+
+        prompt_revision = f"""
+{prompt_usuario}
+
+
+REVISION OBLIGATORIA POR CONTROL DETERMINISTA
+=============================================
+
+Python reviso tu primera evaluacion contra el inventario real de archivos.
+
+Detecto que utilizaste como evidencia una o mas rutas que NO existen en el
+paquete completo del repositorio:
+
+{detalle_problemas}
+
+Esto es un hecho mecanico comprobado por Python.
+
+Debes corregir la evaluacion completa aplicando estas reglas:
+
+1. Una ruta indicada arriba NO puede utilizarse como evidencia.
+2. Reevalua solamente los componentes afectados por esa evidencia.
+3. No apliques una penalizacion automatica por la contradiccion.
+4. Si existe otra evidencia REAL suficiente para el mismo componente,
+   podes conservar el estado correspondiente.
+5. Si la evidencia inexistente era necesaria para justificar un componente,
+   corregi su estado segun la rubrica.
+6. Registra las rutas inexistentes en
+   `verificaciones.contradicciones`.
+7. Registralas tambien en
+   `verificaciones.afirmaciones_no_verificadas`.
+8. No inventes archivos sustitutos.
+9. Devolve nuevamente el objeto JSON COMPLETO exigido por el contrato.
+10. Devolve solamente JSON.
+
+Tu primera respuesta debe ser revisada. No la defiendas ni conserves un
+estado solamente porque aparecia en la evaluacion anterior.
+"""
+
+        respuesta_revision = cliente.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt_revision,
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                response_mime_type="application/json",
+                temperature=0
+            )
+        )
+
+        if not respuesta_revision.text:
+            raise ValueError(
+                "Gemini no devolvió respuesta durante la revisión "
+                "de evidencia."
+            )
+
+        try:
+            resultado = json.loads(respuesta_revision.text)
+        except json.JSONDecodeError:
+            raise ValueError(
+                "Gemini respondió a la revisión, pero la salida "
+                "no fue JSON válido."
+            )
+
+        # Verificar nuevamente que la respuesta corregida no siga usando
+        # rutas inexistentes como evidencia.
+        problemas_persistentes = detectar_evidencia_con_rutas_inexistentes(
+            resultado,
+            contenido_repo,
+            metadata
+        )
+
+        if problemas_persistentes:
+            rutas = ", ".join(
+                sorted({
+                    p["ruta"]
+                    for p in problemas_persistentes
+                })
+            )
+
+            raise ValueError(
+                "La revisión automática detectó que Gemini siguió "
+                "utilizando rutas inexistentes como evidencia: "
+                f"{rutas}. La corrida se considera inválida."
+            )
+
+        # Las contradicciones comprobadas por Python quedan registradas
+        # aunque Gemini omita alguna de ellas en la segunda respuesta.
+        registrar_rutas_inexistentes(
+            resultado,
+            problemas
+        )
+
+    # -----------------------------------------------------
+    # NORMALIZACION MECANICA FINAL
+    # -----------------------------------------------------
+
     normalizar_resultado(resultado)
 
     return resultado, metadata
-
-
 # ---------------------------------------------------------
 # INTERFAZ
 # ---------------------------------------------------------
