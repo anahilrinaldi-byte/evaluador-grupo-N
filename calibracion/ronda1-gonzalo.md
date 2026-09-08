@@ -26,18 +26,49 @@ de estos cinco por dimensión.
 
 ---
 
+---
+
+## Cómo se produjo esta ronda
+
+La corrección se hizo en diálogo con un agente de IA distinto del que venía
+construyendo la rúbrica, y a propósito: el que la escribió ya había puntuado los
+tres casos y no podía volver a mirarlos sin contaminar el resultado. El
+procedimiento fue componente por componente, exigiendo la condición textual antes
+que la impresión general, y declarando cada regla de corte aunque no se activara.
+
+Las decisiones discutibles las tomé yo y están firmadas abajo, en «Dónde dudé».
+Cuatro de ellas cambiaron la rúbrica: la ronda produjo las versiones v1.2, v1.3 y
+v1.4, todas con su changelog.
+
+**Versión de la rúbrica contra la que se tomó cada dimensión.** La vara cambió
+durante la corrección y eso hay que declararlo, porque una calibración donde la
+vara se mueve y no se dice no vale nada.
+
+| Dimensión | Versión | ¿La versión la afecta? |
+|---|---|---|
+| D1 | v1.1, sostenida por R6-bis en v1.2 | Sí. Bajo v1.1 estricta, D1 sería 22,5 |
+| D2 | v1.1 | No |
+| D3 | v1.2 | No — no hay rutas de insumo en juego |
+| D4 | v1.2 | No |
+| D5 | v1.3 | No |
+
 ## Caso EXCELENTE — `casos/excelente`
 
 | Dim | Componentes (V / P / NV) | Conteo | Nivel | Puntaje | Por qué |
 |---|---|---|---|---|---|
-| D1 Sistema | | | | | |
-| D2 Proceso | | | | | |
-| D3 Formato | | | | | |
-| D4 Económico | | | | | |
-| D5 Gobierno | | | | | |
-| **Total** | | | | | |
+| D1 Sistema | Contrato V · Herramienta V · Output V · Gancho V | 4,0 | N4 | 30 | Los cuatro abribles. Falta `datos/bd_cursos.xlsx`, citado doce veces, y el trabajo no declara la ausencia: bajo R6-bis es insumo externo no versionado, se registra y no baja el nivel, con la excepción agotada |
+| D2 Proceso | Iteraciones V · Fallas V · Decisiones V · Alcance V | 4,0 | N4 | 25 | Dos versiones anteriores del contrato, el error del 22/08 con log, decisiones con alternativa descartada, y dos recortes de alcance declarados. R11 verificada y no aplica: hubo discrepancia en D1 pero la documentación no narra la construcción del artefacto inexistente |
+| D3 Formato | Estructura V · Corridas V · Reconstruibilidad V · Instrucciones V | 4,0 | N4 | 15 | Las cinco rutas de 3.1 presentes; tres corridas con filtros distintos que anidan bien (149 España ⊂ 362); quince campos idénticos en las tres salidas, incluido `"error": null`; seis pasos de ejecución con modelo y temperatura |
+| D4 Económico | Consumo **P** · Costo V · Proyección **P** · Elección V | 3,0 | N3 | 11,25 | Costo recalculable al sexto decimal y elección con criterio y alternativa. Consumo parcial: el origen está declarado pero la consola de la API no está en ningún archivo, y 4.4 resuelve esa misma situación como parcial en el tramposo. Proyección parcial: falta el horizonte semanal, declarado en tres archivos |
+| D5 Gobierno | Perímetro V · Riesgos V · Autonomía V · Responsabilidad **P** | 3,5 | N3 | 11,25 | Perímetro con cinco acciones prohibidas; cinco riesgos anclados a acción y consecuencia; L2 coherente con el flujo y R24 verificada en sus dos sentidos. Responsabilidad parcial: define quién firma y qué veta, y no dice qué pasa si esa persona no está disponible |
+| **Total** | | | | **92,50** | |
 
 ## Caso FLOJO — `casos/flojo`
+
+> **Pendiente.** El excelente consumió la ronda entera porque cada dimensión
+> destapó un problema de la rúbrica. Acá está D2, que es una de las cinco celdas
+> genuinamente ciegas.
+
 
 | Dim | Componentes (V / P / NV) | Conteo | Nivel | Puntaje | Por qué |
 |---|---|---|---|---|---|
@@ -49,6 +80,9 @@ de estos cinco por dimensión.
 | **Total** | | | | | |
 
 ## Caso TRAMPOSO — `casos/tramposo`
+
+> **Pendiente.** Acá están tres de las cinco celdas ciegas: D1, D3 y D5.
+
 
 | Dim | Componentes (V / P / NV) | Conteo | Nivel | Puntaje | Por qué |
 |---|---|---|---|---|---|
@@ -67,12 +101,60 @@ Anotá acá las dimensiones donde no estabas seguro, aunque hayas puesto un núm
 **Esto vale tanto como las notas:** una duda compartida por dos personas es un
 descriptor mal escrito, y eso es lo que la ronda tiene que encontrar.
 
--
--
+- **R17 caza edición cosmética, no fabricación.** Detecta que una salida fue
+  retocada; no detecta que nunca fue producida por un modelo. Un JSON escrito a
+  mano con aritmética perfecta la pasa sin despeinarse. Las tres salidas del
+  excelente cierran al céntimo en todas las agregaciones, que es lo que uno
+  esperaría de una planilla más que de tres corridas de un LLM. **No lo usé para
+  bajar el nivel**, y quiero ser explícito sobre por qué: la rúbrica no me da
+  ninguna palanca para hacerlo y 4.4 advierte contra puntuar por impresión
+  general. Bajarlo sería exactamente lo que la rúbrica prohíbe. Queda como límite
+  conocido de R17.
+- **Apliqué P9 con dos varas en la misma corrección.** En D1 di la Herramienta por
+  verificada apoyándome en un log que también podría haberse tipeado a mano, y en
+  D4 bajé el Consumo a parcial porque la consola de la API no está. La diferencia
+  que sostengo: en D1 el artefacto existe y sus timestamps corroboran contra
+  `entrada.md`, y en D4 no existe ninguno y la tabla es el único soporte de sí
+  misma. Pero alguien puede señalar con razón que es la misma regla con dos
+  exigencias.
+- **USD 0,0562 no es reconstruible.** El documento da la tarifa de entrada de
+  GPT-4o (2,50/M) y nunca la de salida. El resto implícito son 0,0025, o sea una
+  tarifa de 1,799/M que no está escrita en ningún lado. **Dudé si activaba R20**
+  —«los números no cierran entre sí»— y resolví que no: el número no contradice a
+  ningún otro, es indeterminado y no inconsistente. Es un defecto de base de
+  cálculo (R19) sobre una cifra que no es la viga del componente. Si se activara,
+  D4 caería a 7,50.
+- **Dos de las cinco celdas ciegas quedaron sin corregir** (D2-flojo, y D1, D3 y
+  D5 del tramposo). Lo anoto como límite de esta ronda, no como resultado.
 
 ## Contradicciones y alertas que encontré
 
 Solo para el tramposo, en principio. Si le encontrás contradicciones al flojo,
 anotalo igual: sería una señal de que la rúbrica induce falsos positivos.
 
--
+### En el caso excelente
+
+- **`datos/bd_cursos.xlsx` se cita doce veces en ocho archivos y no está en el
+  árbol.** Es la única ruta afirmada e inexistente del entregable, y el trabajo
+  nunca declara la ausencia. Originó R6-bis.
+- **`herramienta/config_lector.md:26` dice «Cada corrida deja un log en `logs/`»** y
+  hay log para una de las tres corridas. Originó R6-ter.
+- **El pie de `prompts/versiones/system_prompt_v1.md` cita D1 y D2** cuando esas
+  dos decisiones son recortes de alcance.
+- **De las tres fallas narradas, solo la del margen tiene artefacto.**
+
+### En la rúbrica misma
+
+- **`rubrica.md` citaba mal su propia regla en tres lugares.** La condición del
+  componente Perímetro remitía a R25 (Responsable nominal) para las acciones
+  prohibidas, que son R26, y dos líneas del changelog de v1.0 hacen lo mismo. Un
+  corrector que siguiera el puntero aterrizaba en la regla de otro componente y
+  podía dejar Perímetro verificado de más. Corregido el puntero vivo; las dos del
+  changelog quedan con nota de numeración, porque es registro histórico.
+- **Mi propia corrida de calibración del excelente tenía el inventario de 6.3
+  vacío.** No registraba el `.xlsx`. Bajo v1.1 el total real era 85 y no 92,5.
+  Re-emitida dos veces, como corridas 1-bis y 1-ter.
+- **`app.py` no compilaba.** Un `SyntaxError` introducido esa misma noche dejó la
+  app sin levantar. Lo anoto acá porque es el hallazgo de mayor consecuencia de
+  toda la ronda: la rúbrica estaba en su mejor momento y el sistema que la
+  ejecuta estaba caído.
