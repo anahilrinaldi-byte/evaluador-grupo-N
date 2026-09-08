@@ -31,7 +31,7 @@ equipo que escribe el contrato al principio y después no lo respeta cae justo a
 y va a aparecer el domingo 13.
 
 - [ ] **A** — verificado. La nota objetivo del tramposo no cambia por esta decisión.
-- [ ] **B** — parcial. Hay que cambiar el texto de la condición en `rubrica.md` §1.1 a «dos o más corridas que satisfacen **el formato declarado**, validado campo por campo».
+- [x] **B** — parcial. Hay que cambiar el texto de la condición en `rubrica.md` §1.1 a «dos o más corridas que satisfacen **el formato declarado**, validado campo por campo».
 
 > **Antes de elegir, un hecho que hay que tener a la vista: la premisa de A no se
 > cumple.** A dice que «las dos corridas comparten estructura entre sí». Verificado
