@@ -92,8 +92,8 @@ debe distinguirse de la inexistencia demostrada de un artefacto.
 
 Un evaluador excesivamente desconfiado también sería un mal evaluador.
 
-La calibración incluyó un caso Excelente que obtuvo **92,50/100** y un caso
-Flojo que obtuvo **25,00/100** sin que ser incompleto se transformara
+La calibración v2.0 incluyó un caso Excelente que obtuvo **96,25/100** y un caso
+Flojo que obtuvo **22,50/100** sin que ser incompleto se transformara
 automáticamente en una alerta de integridad.
 
 **Qué decir antes:**
@@ -165,10 +165,10 @@ La arquitectura final puede resumirse así:
 
 `Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
 
-En la corrida final del caso Tramposo:
+En la corrida final v2.0 del caso Tramposo:
 
-- se declaraban 3 corridas y se verificaron 2;
-- se declaraba Google Sheets API y no se verificó una herramienta;
+- se declararon y verificaron 3 corridas;
+- se declaró Google Sheets API, pero no se verificó una herramienta;
 - se detectaron referencias a artefactos inexistentes.
 
 Entre ellas:
@@ -176,7 +176,11 @@ Entre ellas:
 - `conectores/sheets_config.yaml`
 - `prompts/system_prompt_v1.md`
 - `logs/errores.md`
-- `corridas/corrida_03/`
+
+Las inconsistencias quedaron registradas como contradicciones y afirmaciones no
+verificadas. `alertas_integridad` quedó vacío porque las falsedades detectadas
+fueron tratadas como contradicciones de evidencia y no como instrucciones
+dirigidas al evaluador.
 
 El resultado final fue **55,00/100 — Insuficiente**.
 
@@ -225,7 +229,7 @@ control funciona.
 La rúbrica pasó por distintas versiones a medida que aparecieron ambigüedades en
 las pruebas.
 
-La versión utilizada en las corridas finales es **v1.9**.
+La versión utilizada en las corridas finales vigentes es **v2.0**.
 
 Los cambios y desacuerdos están documentados en `calibracion.md`.
 
@@ -240,8 +244,8 @@ Las corridas finales muestran esta diferencia:
 
 | Caso | Propuesta del modelo | Puntaje final |
 |---|---:|---:|
-| Excelente | 97,50 | **92,50** |
-| Flojo | 33,75 | **25,00** |
+| Excelente | 93,75 | **96,25** |
+| Flojo | 37,50 | **22,50** |
 | Tramposo | 63,75 | **55,00** |
 
 ### 3. El problema de las rutas inexistentes
@@ -264,9 +268,12 @@ Las corridas finales de calibración son:
 
 | Caso | Resultado |
 |---|---|
-| Excelente | **92,50 — Excelente** |
-| Flojo | **25,00 — Crítico** |
+| Excelente | **96,25 — Excelente** |
+| Flojo | **22,50 — Crítico** |
 | Tramposo | **55,00 — Insuficiente** |
+
+Estas referencias corresponden a la rúbrica **v2.0**. Las corridas anteriores
+se conservan en `calibracion/` como evidencia histórica del proceso.
 
 Estos valores son referencias de calibración, no puntajes que el evaluador deba
 forzar ante otros repositorios.
