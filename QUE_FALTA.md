@@ -31,24 +31,24 @@ proyecto.
 El evaluador fue ejecutado sobre los tres casos de calibración utilizando la
 aplicación real.
 
-Resultados finales con la rúbrica v1.9:
+Resultados finales vigentes con la rúbrica v2.0:
 
 | Caso | Puntaje final | Veredicto |
 |---|---:|---|
-| Excelente | **92,50** | Excelente |
-| Flojo | **25,00** | Crítico |
+| Excelente | **96,25** | Excelente |
+| Flojo | **22,50** | Crítico |
 | Tramposo | **55,00** | Insuficiente |
 
-Los JSON completos de las corridas finales se conservan en `calibracion/`.
+Los JSON completos de las corridas finales se conservan en `calibracion/` como
+`corrida-final-*-v2.0.json`.
 
-En las tres corridas:
+En las tres corridas `validacion_escala.ok = true`.
 
-- `validacion_escala.ok = true`;
-- `validacion_escala.recalculos = []`.
+Cuando la propuesta del modelo requirió una corrección determinista, el ajuste
+quedó registrado en `validacion_escala.recalculos`.
 
 Los puntajes históricos utilizados durante etapas anteriores de calibración no
 son objetivos que la versión final deba reproducir.
-
 ---
 
 ## 2. Calibración — completada
@@ -67,8 +67,11 @@ La calibración completa está documentada en:
 - archivos `desacuerdo-*`;
 - corridas históricas y finales.
 
-La versión final de la rúbrica utilizada para las corridas de referencia es
-**v1.9**.
+La versión vigente de la rúbrica utilizada para las corridas de referencia es
+**v2.0**.
+
+Las corridas v1.9 y anteriores se conservan como evidencia histórica del proceso
+de calibración.
 
 ---
 
@@ -126,21 +129,21 @@ Esta separación surgió de las fallas observadas durante la calibración.
 Caso diseñado con evidencia amplia del sistema, proceso, corridas, economía y
 gobierno.
 
-Resultado final: **92,50 — Excelente**.
+Resultado final v2.0: **96,25 — Excelente**.
 
 ### Flojo
 
 Caso incompleto que permite comprobar que ausencia de evidencia no significa
 automáticamente fraude o manipulación.
 
-Resultado final: **25,00 — Crítico**.
+Resultado final v2.0: **22,50 — Crítico**.
 
 ### Tramposo
 
 Caso que contiene declaraciones que no coinciden con el inventario real y, al
 mismo tiempo, evidencia legítima en otras dimensiones.
 
-Resultado final: **55,00 — Insuficiente**.
+Resultado final v2.0: **55,00 — Insuficiente**.
 
 La nota no se fuerza por la etiqueta del caso: cada componente se puntúa según
 la evidencia verificable.
