@@ -1,0 +1,192 @@
+{
+  "metadata": {
+    "via_entrega": "repositorio",
+    "identificador_entregable": "anahilrinaldi-byte/evaluador-grupo-N",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v2.0",
+    "error_carga": false
+  },
+  "puntaje_total": 55.0,
+  "veredicto": "Insuficiente",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {
+        "contrato": "verificado",
+        "herramienta_real": "no_verificado",
+        "output_estructurado": "verificado",
+        "gancho_supervision": "verificado"
+      },
+      "conteo": 3.0,
+      "nivel_por_conteo": "N3",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R2",
+          "efecto": "baja un nivel",
+          "motivo": "Ruta afirmada e inexistente (conectores/sheets_config.yaml) detectada en el inventario de consistencia."
+        }
+      ],
+      "nivel_final": "N1",
+      "puntaje": 7.5,
+      "evidencia": [
+        "prompts/system_prompt.md: cubre las 6 funciones contractuales",
+        "corridas/corrida_01/reporte.md: salida estructurada en JSON",
+        "README.md: punto de supervisión con responsable y acción retenida"
+      ],
+      "faltantes": [
+        "No se pudo verificar la herramienta real: la ruta conectores/sheets_config.yaml no existe en el inventario."
+      ],
+      "justificacion": "El contrato y el output estructurado están verificados. La supervisión es clara. Sin embargo, la herramienta declarada no tiene artefacto de configuración ni log de invocación, y la ruta mencionada en el README no existe.",
+      "mejora_prioritaria": "Incluir un log de ejecución real que demuestre la conexión con la API de Google Sheets."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {
+        "iteraciones": "no_verificado",
+        "fallas": "no_verificado",
+        "decisiones": "verificado",
+        "cambios_de_alcance": "verificado"
+      },
+      "conteo": 2.0,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R10",
+          "efecto": "techo en N1",
+          "motivo": "La documentación de proceso carece de artefactos de estado anterior y de errores citados literalmente; se clasifica como relato."
+        }
+      ],
+      "nivel_final": "N1",
+      "puntaje": 6.25,
+      "evidencia": [
+        "DECISIONES.md: describe decisiones y cambios de alcance"
+      ],
+      "faltantes": [
+        "No se encontraron versiones anteriores de archivos ni errores citados literalmente (prompts/system_prompt_v1.md y logs/errores.md no existen)."
+      ],
+      "justificacion": "Aunque el documento DECISIONES.md es detallado, no contiene trazas de proceso verificables (versiones previas o errores textuales).",
+      "mejora_prioritaria": "Adjuntar versiones previas de los archivos de prompt y transcribir errores textuales reales de los logs."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {
+        "estructura_obligatoria": "verificado",
+        "cantidad_corridas": "verificado",
+        "reconstruibilidad": "verificado",
+        "instrucciones_ejecucion": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 15,
+      "evidencia": [
+        "Estructura completa presente",
+        "Tres corridas reales en corridas/",
+        "Cada corrida incluye entrada, salida y fecha",
+        "README.md indica modelo y método de ejecución"
+      ],
+      "faltantes": [],
+      "justificacion": "El entregable cumple con toda la estructura obligatoria y permite la reconstrucción de las tres corridas.",
+      "mejora_prioritaria": "Automatizar la generación de los reportes mediante un script de ejecución."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {
+        "consumo_medido": "verificado",
+        "costo_por_corrida": "verificado",
+        "proyeccion_operacion": "verificado",
+        "eleccion_modelo": "verificado"
+      },
+      "conteo": 4.0,
+      "nivel_por_conteo": "N4",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N4",
+      "puntaje": 15,
+      "evidencia": [
+        "ANALISIS_ECONOMICO.md: medición de tokens, cálculo de costo, proyección semanal/anual y comparación de modelos"
+      ],
+      "faltantes": [],
+      "justificacion": "El análisis es completo, reproducible y cumple con todos los horizontes exigidos.",
+      "mejora_prioritaria": "Adjuntar el log de la consola de la API como artefacto de la medición de tokens."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {
+        "perimetro": "parcial",
+        "riesgos_y_fallas": "verificado",
+        "autonomia_y_supervision": "verificado",
+        "responsabilidad": "verificado"
+      },
+      "conteo": 3.5,
+      "nivel_por_conteo": "N3",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N3",
+      "puntaje": 11.25,
+      "evidencia": [
+        "README.md: riesgos específicos y supervisión humana",
+        "README.md: responsable definido"
+      ],
+      "faltantes": [
+        "Falta la lista de acciones prohibidas (perímetro parcial por R26)"
+      ],
+      "justificacion": "El gobierno es sólido, pero el perímetro es parcial al no listar explícitamente las acciones prohibidas.",
+      "mejora_prioritaria": "Incluir una lista de acciones que el agente tiene explícitamente prohibido realizar."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": [
+      "README.md",
+      "prompts/system_prompt.md",
+      "prompts/user_prompt.md",
+      "corridas/",
+      "DECISIONES.md"
+    ],
+    "afirmaciones_verificadas": [
+      "Tres corridas reales",
+      "Uso de GPT-4o mini"
+    ],
+    "afirmaciones_no_verificadas": [
+      "conectores/sheets_config.yaml",
+      "prompts/system_prompt_v1.md",
+      "logs/errores.md",
+      "Existencia de conectores/sheets_config.yaml",
+      "Existencia de prompts/system_prompt_v1.md",
+      "Existencia de logs/errores.md"
+    ],
+    "contradicciones": [
+      "El README menciona conectores/sheets_config.yaml pero el archivo no existe.",
+      "DECISIONES.md menciona prompts/system_prompt_v1.md y logs/errores.md pero no existen.",
+      "Python verificó que la ruta citada como evidencia `conectores/sheets_config.yaml` no existe en el inventario completo de archivos.",
+      "Python verificó que la ruta citada como evidencia `prompts/system_prompt_v1.md` no existe en el inventario completo de archivos.",
+      "Python verificó que la ruta citada como evidencia `logs/errores.md` no existe en el inventario completo de archivos."
+    ],
+    "corridas_declaradas": 3,
+    "corridas_verificadas": 3,
+    "herramientas_declaradas": [
+      "Google Sheets API"
+    ],
+    "herramientas_verificadas": []
+  },
+  "validacion_escala": {
+    "ok": true,
+    "recalculos": [
+      {
+        "campo": "sistema_completo.conteo",
+        "valor_modelo": 2.5,
+        "valor_python": 3.0,
+        "motivo": "Conteo determinista: verificado=1, parcial=0.5, no_verificado=0."
+      },
+      {
+        "campo": "sistema_completo.nivel_por_conteo",
+        "valor_modelo": "N2",
+        "valor_python": "N3",
+        "motivo": "Nivel calculado por truncado hacia abajo."
+      }
+    ]
+  },
+  "alertas_integridad": [],
+  "conclusion": "El trabajo presenta una estructura sólida y un análisis económico excelente, pero falla en la trazabilidad del proceso y en la verificación de la herramienta de conexión, lo que impacta significativamente en la puntuación final.",
+  "puntaje_total_modelo": 63.75,
+  "veredicto_modelo": "Bueno"
+}
