@@ -1,0 +1,171 @@
+{
+  "metadata": {
+    "via_entrega": "repositorio",
+    "identificador_entregable": "anahilrinaldi-byte/evaluador-grupo-N",
+    "fecha_correccion": "2026-09-08",
+    "version_rubrica": "v2.0",
+    "error_carga": false
+  },
+  "puntaje_total": 22.5,
+  "veredicto": "Crítico",
+  "dimensiones": {
+    "sistema_completo": {
+      "maximo": 30,
+      "componentes": {
+        "contrato": "verificado",
+        "herramienta_real": "no_verificado",
+        "output_estructurado": "no_verificado",
+        "gancho_supervision": "no_verificado"
+      },
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 7.5,
+      "evidencia": [
+        "prompts/system_prompt.md cubre las 6 funciones contractuales."
+      ],
+      "faltantes": [
+        "No hay herramienta real configurada ni artefacto de invocación.",
+        "Solo existe una corrida, no permite validar consistencia de formato.",
+        "No hay punto de detención en el flujo con criterio de activación y acción retenida."
+      ],
+      "justificacion": "El contrato está completo, pero el sistema carece de herramienta real, formato estructurado validado por múltiples corridas y un gancho de supervisión definido.",
+      "mejora_prioritaria": "Implementar un punto de detención explícito en el flujo con una acción retenida clara."
+    },
+    "proceso_documentado": {
+      "maximo": 25,
+      "componentes": {
+        "iteraciones": "no_verificado",
+        "fallas": "no_verificado",
+        "decisiones": "no_verificado",
+        "cambios_de_alcance": "no_verificado"
+      },
+      "conteo": 0.0,
+      "nivel_por_conteo": "N0",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R10",
+          "efecto": "Techo en N1",
+          "motivo": "La documentación es un relato sin artefactos de estado anterior ni errores citados literalmente."
+        }
+      ],
+      "nivel_final": "N0",
+      "puntaje": 0,
+      "evidencia": [],
+      "faltantes": [
+        "No hay estados anteriores de archivos.",
+        "No hay errores citados literalmente.",
+        "Las decisiones no nombran alternativas descartadas."
+      ],
+      "justificacion": "El archivo DECISIONES.md es un relato en prosa sin trazas de proceso verificables.",
+      "mejora_prioritaria": "Conservar versiones anteriores de los prompts y citar errores textuales de los logs."
+    },
+    "formato_reproducibilidad": {
+      "maximo": 15,
+      "componentes": {
+        "estructura_obligatoria": "verificado",
+        "cantidad_corridas": "parcial",
+        "reconstruibilidad": "no_verificado",
+        "instrucciones_ejecucion": "verificado"
+      },
+      "conteo": 2.5,
+      "nivel_por_conteo": "N2",
+      "reglas_corte_aplicadas": [
+        {
+          "regla": "R14",
+          "efecto": "Techo en N2",
+          "motivo": "Menos de tres corridas."
+        }
+      ],
+      "nivel_final": "N2",
+      "puntaje": 7.5,
+      "evidencia": [
+        "Estructura completa.",
+        "Instrucciones en README.md."
+      ],
+      "faltantes": [
+        "Faltan dos corridas para el mínimo de tres.",
+        "La corrida existente no tiene fecha."
+      ],
+      "justificacion": "Cumple con la estructura y las instrucciones, pero solo presenta una corrida sin fecha.",
+      "mejora_prioritaria": "Ejecutar y documentar al menos tres corridas con fecha y entrada/salida completa."
+    },
+    "analisis_economico": {
+      "maximo": 15,
+      "componentes": {
+        "consumo_medido": "no_verificado",
+        "costo_por_corrida": "verificado",
+        "proyeccion_operacion": "no_verificado",
+        "eleccion_modelo": "no_verificado"
+      },
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        "Cálculo de costo por corrida basado en tarifa citada."
+      ],
+      "faltantes": [
+        "No hay artefacto de medición de tokens.",
+        "No hay proyección semanal ni anual.",
+        "No hay comparación con alternativa de modelo."
+      ],
+      "justificacion": "El costo por corrida es calculable, pero faltan los horizontes de proyección y la justificación del modelo.",
+      "mejora_prioritaria": "Incluir la proyección de costos anual y semanal y comparar el modelo con una alternativa."
+    },
+    "gobierno_riesgo": {
+      "maximo": 15,
+      "componentes": {
+        "perimetro": "parcial",
+        "riesgos_y_fallas": "no_verificado",
+        "autonomia_y_supervision": "no_verificado",
+        "responsabilidad": "parcial"
+      },
+      "conteo": 1.0,
+      "nivel_por_conteo": "N1",
+      "reglas_corte_aplicadas": [],
+      "nivel_final": "N1",
+      "puntaje": 3.75,
+      "evidencia": [
+        "Se describen permisos básicos.",
+        "Primera persona identificable en supervisión."
+      ],
+      "faltantes": [
+        "No hay lista de acciones prohibidas.",
+        "Riesgos genéricos no ligados a acciones.",
+        "No se declara nivel L0-L4.",
+        "Falta autoridad y contingencia de ausencia."
+      ],
+      "justificacion": "Gobierno superficial sin nivel de autonomía ni gestión de riesgos específica.",
+      "mejora_prioritaria": "Definir el nivel de autonomía L0-L4 y detallar la autoridad del responsable."
+    }
+  },
+  "verificaciones": {
+    "estructura_obligatoria": [
+      "README.md",
+      "prompts/system_prompt.md",
+      "corridas/corrida_01/",
+      "DECISIONES.md"
+    ],
+    "afirmaciones_verificadas": [],
+    "afirmaciones_no_verificadas": [
+      "Medición de 15.000 tokens sin artefacto",
+      "Verificación contra planilla"
+    ],
+    "contradicciones": [],
+    "corridas_declaradas": 1,
+    "corridas_verificadas": 1,
+    "herramientas_declaradas": [],
+    "herramientas_verificadas": []
+  },
+  "validacion_escala": {
+    "ok": true,
+    "recalculos": []
+  },
+  "alertas_integridad": [],
+  "conclusion": "El trabajo presenta una estructura básica y un contrato bien definido, pero carece de evidencia de ejecución, procesos documentados y análisis económico completo. La falta de múltiples corridas y de trazas de proceso impide alcanzar niveles superiores.",
+  "puntaje_total_modelo": 37.5,
+  "veredicto_modelo": "Insuficiente"
+}
