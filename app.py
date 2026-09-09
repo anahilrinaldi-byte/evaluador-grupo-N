@@ -1055,8 +1055,9 @@ def extraer_posibles_rutas(texto):
     - semanal/anual
     - entrada/salida
     - antes/despues
+    - v1.md / v2.md usados como referencias de version
 
-    Pero conserva referencias como:
+    Conserva referencias concretas como:
     - logs/errores.md
     - prompts/system_prompt_v1.md
     - corridas/corrida_03/
@@ -1067,7 +1068,6 @@ def extraer_posibles_rutas(texto):
         return []
 
     limpio = texto
-
     for caracter in [
         "`", "'", '"', "(", ")", "[", "]",
         "{", "}", "<", ">", ",", ";", ":"
@@ -1087,6 +1087,22 @@ def extraer_posibles_rutas(texto):
             continue
 
         token_lower = token.lower()
+
+        # -------------------------------------------------
+        # EVITAR VERSIONES DISFRAZADAS DE ARCHIVO
+        # -------------------------------------------------
+        # Expresiones como v1.md o v2.md pueden aparecer al hablar
+        # de versiones y no constituyen por si solas una ruta fiable.
+        # Una ruta con directorio, por ejemplo prompts/v2.md, sigue
+        # siendo verificable normalmente.
+        if "/" not in token:
+            nombre_sin_extension = token_lower.rsplit(".", 1)[0]
+
+            if (
+                nombre_sin_extension.startswith("v")
+                and nombre_sin_extension[1:].replace(".", "").isdigit()
+            ):
+                continue
 
         # -------------------------------------------------
         # CASO 1: ARCHIVO CON EXTENSION PERMITIDA
@@ -1137,8 +1153,7 @@ def extraer_posibles_rutas(texto):
         if token not in referencias:
             referencias.append(token)
 
-    return referencias
-def ruta_existe_en_inventario(referencia, rutas_reales):
+    return referenciasdef ruta_existe_en_inventario(referencia, rutas_reales):
     """
     Decide de forma determinista si una referencia existe en el inventario.
 
