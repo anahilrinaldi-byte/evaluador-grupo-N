@@ -120,7 +120,7 @@ publica como una evaluación válida.
 
 ## Rúbrica
 
-La versión utilizada en las corridas finales es **v1.9**.
+La versión vigente y utilizada en las corridas finales es **v2.0**.
 
 La evaluación se divide en cinco dimensiones:
 
@@ -139,6 +139,9 @@ discretos de evaluación.
 La evidencia tiene prioridad sobre las declaraciones: afirmar que un artefacto
 existe no equivale a demostrar su existencia.
 
+La rúbrica v2.0 incorpora las aclaraciones surgidas de la calibración de los
+casos Excelente, Flojo y Tramposo. Los cambios de versión y sus motivos se
+conservan en `rubrica.md` y `calibracion.md`.
 ## Casos de prueba
 
 Se construyeron tres casos de calibración.
@@ -166,24 +169,31 @@ puede acreditar.
 
 ## Calibración final
 
-Las tres corridas reales finales se realizaron con la misma versión de la
-rúbrica, **v1.9**.
+Las tres corridas de referencia vigentes se realizaron con la rúbrica **v2.0**.
 
-| Caso | Puntaje final | Veredicto | Puntaje propuesto por el modelo |
-|---|---:|---|---:|
-| Excelente | **92,50** | Excelente | 97,50 |
-| Flojo | **25,00** | Crítico | 33,75 |
-| Tramposo | **55,00** | Insuficiente | 63,75 |
+| Caso | Puntaje final | Veredicto |
+|---|---:|---|
+| Excelente | **96,25** | Excelente |
+| Flojo | **22,50** | Crítico |
+| Tramposo | **55,00** | Insuficiente |
 
-En las tres corridas finales:
+En las tres corridas:
 
-- `validacion_escala.ok = true`
-- `validacion_escala.recalculos = []`
+- `validacion_escala.ok = true`;
+- los puntajes finales respetaron las anclas de la rúbrica;
+- el puntaje total fue derivado por la capa determinista;
+- los ajustes deterministas, cuando fueron necesarios, quedaron registrados en
+  `validacion_escala.recalculos`.
 
-Los JSON completos están archivados en `calibracion/`.
+Los JSON completos están archivados en `calibracion/` como
+`corrida-final-*-v2.0.json`.
 
-La diferencia entre `puntaje_total_modelo` y `puntaje_total` se conserva
-deliberadamente para hacer auditable la intervención de la capa determinista.
+Las diferencias respecto de las corridas v1.9 se conservan deliberadamente como
+evidencia de calibración. No se modificó el evaluador para forzar la
+reproducción de puntajes históricos.
+
+La diferencia entre `puntaje_total_modelo` y `puntaje_total` también se conserva
+para hacer auditable la intervención de la capa determinista.
 
 ## Qué detectó el caso Tramposo
 
@@ -194,22 +204,27 @@ si el archivo realmente existiera.
 La versión final contrasta esas referencias con el inventario obtenido por
 Python.
 
-En la corrida final se detectaron, entre otras, referencias a artefactos
-inexistentes como:
+En la corrida final v2.0 se detectaron como inexistentes, entre otras, las
+referencias a:
 
 - `conectores/sheets_config.yaml`
 - `prompts/system_prompt_v1.md`
 - `logs/errores.md`
-- `corridas/corrida_03/`
 
-El repositorio declaraba tres corridas, pero solamente dos pudieron verificarse.
+Las tres corridas declaradas quedaron verificadas en esta versión, pero la
+herramienta Google Sheets API fue solamente declarada: no se encontró evidencia
+suficiente para considerarla una herramienta verificada.
 
-También declaraba Google Sheets API, pero no se encontró un artefacto suficiente
-para considerarla una herramienta verificada.
+Las referencias inexistentes quedaron registradas en
+`verificaciones.contradicciones` y
+`verificaciones.afirmaciones_no_verificadas`.
 
-Estas inconsistencias se registran en la salida en lugar de convertirse en una
-penalización global automática.
+La corrida no produjo `alertas_integridad`: las falsedades fueron tratadas como
+contradicciones de evidencia y no como instrucciones dirigidas al evaluador.
 
+Estas inconsistencias no generan una penalización global automática. Afectan
+los componentes cuya evidencia deja de estar verificada, mientras se conserva
+el mérito de los componentes respaldados por evidencia legítima.
 ## Qué falló durante el desarrollo
 
 El sistema actual es resultado de varias correcciones surgidas de las pruebas.
@@ -253,7 +268,7 @@ registren sus contradicciones.
 
 ## Estructura del repositorio
 
-- `rubrica.md` — rúbrica ejecutable v1.9.
+- `rubrica.md` — rúbrica ejecutable v2.0.
 - `agente/` — system prompt y configuración del evaluador.
 - `casos/` — casos Excelente, Flojo y Tramposo.
 - `calibracion.md` — proceso de calibración, rondas, hallazgos y resultado final.
