@@ -1153,7 +1153,10 @@ def extraer_posibles_rutas(texto):
         if token not in referencias:
             referencias.append(token)
 
-    return referenciasdef ruta_existe_en_inventario(referencia, rutas_reales):
+        return referencias
+
+
+def ruta_existe_en_inventario(referencia, rutas_reales):
     """
     Decide de forma determinista si una referencia existe en el inventario.
 
