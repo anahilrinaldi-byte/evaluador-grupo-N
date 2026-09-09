@@ -447,23 +447,258 @@ grado de variabilidad.
 
 ---
 
+## Ronda 3 — calibración final con rúbrica v2.0
+
+El 9/9 se volvió a ejecutar el evaluador sobre los tres casos después de
+consolidar la rúbrica v2.0 y corregir los defectos detectados durante las
+rondas anteriores.
+
+Estas ejecuciones constituyen la referencia vigente del evaluador.
+
+No se modificó la rúbrica para perseguir una nota objetivo. Los cambios entre
+v1.9 y v2.0 se conservan como resultado de aplicar la versión nueva de la
+rúbrica y de fortalecer los controles del evaluador.
+
+Los archivos de referencia son:
+
+- `calibracion/corrida-final-excelente-v2.0.json`
+- `calibracion/corrida-final-flojo-v2.0.json`
+- `calibracion/corrida-final-tramposo-v2.0.json`
+
+### Resultados v2.0
+
+| Caso | Puntaje final | Veredicto |
+|---|---:|---|
+| Excelente | **96,25** | Excelente |
+| Flojo | **22,50** | Crítico |
+| Tramposo | **55,00** | Insuficiente |
+
+Los tres casos mantienen el comportamiento esperado para el propósito de la
+calibración:
+
+- el caso Excelente obtiene un puntaje alto;
+- el caso Flojo obtiene un puntaje bajo;
+- el caso Tramposo es detectado por sus inconsistencias sin aplicar una
+  penalización global automática por el solo hecho de contenerlas.
+
+---
+
+## Qué cambió respecto de v1.9
+
+| Caso | v1.9 | v2.0 | Diferencia |
+|---|---:|---:|---:|
+| Excelente | 92,50 | 96,25 | +3,75 |
+| Flojo | 25,00 | 22,50 | -2,50 |
+| Tramposo | 55,00 | 55,00 | 0,00 |
+
+Estas diferencias no fueron corregidas artificialmente para recuperar los
+puntajes anteriores.
+
+La calibración se utiliza para detectar ambigüedades o defectos en la rúbrica
+y en el evaluador, no para obligar al agente a reproducir una nota
+predeterminada.
+
+En particular, durante esta ronda se detectó una interpretación inconsistente
+de D3 en el caso Flojo. El `system_prompt.md` fue aclarado para exigir que los
+estados `verificado`, `parcial` y `no_verificado` se apliquen según la
+definición de la rúbrica vigente y que las reglas de corte se apliquen después
+del conteo, sin hardcodear el caso ni su puntaje.
+
+La nueva corrida de Flojo produjo D3 = N2 = 7,50 y el resultado global quedó en
+22,50.
+
+---
+
+## Caso Excelente · v2.0
+
+Resultado final: **96,25/100 — Excelente**.
+
+La corrida verificó tres ejecuciones, herramienta real, proceso documentado,
+estructura reproducible y evidencia de gobierno.
+
+El control determinista también intervino de forma auditable: el modelo había
+propuesto un puntaje que no coincidía con el ancla correspondiente al nivel
+final de una dimensión. Python normalizó el puntaje al valor de ancla y registró
+el cambio en `validacion_escala.recalculos`.
+
+Esto muestra que una corrida puede ser semánticamente producida por el modelo
+pero seguir sometida a controles mecánicos antes de convertirse en resultado
+final.
+
+---
+
+## Caso Flojo · v2.0
+
+Resultado final: **22,50/100 — Crítico**.
+
+El caso conserva evidencia mínima pero presenta faltantes importantes de
+proceso, reproducibilidad, análisis económico y gobierno.
+
+Durante la calibración apareció una discrepancia de interpretación en D3. Una
+primera ejecución v2.0 produjo un estado demasiado restrictivo para uno de sus
+componentes.
+
+En lugar de fijar un puntaje objetivo para `casos/flojo`, se aclaró en el
+system prompt el procedimiento general:
+
+1. evaluar los cuatro componentes de D3 por separado;
+2. aplicar las definiciones de `verificado`, `parcial` y `no_verificado` de la
+   rúbrica vigente;
+3. realizar el conteo;
+4. obtener el nivel por truncado;
+5. aplicar recién después las reglas de corte.
+
+La nueva ejecución dejó D3 en N2 = 7,50.
+
+El total final de 22,50 no fue modificado para hacerlo coincidir con los 25,00
+de v1.9.
+
+---
+
+## Caso Tramposo · v2.0
+
+Resultado final: **55,00/100 — Insuficiente**.
+
+El caso cumplió su función de prueba adversarial.
+
+El evaluador detectó como inexistentes las referencias a:
+
+- `conectores/sheets_config.yaml`
+- `prompts/system_prompt_v1.md`
+- `logs/errores.md`
+
+Las referencias quedaron registradas en
+`verificaciones.afirmaciones_no_verificadas` y
+`verificaciones.contradicciones`.
+
+La herramienta Google Sheets API fue declarada pero no quedó verificada por
+evidencia suficiente.
+
+Al mismo tiempo, el evaluador preservó el puntaje de las dimensiones que sí
+tenían evidencia legítima. En particular, el caso mantuvo evidencia fuerte en
+formato/reproducibilidad y análisis económico.
+
+Esto es deliberado: la rúbrica evalúa evidencia por componente y no aplica una
+penalización global automática por la existencia de una contradicción.
+
+`alertas_integridad` quedó vacío en esta corrida. Las afirmaciones falsas fueron
+tratadas como contradicciones de evidencia y no como instrucciones dirigidas al
+evaluador. Esa distinción se conserva en la calibración en lugar de alterar el
+resultado después de observarlo.
+
+---
+
+## Control modelo + Python observado en v2.0
+
+Las corridas finales confirman la separación de responsabilidades de la
+arquitectura:
+
+`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
+
+El modelo interpreta semánticamente la evidencia y propone estados, reglas de
+corte y justificaciones.
+
+Python controla los aspectos que pueden verificarse mecánicamente, entre ellos:
+
+- inventario de archivos efectivamente leídos;
+- detección de determinadas referencias a rutas inexistentes;
+- conteo de componentes;
+- nivel derivado del conteo;
+- puntajes discretos de ancla;
+- suma del puntaje total;
+- registro de recalculos cuando la propuesta del modelo no coincide con las
+  invariantes deterministas.
+
+La corrida de Tramposo mostró este mecanismo de manera explícita: Python
+recalculó el conteo y el nivel por conteo de D1 a partir de los estados que el
+propio modelo había emitido, dejando el ajuste registrado para auditoría.
+
+---
+
+## Comparación humano–agente
+
+La calibración humana no se reemplaza por estas corridas automáticas.
+
+Las primeras rondas documentan la aplicación manual de la rúbrica, la revisión
+de Gonzalo y los desacuerdos que llevaron a modificar reglas y ejemplos. Esa
+evidencia se conserva arriba como historial de calibración.
+
+La comparación no se interpreta como obligación de igualdad numérica entre
+persona y agente. Se utiliza para localizar desacuerdos y decidir si provienen
+de:
+
+- una ambigüedad de la rúbrica;
+- una interpretación semántica discutible;
+- un error aritmético;
+- evidencia insuficiente;
+- o una diferencia de criterio que debe permanecer documentada.
+
+Un ejemplo concreto fue D4 del caso Excelente: dos correcciones podían llegar
+al mismo puntaje con estados de componentes diferentes. Ese desacuerdo llevó a
+revisar la definición probatoria y mostró por qué comparar únicamente el total
+es insuficiente.
+
+Otro ejemplo fue D3 del caso Flojo en v2.0: la primera corrida automática
+interpretó un componente de manera demasiado restrictiva. La corrección se hizo
+sobre la regla general de interpretación y no sobre el puntaje objetivo del
+caso.
+
+Las rondas humanas que no llegaron a completarse se mantienen declaradas como
+tales. No se reconstruyen retrospectivamente como revisiones ciegas.
+
+---
+
+## Criterio de estabilidad
+
+Temperatura 0 reduce variabilidad, pero no convierte una evaluación semántica
+de un LLM en una función completamente determinista.
+
+Por eso la estabilidad exigida se concentra en las invariantes que sí pueden
+controlarse:
+
+- una ruta inexistente no debe transformarse en evidencia válida;
+- una herramienta declarada no equivale automáticamente a una herramienta
+  verificada;
+- las cantidades verificadas deben derivarse de artefactos reales;
+- el conteo de componentes debe respetar la aritmética de la rúbrica;
+- el nivel final no puede superar indebidamente el nivel permitido;
+- los puntajes deben pertenecer a las anclas oficiales;
+- el total debe coincidir con la suma de las cinco dimensiones;
+- los ajustes deterministas deben quedar registrados.
+
+La variabilidad semántica residual se documenta en vez de ocultarse.
+
+---
+
 ## Conclusión de calibración
 
-La calibración final produjo tres comportamientos claramente diferenciados:
+La referencia vigente de calibración para la rúbrica v2.0 queda formada por:
 
-- **Excelente — 92,50:** evidencia abundante, trazable y reproducible.
-- **Flojo — 25,00:** estructura mínima con faltantes sustanciales.
-- **Tramposo — 55,00:** contiene evidencia legítima, pero también declaraciones
-  que contradicen el inventario real.
+| Caso | Resultado final |
+|---|---:|
+| Excelente | **96,25/100 — Excelente** |
+| Flojo | **22,50/100 — Crítico** |
+| Tramposo | **55,00/100 — Insuficiente** |
 
-Los casos Excelente y Flojo coinciden exactamente con las referencias históricas.
+Los tres casos cumplen funciones diferentes y no se utilizan como notas que el
+evaluador deba memorizar:
 
-El caso Tramposo no coincide con las notas históricas de las primeras rondas,
-pero la diferencia se conserva y documenta en lugar de modificar el evaluador
-para forzar una coincidencia.
+**Excelente** verifica que un trabajo con evidencia abundante, trazable y
+reproducible pueda obtener un puntaje alto.
 
-El resultado final prioriza la aplicación de la rúbrica v1.9 y la evidencia
-verificable por encima de una nota objetivo predeterminada.
+**Flojo** verifica que un trabajo con evidencia insuficiente y documentación
+débil obtenga un puntaje bajo.
 
-Las tres corridas reales constituyen la referencia de calibración de la versión
-actual del evaluador.
+**Tramposo** verifica que las declaraciones incompatibles con el inventario
+sean detectadas y no puedan utilizarse como evidencia, sin borrar el mérito de
+los componentes que sí poseen evidencia legítima.
+
+Las diferencias con v1.9 se mantienen explícitas. No se ajustó el evaluador
+para reproducir puntajes históricos.
+
+Por lo tanto, las tres corridas v2.0 constituyen la referencia actual de
+calibración del evaluador.
+
+Cualquier cambio posterior en `rubrica.md`, `agente/system_prompt.md` o en las
+reglas deterministas de `app.py` requiere volver a ejecutar los tres casos antes
+de reemplazar estas referencias.
