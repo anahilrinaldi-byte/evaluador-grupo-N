@@ -669,6 +669,44 @@ controlarse:
 La variabilidad semántica residual se documenta en vez de ocultarse.
 
 ---
+## Revisión humana final del grupo
+
+Como cierre de la calibración, el grupo realizó una revisión humana final sobre
+los tres casos utilizando la rúbrica v2.0 ya estabilizada.
+
+Esta revisión no fue ciega: al momento de hacerla ya se conocían las corridas
+automáticas previas. Se declara así para no presentar como independiente una
+evaluación que no lo fue.
+
+La comparación final fue:
+
+| Caso | Evaluador automático | Criterio humano del grupo | Acuerdo |
+|---|---:|---:|---|
+| Excelente | 96,25 | Alto / Excelente | Sí, en la clasificación general |
+| Flojo | 22,50 | Bajo / Crítico | Sí, en la clasificación general |
+| Tramposo | 55,00 | Insuficiente, con evidencia válida y contradicciones detectadas | Sí, en el comportamiento esperado |
+
+El grupo no tomó estas referencias como notas objetivo que el sistema debiera
+reproducir exactamente.
+
+En el caso Excelente, el criterio humano coincidió en que debía ubicarse en el
+tramo superior de la escala.
+
+En el caso Flojo, el criterio humano coincidió en que debía quedar claramente en
+el tramo bajo por sus faltantes sustanciales.
+
+En el caso Tramposo, el criterio humano coincidió en que las contradicciones
+debían detectarse, pero que la evidencia legítima de otras dimensiones no debía
+eliminarse mediante una sanción global automática.
+
+Los desacuerdos más relevantes aparecieron durante las rondas previas en la
+interpretación de componentes específicos, especialmente D3 y D4. Esos
+desacuerdos llevaron a aclarar reglas de la rúbrica, el system prompt y los
+controles deterministas.
+
+La calibración final se considera satisfactoria porque agente y criterio humano
+coinciden en la clasificación y en el comportamiento esperado de los tres
+casos, aunque no se exige identidad exacta de puntaje como condición de validez.
 
 ## Conclusión de calibración
 
