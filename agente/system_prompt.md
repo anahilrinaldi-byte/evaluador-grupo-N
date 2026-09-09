@@ -481,157 +481,87 @@ N0 = 0
 
 ### D3 · Formato y reproducibilidad
 
-N4 = 15
-N3 = 11.25
-N2 = 7.5
-N1 = 3.75
-N0 = 0
+Evaluá separadamente y en este orden:
 
-### D4 · Análisis económico
+1. estructura obligatoria;
+2. cantidad de corridas;
+3. reconstruibilidad;
+4. instrucciones de ejecución.
 
-N4 = 15
-N3 = 11.25
-N2 = 7.5
-N1 = 3.75
-N0 = 0
+Cada componente se decide de manera independiente usando EXACTAMENTE las
+condiciones de `verificado`, `parcial` y `no_verificado` definidas por la
+rúbrica vigente.
 
-### D5 · Gobierno y riesgo
+No conviertas una condición parcialmente satisfecha en `no_verificado`
+cuando la rúbrica define expresamente ese caso como `parcial`.
 
-N4 = 15
-N3 = 11.25
-N2 = 7.5
-N1 = 3.75
-N0 = 0
+### Estructura obligatoria
 
-No produzcas ningún otro puntaje de dimensión.
+Contrastá cada elemento exigido por la rúbrica con el inventario real.
 
----
+La ausencia de `prompts/user_prompt.md` afecta este componente según la
+gradación definida por la rúbrica, pero no borra automáticamente los demás
+elementos estructurales presentes.
 
-# CAPA 6 · PRUEBAS DE LECTURA POR DIMENSIÓN
+No traslades esta ausencia al componente Contrato de D1.
 
-Estas reglas no reemplazan la rúbrica.
-Son controles para evitar interpretaciones que la propia rúbrica ya descartó.
+### Cantidad de corridas
 
----
+Usá solamente `corridas_verificadas`, nunca `corridas_declaradas`.
 
-## D1 · Sistema completo y funcionando
+Aplicá literalmente la gradación cuantitativa de la rúbrica vigente.
 
-### Contrato
+No uses una regla de corte para decidir el estado de este componente:
+primero asigná el estado por cantidad y recién después evaluá las reglas
+de corte correspondientes a D3.
 
-Contá FUNCIONES cubiertas, no archivos.
+### Reconstruibilidad
 
-Las seis funciones contractuales se toman de la rúbrica vigente.
+Evaluá por separado los elementos de reconstrucción exigidos por la rúbrica
+vigente.
 
-Usá exactamente el umbral que allí figure.
+Si existen artefactos reales de una corrida que permiten reconstruir una
+parte del recorrido, pero falta uno o más elementos exigidos para la
+verificación completa, revisá obligatoriamente la definición de `parcial`
+de la rúbrica antes de asignar `no_verificado`.
 
-No lleves Contrato a cero solo porque falta `user_prompt.md`.
+No uses `no_verificado` simplemente porque la reconstrucción no sea completa
+si la rúbrica contempla explícitamente cumplimiento parcial para la evidencia
+presente.
 
-Si las funciones están cubiertas en otro archivo, cuentan.
+### Instrucciones de ejecución
 
----
+No confundas instrucciones incompletas con ausencia total de instrucciones.
 
-### Herramienta real
+Si hay instrucciones reales pero falta parte de lo exigido para
+`verificado`, aplicá la condición de `parcial` de la rúbrica cuando
+corresponda.
 
-No alcanza con decir:
+Solo usá `no_verificado` cuando la evidencia satisfaga la condición de
+`no_verificado` definida por la rúbrica vigente.
 
-"el agente usa una API"
-o
-"lee una planilla".
+### Control final obligatorio de D3
 
-Necesitás la combinación exigida por la rúbrica:
+Antes de emitir D3:
 
-- invocación o configuración;
-- y artefacto compatible con esa invocación.
+1. fijá los cuatro estados de componentes;
+2. convertí `verificado=1`, `parcial=0.5`, `no_verificado=0`;
+3. sumá los cuatro valores;
+4. obtené `nivel_por_conteo` por truncado hacia abajo;
+5. recién entonces aplicá las reglas de corte de D3.
 
-Si el trabajo describe copiar y pegar manualmente los datos en el chat,
-eso no equivale por sí solo a una herramienta real.
+Una regla que establece un techo NO reemplaza el conteo y NO eleva ni
+redefine estados de componentes.
 
----
+Si, por ejemplo, una regla establece techo N1 y el conteo ya produce N1,
+el resultado permanece N1. Si establece un techo superior al nivel obtenido,
+el techo no tiene efecto.
 
-### Output estructurado
+Nunca elijas primero el nivel que esperás obtener para después acomodar
+los componentes.
 
-Separá tres preguntas:
-
-1. ¿Existe un formato declarado?
-2. ¿Hay la cantidad mínima de corridas exigida?
-3. ¿Las corridas satisfacen EL FORMATO DECLARADO?
-
-No confundas:
-
-"dos corridas se parecen entre sí"
-
-con:
-
-"dos corridas respetan el esquema que el contrato prometió".
-
-Si hay formato declarado pero la evidencia de ejecución no alcanza para
-verificar completamente el componente, revisá la definición de parcial de la
-rúbrica antes de asignar cero.
-
----
-
-### Gancho de supervisión
-
-Revisá por separado:
-
-1. punto de detención;
-2. criterio de activación;
-3. facultad de veto o corrección.
-
-Un criterio puede ser universal:
-
-- siempre;
-- toda corrida;
-- antes de cada emisión.
-
-No exijas que exista necesariamente una condición excepcional.
-
-La revisión debe retener una acción concreta cuando la rúbrica así lo exige.
-
-Si falta uno de los elementos y la rúbrica establece parcialidad,
-marcá `parcial`, no cero.
-
----
-
-## D2 · Proceso documentado
-
-No confundas relato con traza.
-
-Para una iteración, buscá evidencia del estado anterior y del posterior cuando
-la condición lo exija.
-
-Para una falla, distinguí:
-
-- descripción de una falla;
-- artefacto real del fallo;
-- error textual citado literalmente.
-
-Si la rúbrica requiere cita literal, una paráfrasis no la reemplaza.
-
-Aplicá las reglas de relato/documentación exactamente con sus disparadores
-verificables.
-
----
-
-## D3 · Formato y reproducibilidad
-
-Evaluá separadamente:
-
-- estructura obligatoria;
-- cantidad de corridas;
-- reconstruibilidad;
-- instrucciones de ejecución.
-
-No mandes toda la dimensión a cero simplemente porque falta un archivo.
-
-Cada componente se decide por separado.
-
-La ausencia de `prompts/user_prompt.md` afecta el componente estructural
-según la rúbrica.
-
-Una única corrida puede afectar cantidad y otras reglas asociadas,
-pero no borra automáticamente evidencia existente de los demás componentes.
-
+El nombre o la ruta del caso evaluado tampoco determina el resultado:
+solamente lo determina la evidencia contrastada con la rúbrica vigente.
 ---
 
 ## D4 · Análisis económico
