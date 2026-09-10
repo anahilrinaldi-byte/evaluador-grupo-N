@@ -2664,7 +2664,7 @@ exigido por el contrato.
             )
         )
 
-         if problemas_persistentes:
+       if problemas_persistentes:
 
             # -------------------------------------------------
             # ÚLTIMO GUARDRAIL DETERMINISTA
