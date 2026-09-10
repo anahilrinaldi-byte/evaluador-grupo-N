@@ -2664,32 +2664,97 @@ exigido por el contrato.
             )
         )
 
-        if problemas_persistentes:
+         if problemas_persistentes:
 
-            rutas = ", ".join(
-                sorted({
-                    str(
-                        p.get("ruta")
-                    )
+            # -------------------------------------------------
+            # ÚLTIMO GUARDRAIL DETERMINISTA
+            # -------------------------------------------------
+            #
+            # Si Gemini todavía menciona una ruta inexistente
+            # después de la revisión, Python NO permite que esa
+            # referencia quede presentada como evidencia.
+            #
+            # En lugar de abortar toda la evaluación:
+            # 1. elimina la evidencia concreta inválida;
+            # 2. registra la contradicción;
+            # 3. registra la afirmación como no verificada;
+            # 4. deja continuar la evaluación.
+            #
+            # Se adopta un criterio conservador:
+            # si una línea de evidencia contiene una ruta
+            # inexistente, se elimina esa línea completa.
 
-                    for p
-                    in problemas_persistentes
-
-                    if (
-                        isinstance(p, dict)
-                        and p.get("ruta")
-                    )
-                })
+            dimensiones_resultado = resultado.get(
+                "dimensiones",
+                {}
             )
 
-            raise ValueError(
-                "La revisión automática "
-                "detectó que Gemini siguió "
-                "utilizando rutas inexistentes "
-                "como evidencia: "
-                f"{rutas}. "
-                "La corrida se considera "
-                "inválida."
+            if isinstance(
+                dimensiones_resultado,
+                dict
+            ):
+
+                for problema in problemas_persistentes:
+
+                    if not isinstance(
+                        problema,
+                        dict
+                    ):
+                        continue
+
+                    nombre_dimension = problema.get(
+                        "dimension"
+                    )
+
+                    evidencia_invalida = problema.get(
+                        "evidencia"
+                    )
+
+                    datos_dimension = (
+                        dimensiones_resultado.get(
+                            nombre_dimension
+                        )
+                    )
+
+                    if not isinstance(
+                        datos_dimension,
+                        dict
+                    ):
+                        continue
+
+                    evidencias = datos_dimension.get(
+                        "evidencia",
+                        []
+                    )
+
+                    if isinstance(
+                        evidencias,
+                        str
+                    ):
+                        evidencias = [
+                            evidencias
+                        ]
+
+                    if not isinstance(
+                        evidencias,
+                        list
+                    ):
+                        evidencias = []
+
+                    evidencias_limpias = [
+                        evidencia
+                        for evidencia in evidencias
+                        if evidencia
+                        != evidencia_invalida
+                    ]
+
+                    datos_dimension[
+                        "evidencia"
+                    ] = evidencias_limpias
+
+            registrar_rutas_inexistentes(
+                resultado,
+                problemas_persistentes
             )
 
         registrar_rutas_inexistentes(
