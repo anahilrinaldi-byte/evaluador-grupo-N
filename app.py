@@ -2664,25 +2664,15 @@ exigido por el contrato.
             )
         )
 
-       if problemas_persistentes:
+        if problemas_persistentes:
 
             # -------------------------------------------------
             # ÚLTIMO GUARDRAIL DETERMINISTA
             # -------------------------------------------------
-            #
-            # Si Gemini todavía menciona una ruta inexistente
-            # después de la revisión, Python NO permite que esa
-            # referencia quede presentada como evidencia.
-            #
-            # En lugar de abortar toda la evaluación:
-            # 1. elimina la evidencia concreta inválida;
-            # 2. registra la contradicción;
-            # 3. registra la afirmación como no verificada;
-            # 4. deja continuar la evaluación.
-            #
-            # Se adopta un criterio conservador:
-            # si una línea de evidencia contiene una ruta
-            # inexistente, se elimina esa línea completa.
+            # Si Gemini todavía usa una ruta inexistente
+            # después de la revisión, Python elimina esa
+            # evidencia inválida, registra la contradicción
+            # y permite terminar la evaluación.
 
             dimensiones_resultado = resultado.get(
                 "dimensiones",
@@ -2744,8 +2734,7 @@ exigido por el contrato.
                     evidencias_limpias = [
                         evidencia
                         for evidencia in evidencias
-                        if evidencia
-                        != evidencia_invalida
+                        if evidencia != evidencia_invalida
                     ]
 
                     datos_dimension[
@@ -2761,7 +2750,7 @@ exigido por el contrato.
             resultado,
             problemas
         )
-
+    
     # -----------------------------------------------------
     # NORMALIZACIÓN MECÁNICA
     # -----------------------------------------------------
