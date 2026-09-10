@@ -5,10 +5,7 @@
 Construimos un sistema agéntico para evaluar trabajos finales de la materia
 **Programación de y con Agentes de IA** a partir de una rúbrica ejecutable.
 
-El sistema recibe la URL de un repositorio público de GitHub, recupera su
-contenido, aplica la rúbrica mediante un agente basado en Gemini y devuelve una
-evaluación estructurada con puntajes, evidencia, faltantes, contradicciones y
-alertas de integridad.
+El sistema recibe una entrega mediante la URL de un repositorio público de GitHub, una subcarpeta de GitHub o un archivo ZIP. Recupera y normaliza su contenido, aplica la rúbrica mediante un agente basado en Gemini y devuelve una evaluación estructurada con puntajes, evidencia, faltantes, contradicciones y alertas de integridad. Las distintas vías de entrada utilizan el mismo motor de evaluación.
 
 El objetivo es que un mismo criterio de evaluación pueda aplicarse de forma
 consistente, trazable y auditable a distintos trabajos.
@@ -62,15 +59,15 @@ instrucciones y criterios que guiaron la construcción:
 
 El evaluador acepta:
 
-- la URL de un repositorio público completo de GitHub; o
-- la URL de una subcarpeta de un repositorio.
+* la URL de un repositorio público completo de GitHub;
+* la URL de una subcarpeta de un repositorio; o
+* un archivo ZIP cargado directamente desde la interfaz.
 
-Esto último permite evaluar de manera independiente los tres casos almacenados
-en `casos/`.
+Las URLs de subcarpetas permiten evaluar de manera independiente los tres casos almacenados en `casos/`. Los archivos ZIP se leen en memoria, sin ejecutar el contenido de la entrega, y pasan por los mismos límites de lectura y el mismo motor de evaluación que las entradas provenientes de GitHub.
 
 El flujo general es:
 
-`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
+`Entrega (GitHub o ZIP) -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
 
 ### 1. Recuperación del repositorio
 
@@ -114,9 +111,7 @@ Entre otros controles:
 - recalcula el puntaje total;
 - deriva el veredicto final.
 
-Si una ruta inexistente es utilizada como evidencia, el sistema solicita una
-revisión de la evaluación. Si la inconsistencia persiste, la corrida no se
-publica como una evaluación válida.
+Si una ruta inexistente es utilizada como evidencia, el sistema solicita una revisión de la evaluación. Si después de esa revisión el modelo continúa utilizando una ruta inexistente, la capa determinista elimina esa evidencia inválida, registra la contradicción y la afirmación como no verificada, y permite completar la evaluación sin presentar esa referencia como evidencia válida.
 
 ## Rúbrica
 
