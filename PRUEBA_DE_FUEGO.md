@@ -25,6 +25,22 @@ Aplicación:
 
 `https://evaluador-grupo-n.streamlit.app/`
 
+### Formas de ingreso de una entrega
+
+La aplicación admite dos vías de entrada:
+
+- una URL de un repositorio público de GitHub o de una subcarpeta del repositorio;
+- un archivo `.zip` cargado directamente desde la interfaz.
+
+En ambos casos se utiliza el mismo motor de evaluación.
+
+Los archivos ZIP se leen en memoria, sin ejecutar el contenido de la entrega, y
+se someten a los mismos límites de lectura y controles de evidencia utilizados
+para las entregas provenientes de GitHub.
+
+La vía utilizada para recibir la entrega no forma parte del criterio de
+puntuación.
+
 ---
 
 ## Roles durante la prueba
@@ -163,7 +179,7 @@ Eso llevó a incorporar un control determinista en Python.
 
 La arquitectura final puede resumirse así:
 
-`Repositorio -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
+`Entrega (GitHub o ZIP) -> inventario Python -> evaluación semántica -> control de evidencia -> normalización determinista -> resultado`
 
 En la corrida final v2.0 del caso Tramposo:
 
@@ -257,6 +273,12 @@ Ese problema no se intentó resolver solamente agregando instrucciones al prompt
 
 Se agregó una verificación objetiva del inventario en Python y una segunda
 evaluación cuando el control encuentra evidencia inválida.
+
+Si después de esa revisión el modelo continúa utilizando una ruta inexistente,
+la capa determinista elimina esa referencia como evidencia válida y registra la
+inconsistencia como contradicción y afirmación no verificada. De esta manera, la
+evaluación puede completarse sin presentar como evidencia un artefacto cuya
+existencia no fue verificada.
 
 Es un ejemplo concreto de una decisión arquitectónica surgida de una falla real.
 
